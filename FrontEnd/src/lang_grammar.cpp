@@ -11,8 +11,6 @@
 #include "lang_logger.h"
 #include "string_funcs.h"
 #include "lang_grammar.h"
-#include "diff_funcs.h"
-#include "diff_tree.h"
 
 #include "diff_DSL.h"
 
@@ -70,13 +68,13 @@ bool check_parser_err(FILE *stream, parsing_block_t *data) {
     return true;
 }
 
-bin_tree_elem_t *get_code_block(parsing_block_t *data) {
+ast_tree_elem_t *get_code_block(parsing_block_t *data) {
     assert(data != NULL);
 
     lexem_t *tl = data->lexem_list;
     size_t *tp = &(data->lexem_list_idx);
 
-    bin_tree_elem_t *val = get_additive_expression(data);
+    ast_tree_elem_t *val = get_additive_expression(data);
     if (data->parser_err.err_state) {
         add_grule_to_parser_err(&data->parser_err, GET_CODE_BLOCK);
         return val;
@@ -92,13 +90,13 @@ bin_tree_elem_t *get_code_block(parsing_block_t *data) {
     return val;
 }
 
-bin_tree_elem_t *get_additive_expression(parsing_block_t *data) {
+ast_tree_elem_t *get_additive_expression(parsing_block_t *data) {
     assert(data != NULL);
 
     lexem_t *tl = data->lexem_list;
     size_t *tp = &(data->lexem_list_idx);
 
-    bin_tree_elem_t *val = get_multiplicative_expression(data);
+    ast_tree_elem_t *val = get_multiplicative_expression(data);
     if (data->parser_err.err_state) {
         add_grule_to_parser_err(&data->parser_err, GET_ADDITIVE_EXPRESSION);
         return val;
@@ -107,7 +105,7 @@ bin_tree_elem_t *get_additive_expression(parsing_block_t *data) {
     while (tl[*tp].token_type == T_ADD || tl[*tp].token_type == T_SUB) {
         token_t op = tl[*tp].token_type;
         (*tp)++;
-        bin_tree_elem_t *val2 = get_multiplicative_expression(data);
+        ast_tree_elem_t *val2 = get_multiplicative_expression(data);
         if (data->parser_err.err_state) {
             add_grule_to_parser_err(&data->parser_err, GET_ADDITIVE_EXPRESSION);
             return val;
@@ -123,12 +121,12 @@ bin_tree_elem_t *get_additive_expression(parsing_block_t *data) {
     return val;
 }
 
-bin_tree_elem_t *get_multiplicative_expression(parsing_block_t *data) {
+ast_tree_elem_t *get_multiplicative_expression(parsing_block_t *data) {
     assert(data != NULL);
 
     lexem_t *tl = data->lexem_list;
     size_t *tp = &(data->lexem_list_idx);
-    bin_tree_elem_t *val = get_direct_declarator(data);
+    ast_tree_elem_t *val = get_direct_declarator(data);
     if (data->parser_err.err_state) {
         add_grule_to_parser_err(&data->parser_err, GET_MULTIPLICATIVE_EXPRESSION);
         return val;
@@ -138,7 +136,7 @@ bin_tree_elem_t *get_multiplicative_expression(parsing_block_t *data) {
         token_t op = tl[*tp].token_type;
         (*tp)++;
 
-        bin_tree_elem_t *val2 = get_direct_declarator(data);
+        ast_tree_elem_t *val2 = get_direct_declarator(data);
         if (data->parser_err.err_state) {
             add_grule_to_parser_err(&data->parser_err, GET_MULTIPLICATIVE_EXPRESSION);
             return val;
@@ -156,14 +154,14 @@ bin_tree_elem_t *get_multiplicative_expression(parsing_block_t *data) {
 
 // there is should be pow grammar rule
 
-bin_tree_elem_t *get_direct_declarator(parsing_block_t *data) {
+ast_tree_elem_t *get_direct_declarator(parsing_block_t *data) {
     assert(data != NULL);
 
     lexem_t *tl = data->lexem_list;
     size_t *tp = &(data->lexem_list_idx);
     if (tl[*tp].token_type == T_O_BRACE) {
         (*tp)++;
-        bin_tree_elem_t *val = get_additive_expression(data);
+        ast_tree_elem_t *val = get_additive_expression(data);
         if (data->parser_err.err_state) {
             add_grule_to_parser_err(&data->parser_err, GET_DIRECT_DECLARATOR);
             return NULL;
@@ -177,7 +175,7 @@ bin_tree_elem_t *get_direct_declarator(parsing_block_t *data) {
         (*tp)++;
         return val;
     } else if (tl[*tp].token_type == T_ID && tl[(*tp) + 1].token_type == T_O_BRACE) {
-        bin_tree_elem_t *func_node = get_function(data);
+        ast_tree_elem_t *func_node = get_function(data);
         if (data->parser_err.err_state) {
             add_grule_to_parser_err(&data->parser_err, GET_DIRECT_DECLARATOR);
             return func_node;
@@ -185,7 +183,7 @@ bin_tree_elem_t *get_direct_declarator(parsing_block_t *data) {
 
         return func_node;
     } else if (tl[*tp].token_type == T_ID || tl[*tp].token_type == T_NUM) {
-        bin_tree_elem_t *prim_node = get_primary_expression(data);
+        ast_tree_elem_t *prim_node = get_primary_expression(data);
         if (data->parser_err.err_state) {
             add_grule_to_parser_err(&data->parser_err, GET_DIRECT_DECLARATOR);
             return prim_node;
@@ -198,7 +196,7 @@ bin_tree_elem_t *get_direct_declarator(parsing_block_t *data) {
     }
 }
 
-bin_tree_elem_t *get_function(parsing_block_t *data) {
+ast_tree_elem_t *get_function(parsing_block_t *data) {
     assert(data != NULL);
 
     lexem_t *tl = data->lexem_list;
@@ -208,7 +206,7 @@ bin_tree_elem_t *get_function(parsing_block_t *data) {
         lexem_t func_lexem = tl[*tp];
         (*tp) += 2;
 
-        bin_tree_elem_t *val = get_additive_expression(data);
+        ast_tree_elem_t *val = get_additive_expression(data);
         if (data->parser_err.err_state) {
             add_grule_to_parser_err(&data->parser_err, GET_FUNCTION);
             return NULL;
@@ -227,14 +225,14 @@ bin_tree_elem_t *get_function(parsing_block_t *data) {
     }
 }
 
-bin_tree_elem_t *get_primary_expression(parsing_block_t *data) {
+ast_tree_elem_t *get_primary_expression(parsing_block_t *data) {
     assert(data != NULL);
 
     lexem_t *tl = data->lexem_list;
     size_t *tp = &(data->lexem_list_idx);
 
     if (tl[*tp].token_type == T_ID) {
-        bin_tree_elem_t *id_node = get_identificator(data);
+        ast_tree_elem_t *id_node = get_identificator(data);
         if (data->parser_err.err_state) {
             add_grule_to_parser_err(&data->parser_err, GET_PRIMARY_EXPRESSION);
             return id_node;
@@ -242,7 +240,7 @@ bin_tree_elem_t *get_primary_expression(parsing_block_t *data) {
 
         return id_node;
     } else if (tl[*tp].token_type == T_NUM) {
-        bin_tree_elem_t *const_node = get_constant(data);
+        ast_tree_elem_t *const_node = get_constant(data);
         if (data->parser_err.err_state) {
             add_grule_to_parser_err(&data->parser_err, GET_PRIMARY_EXPRESSION);
             return const_node;
@@ -254,7 +252,7 @@ bin_tree_elem_t *get_primary_expression(parsing_block_t *data) {
     }
 }
 
-bin_tree_elem_t *get_constant(parsing_block_t *data) {
+ast_tree_elem_t *get_constant(parsing_block_t *data) {
     assert(data != NULL);
 
     lexem_t *tl = data->lexem_list;
@@ -272,7 +270,7 @@ bin_tree_elem_t *get_constant(parsing_block_t *data) {
     return _NUM(val);
 }
 
-bin_tree_elem_t *get_identificator(parsing_block_t *data) {
+ast_tree_elem_t *get_identificator(parsing_block_t *data) {
     assert(data != NULL);
 
     lexem_t *tl = data->lexem_list;

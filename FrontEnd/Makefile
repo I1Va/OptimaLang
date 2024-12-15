@@ -84,7 +84,7 @@ override CFLAGS += $(COMMONINC) # CFLAGS - environment variable. We can change i
 
 #/---------------------------PROJECT_SRC_CONFIG--------------------\#
 PROJECT_NAME = FrontEnd
-CSRC = main.cpp src/diff_tree.cpp src/diff_funcs.cpp src/lang_grammar.cpp src/lang_logger.cpp \
+CSRC = main.cpp src/lang_grammar.cpp src/lang_logger.cpp \
 src/lang_lexer.cpp src/lang_global_space.cpp src/front_args_proc.cpp
 
 LOGS_DIR = ./logs
@@ -94,7 +94,7 @@ SRC = ./src
 #/---------------------------PROJECT_SRC_CONFIG--------------------\#
 
 #/---------------------------SUBMODULES_CONFIG--------------------\#
-SUBMODULES = args_processing string_funcs
+SUBMODULES = args_processing string_funcs ASTio_lib graphviz_funcs
 #/---------------------------SUBMODULES_CONFIG--------------------\#
 
 

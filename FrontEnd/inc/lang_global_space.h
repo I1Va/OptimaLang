@@ -3,7 +3,6 @@
 
 #include <string.h>
 #include "string_funcs.h"
-#include "diff_tree.h"
 
 const size_t TOKEN_LIST_MAX_SZ = 1028;
 

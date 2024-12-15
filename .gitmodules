@@ -1,3 +1,9 @@
 [submodule "FrontEnd/string_funcs"]
 	path = FrontEnd/string_funcs
 	url = https://github.com/I1Va/string_funcs.git
+[submodule "FrontEnd/ASTio_lib"]
+	path = FrontEnd/ASTio_lib
+	url = https://github.com/I1Va/ASTio_lib.git
+[submodule "FrontEnd/graphviz_funcs"]
+	path = FrontEnd/graphviz_funcs
+	url = https://github.com/I1Va/graphviz_funcs.git
