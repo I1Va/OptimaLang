@@ -1,0 +1,85 @@
+jmp func_def_end:
+
+outN:
+    out;
+    call new_line:
+    ret
+
+new_line:
+    upush 10;
+    outc;
+    ret
+
+func_def_end:
+
+
+
+
+
+
+
+
+
+push 0;
+popr AX;
+
+push 1;
+popr BX;
+
+in; // ENTER FIBONACHI IDX
+popr DX;
+
+push 0;
+pushr DX;
+
+jb exit: ; DX < 0. NO FIBONACHI!:(
+
+pushr DX;
+push 0;
+jne end_if1:
+    pushr AX;
+    out;
+    jmp exit:
+end_if1:
+
+pushr DX;
+push 1;
+jne end_if2:
+    pushr BX;
+    out;
+    jmp exit:
+end_if2:
+
+
+
+push 1;
+pushr DX;
+sub;
+popr DX;
+
+cycle: ; CYCLE_START
+    pushr AX;
+    pushr BX;
+    add;
+    popr CX; CX = AX + BX
+    pushr BX;
+    popr AX;
+    pushr CX;
+    popr BX;
+
+    push 1;
+    pushr DX;
+
+    sub;
+    popr DX;
+
+    pushr DX;
+    push 0;
+    jne cycle:
+
+pushr BX;
+call outN:
+
+
+exit:
+hlt

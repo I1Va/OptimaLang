@@ -1,0 +1,176 @@
+jmp end_func_dec:
+
+outN:
+    out;
+    call new_line:
+    ret
+
+new_line:
+    push 10;
+    outc;
+    ret
+
+get_height:
+    push [6000]
+    ret;
+
+get_width:
+    call get_height:
+    push 2;
+    mult;
+    ret;
+
+
+print_sim:
+    push 35;
+    outc;
+    call new_line:
+    ret;
+
+fill_screen:
+
+    push 0;
+    pop BX;
+
+    push 0;
+    pop CX;
+
+    push 0;
+    pop AX;
+    cycle_AX:
+        push 0;
+        pop BX;
+
+
+
+        cycle_BX:
+            push AX;
+            call get_width:
+            mult;
+            push BX;
+            add;
+            pop CX;
+
+            push 46;
+            pop [CX];
+
+            push 1;
+            push BX;
+            add;
+            pop BX;
+
+            call get_width:
+            push BX;
+            jne cycle_BX:
+
+
+
+        push 1;
+        push AX;
+        add;
+        pop AX;
+
+        call get_height:
+        push AX;
+        jne cycle_AX:
+
+    ret;
+
+draw_circle:
+    push 0;
+    pop BX;
+
+    push 0;
+    pop CX;
+
+    push 0;
+    pop AX;
+    cycle_AX_draw:
+        push 0;
+        pop BX;
+        cycle_BX_draw:
+
+
+
+
+            ;if (AX - h/2)^2 + (BX - w/2) ^ 2 <= RAD^2
+
+            push 0;
+            pop DX;
+
+            push 2 call get_height: div
+            push AX;
+            sub;
+            pop DX;
+            push DX;
+            push DX;
+            mult;
+
+            push 2 call get_width: div
+            push BX;
+            sub;
+            pop DX;
+            push DX;
+            push DX;
+            mult;
+
+
+            add;
+            pop DX;
+
+            push 300; RADIUS^2
+            push DX;
+
+
+
+            ja end_draw_if:
+
+                push AX;
+                call get_width:
+                mult;
+                push BX;
+                add;
+                pop CX;
+
+
+                push 64;
+                pop [CX];
+            end_draw_if:
+
+
+
+
+            push 1;
+            push BX;
+            add;
+            pop BX;
+
+            call get_width:
+            push BX;
+            jne cycle_BX_draw:
+
+        push 1;
+        push AX;
+        add;
+        pop AX;
+
+        call get_height:
+        push AX;
+        jne cycle_AX_draw:
+
+    draw;
+    ret;
+
+end_func_dec:
+
+push 50;
+pop [6000]; FIXME: можно добавить новый регистр EX и писать это значение туда
+
+call get_height: call outN:
+call get_width: call outN: call new_line:;
+
+call fill_screen:
+
+call draw_circle:
+
+hlt;

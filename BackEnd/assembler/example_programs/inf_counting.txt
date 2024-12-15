@@ -1,0 +1,12 @@
+push 0; [0-1]
+popr AX; [2-3]
+
+pushr AX;
+out;
+pushr AX;
+push 1;
+add;
+popr AX;
+jmp 4;
+
+hlt;

@@ -1,0 +1,33 @@
+; Enter number, programm will count from this number to 1
+jmp funcs_dec_end:
+
+count:
+
+    pushr AX;
+    push 0;
+    je exit_count:
+
+    pushr AX;
+    out;
+
+    push 1;
+    pushr AX;
+
+    sub;
+    popr AX;
+
+    call count:
+
+    exit_count:
+    ret
+
+funcs_dec_end:
+
+in;
+popr AX;
+
+
+call count:
+
+
+hlt;

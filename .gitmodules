@@ -7,3 +7,39 @@
 [submodule "FrontEnd/graphviz_funcs"]
 	path = FrontEnd/graphviz_funcs
 	url = https://github.com/I1Va/graphviz_funcs.git
+[submodule "Backend/assembler/string_funcs"]
+	path = Backend/assembler/string_funcs
+	url = https://github.com/I1Va/string_funcs.git
+[submodule "Backend/string_funcs"]
+	path = Backend/string_funcs
+	url = https://github.com/I1Va/string_funcs.git
+[submodule "Backend/ASTio_lib"]
+	path = Backend/ASTio_lib
+	url = https://github.com/I1Va/ASTio_lib.git
+[submodule "Backend/graphviz_funcs"]
+	path = Backend/graphviz_funcs
+	url = https://github.com/I1Va/graphviz_funcs.git
+[submodule "Backend/processor/stack"]
+	path = Backend/processor/stack
+	url = https://github.com/I1Va/stack.git
+[submodule "Backend/processor/string_funcs"]
+	path = Backend/processor/string_funcs
+	url = https://github.com/I1Va/string_funcs.git
+[submodule "BackEnd/ASTio_lib"]
+	path = BackEnd/ASTio_lib
+	url = https://github.com/I1Va/ASTio_lib.git
+[submodule "BackEnd/string_funcs"]
+	path = BackEnd/string_funcs
+	url = https://github.com/I1Va/string_funcs.git
+[submodule "BackEnd/graphviz_funcs"]
+	path = BackEnd/graphviz_funcs
+	url = https://github.com/I1Va/graphviz_funcs.git
+[submodule "BackEnd/processor/string_funcs"]
+	path = BackEnd/processor/string_funcs
+	url = https://github.com/I1Va/string_funcs.git
+[submodule "BackEnd/processor/stack"]
+	path = BackEnd/processor/stack
+	url = https://github.com/I1Va/stack.git
+[submodule "BackEnd/assembler/string_funcs"]
+	path = BackEnd/assembler/string_funcs
+	url = https://github.com/I1Va/string_funcs.git

@@ -1,0 +1,18 @@
+[submodule "ASTio_lib"]
+	path = ASTio_lib
+	url = https://github.com/I1Va/ASTio_lib.git
+[submodule "string_funcs"]
+	path = string_funcs
+	url = https://github.com/I1Va/string_funcs.git
+[submodule "graphviz_funcs"]
+	path = graphviz_funcs
+	url = https://github.com/I1Va/graphviz_funcs.git
+[submodule "processor/string_funcs"]
+	path = processor/string_funcs
+	url = https://github.com/I1Va/string_funcs.git
+[submodule "processor/stack"]
+	path = processor/stack
+	url = https://github.com/I1Va/stack.git
+[submodule "assembler/string_funcs"]
+	path = assembler/string_funcs
+	url = https://github.com/I1Va/string_funcs.git

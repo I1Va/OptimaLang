@@ -1,0 +1,15 @@
+push 0; [0-1]
+popr AX; [2-3]
+
+bebebe_mark:
+
+pushr AX;
+out;
+pushr AX;
+push 1;
+add;
+popr AX;
+
+jmp bebebe_mark:
+
+hlt;

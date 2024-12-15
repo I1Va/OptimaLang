@@ -1,0 +1,123 @@
+jmp end_func_dec:
+
+outN:
+    out;
+    call new_line:
+    ret
+
+new_line:
+    push 10;
+    outc;
+    ret
+
+get_discr:
+    push AX;
+    push CX;
+    push 4;
+    mult;
+    mult;
+
+    push BX;
+    push BX;
+    mult;
+
+    sub;
+
+    ret
+
+get_first_root:
+    push 2;
+    push AX;
+    mult
+
+    push BX;
+    push -1;
+    mult;
+    call get_discr: sqrt
+    add;
+    div;
+    ret
+
+
+get_second_root:
+
+    push 2;
+    push AX;
+    mult;
+
+    call get_discr: sqrt
+    push BX;
+    push -1;
+    mult;
+    sub;
+    div;
+    ret;
+
+check_zero_root:
+    call get_discr:
+    push 0
+
+    jbe get_zero_root_if_end:
+        push 1;
+        ret;
+    get_zero_root_if_end:
+    push 0;
+    ret;
+
+zero_root_tittle:
+    push 33 push 115 push 116 push 111 push 111 push 114 push 95 push 111 push 110 outc outc outc outc outc outc outc outc outc
+    ret;
+
+one_root_tittle:
+    push 58 push 116 push 111 push 111 push 114 push 95 push 101 push 110 push 111 outc outc outc outc outc outc outc outc outc
+    ret;
+
+two_root_tittle:
+    push 58 push 115 push 116 push 111 push 111 push 114 push 95 push 111 push 119 push 116 outc outc outc outc outc outc outc outc outc outc
+    ret;
+
+check_one_root:
+    call get_discr:
+    push 0
+
+    jne get_one_root_if_end:
+        push 1
+        ret;
+    get_one_root_if_end:
+
+    push 0
+    ret;
+
+end_func_dec:
+
+
+
+
+
+
+in pop AX;
+in pop BX;
+in pop CX;
+
+
+call check_zero_root: push 1;
+jne out_zero_root_end:
+    call zero_root_tittle: call new_line:
+    jmp exit_state:
+out_zero_root_end:
+
+call check_one_root: push 1;
+jne out_one_root_end:
+    call one_root_tittle: call new_line:
+    call get_first_root: call outN:
+    jmp exit_state:
+out_one_root_end:
+
+call two_root_tittle: call new_line:
+call get_first_root: call outN:
+call get_second_root: call outN:
+
+
+exit_state:
+
+hlt;

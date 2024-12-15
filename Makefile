@@ -81,8 +81,8 @@ override CFLAGS += $(COMMONINC) # CFLAGS - environment variable. We can change i
 
 
 #/---------------------------PROJECT_SRC_CONFIG--------------------\#
-PROJECT_NAME = algemguage
-CSRC = main.cpp src/diff_tree.cpp src/diff_funcs.cpp src/lang_grammar.cpp src/lang_logger.cpp src/lang_lexer.cpp src/lang_asm_commands.cpp
+PROJECT_NAME = OptimaLang
+CSRC =
 LOGS_DIR = ./logs
 OUT_O_DIR = build
 COMMONINC = -I./inc
@@ -90,7 +90,7 @@ SRC = ./src
 #/---------------------------PROJECT_SRC_CONFIG--------------------\#
 
 #/---------------------------SUBMODULES_CONFIG--------------------\#
-SUBMODULES = stack graphviz_funcs string_funcs
+SUBMODULES =
 #/---------------------------SUBMODULES_CONFIG--------------------\#
 
 
@@ -143,7 +143,10 @@ all: $(OUT_O_DIR)/$(OUTFILE_NAME) # Target all depends on "$(OUTFILE_NAME)" file
 
 
 launch:
-	@$(LAUNCH_PREFLAGS) ./$(OUT_O_DIR)/$(OUTFILE_NAME)
+	cd ./FrontEnd && make MODE=DEBUG && make launch -f Makefile LAUNCH_FLAGS="-i=./../code.txt -o=./../ast.txt"
+	cd ./BackEnd && make MODE=DEBUG && make launch -f Makefile LAUNCH_FLAGS="-i=./../ast.txt"
+
+#@$(LAUNCH_PREFLAGS) ./$(OUT_O_DIR)/$(OUTFILE_NAME)
 
 #FIXME: научится автоматически создавать динамические библиотеки сабмодулей. cd submodule_path && make DynLibGen
 

@@ -21,6 +21,7 @@ const size_t CHUNK_SIZE = 1024;
 const char DOT_DIR_PATH[] = "./logs";
 const char DOT_FILE_NAME[] = "graph.dot";
 const char DOT_IMG_NAME[] = "gr_img.png";
+const size_t INDENT = 4;
 
 int main(const int argc, const char *argv[]) {
     main_config_t main_config = {};
@@ -74,7 +75,7 @@ int main(const int argc, const char *argv[]) {
     convert_subtree_to_dot(tree.root, &dot_code, &storage);
     dot_code_render(&dot_dir, &dot_code);
 
-    // printTree();
+    ast_tree_file_dump(main_config.output_file, &tree, INDENT);
 
 
 

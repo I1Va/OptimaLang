@@ -1,0 +1,8 @@
+; Enter number and get is't square value
+in;
+popr AX;
+pushr AX;
+pushr AX;
+mult;
+out;
+hlt;

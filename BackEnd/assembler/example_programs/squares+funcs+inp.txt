@@ -1,0 +1,42 @@
+; input number of squares you want to see
+
+jmp END_FUNCTIONS_DEC:
+
+; FUNCTIONS
+
+NEXT_SQUARE_OUT:
+    pushr AX;
+    push 1;
+    add;
+    popr AX;
+
+    pushr AX;
+    pushr AX;
+    mult;
+    out;
+ret
+
+
+END_FUNCTIONS_DEC:
+
+in;
+popr BX;
+
+cycle:
+    push 0;
+    pushr BX;
+    je exit_cycle:
+
+    call NEXT_SQUARE_OUT:
+
+    push 1;
+    pushr BX;
+    sub;
+    popr BX;
+
+    jmp cycle:
+
+exit_cycle:
+
+
+hlt;

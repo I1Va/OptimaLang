@@ -1,0 +1,12 @@
+push 1;
+push 2;
+ja end:
+
+push 7777;
+out;
+
+end:
+    push 2222;
+        out;
+
+hlt;

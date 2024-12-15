@@ -1,0 +1,23 @@
+jmp no_spam:
+
+;AAAA SPAM
+push 1;
+out;
+push 1;
+out;
+push 1;
+out;
+push 1;
+out;
+push 1;
+out;
+push 1;
+out;
+push 1;
+out;
+;SPAM ENDED
+
+no_spam: ; YES, EASY NO SPAM
+
+hlt;
+

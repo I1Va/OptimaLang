@@ -1,0 +1,32 @@
+push 0;
+popr AX; initialization
+
+push 0;
+popr BX; initialization
+
+cycle1:
+cycle:
+    pushr AX;
+    pushr AX;
+    mult;
+    out;
+
+    pushr AX;
+    push 1;
+    add;
+    popr AX;
+
+    pushr BX;
+    push 1;
+    add;
+    popr BX;
+
+pushr BX;
+push 10;
+
+jne cycle:
+
+hlt;
+
+
+

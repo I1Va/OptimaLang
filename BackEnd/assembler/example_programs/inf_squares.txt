@@ -1,0 +1,18 @@
+push 0;
+popr AX;
+
+start:
+
+pushr AX;
+pushr AX;
+mult;
+out
+
+pushr AX;
+push 1;
+add;
+popr AX;
+
+jmp start:
+
+hlt;

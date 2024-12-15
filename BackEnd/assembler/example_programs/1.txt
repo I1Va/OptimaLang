@@ -1,0 +1,17 @@
+
+;pushr AX; Пушит в стэк значение регистра AX
+;popr BX; val = stack_pop; BX = val;
+
+
+push 12;
+push 42;
+popr AX
+popr BX
+pushr BX
+out
+push 0
+out
+pushr AX
+out
+hlt
+
