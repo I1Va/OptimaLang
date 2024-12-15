@@ -13,17 +13,33 @@
 #include "lang_lexer.h"
 #include "string_funcs.h"
 #include "lang_grammar.h"
+#include "front_args_proc.h"
 #include "diff_DSL.h"
 
 const char LOG_FILE_PATH[] = "./logs/log.html";
-const char DOT_FILE_NAME[] = "graph.dot";
-const char DOT_IMG_NAME[] = "gr_img.png";
-const char CODE_FILE_PATH[] = "./code.txt";
-const char ASM_CODE_FILE_PATH[] = "./asm_code.txt";
 
-int main() {
+int main(const int argc, const char *argv[]) {
+    main_config_t main_config = {};
+
+    opt_data options[] =
+    {
+        {"-i", "--input", "%s", &main_config.input_file},
+        {"-o", "--output", "%s", &main_config.output_file},
+    };
+
+    size_t n_options = sizeof(options) / sizeof(opt_data);
+
+    get_options(argc, argv, options, n_options);
+
+    main_config_print(stdout, &main_config);
+
+
+
+
+
+
     str_storage_t *storage = str_storage_t_ctor(CHUNK_SIZE);
-    str_t text = read_text_from_file(CODE_FILE_PATH);
+    str_t text = read_text_from_file(main_config.input_file);
 
     bin_tree_t tree = {};
     bin_tree_ctor(&tree, LOG_FILE_PATH);
@@ -37,17 +53,18 @@ int main() {
     };
 
     parsing_block_t data = {};
-    parsing_block_t_ctor(&data, text.str_ptr, name_table, lexem_list, &storage, ASM_CODE_FILE_PATH);
+    parsing_block_t_ctor(&data, text.str_ptr, name_table, lexem_list, &storage, main_config.output_file);
 
 
     lex_scanner(&data);
-
 
 
     tree.root = get_code_block(&data);
     if (check_parser_err(stdout, &data)) {
         CLEAR_MEMORY(exit_mark);
     }
+
+    // printTree();
 
 
 

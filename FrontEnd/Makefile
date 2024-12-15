@@ -47,6 +47,8 @@ CDEBFLAGS = -D _DEBUG -ggdb3 -std=c++17 -O0 -Wall -Wextra -Weffc++ -Waggressive-
 -Wstack-protector -fcheck-new -fsized-deallocation -fstack-protector -fstrict-overflow -flto-odr-type-merging\
 -fno-omit-frame-pointer -Wlarger-than=8192 -Wstack-usage=8192 -pie -fPIE -Werror=vla\
 
+LAUNCH_FLAGS =
+
 SANITIZER_FLAGS = -fsanitize=address,alignment,bool,bounds,enum,float-cast-overflow,float-divide-by-zero,$\
 integer-divide-by-zero,leak,nonnull-attribute,null,object-size,return,returns-nonnull-attribute,$\
 shift,signed-integer-overflow,undefined,unreachable,vla-bound,vptr
@@ -82,7 +84,9 @@ override CFLAGS += $(COMMONINC) # CFLAGS - environment variable. We can change i
 
 #/---------------------------PROJECT_SRC_CONFIG--------------------\#
 PROJECT_NAME = FrontEnd
-CSRC = main.cpp src/diff_tree.cpp src/diff_funcs.cpp src/lang_grammar.cpp src/lang_logger.cpp src/lang_lexer.cpp src/lang_global_space.cpp
+CSRC = main.cpp src/diff_tree.cpp src/diff_funcs.cpp src/lang_grammar.cpp src/lang_logger.cpp \
+src/lang_lexer.cpp src/lang_global_space.cpp src/front_args_proc.cpp
+
 LOGS_DIR = ./logs
 OUT_O_DIR = build
 COMMONINC = -I./inc
@@ -90,7 +94,7 @@ SRC = ./src
 #/---------------------------PROJECT_SRC_CONFIG--------------------\#
 
 #/---------------------------SUBMODULES_CONFIG--------------------\#
-SUBMODULES = string_funcs
+SUBMODULES = args_processing string_funcs
 #/---------------------------SUBMODULES_CONFIG--------------------\#
 
 
@@ -143,7 +147,7 @@ all: $(OUT_O_DIR)/$(OUTFILE_NAME) # Target all depends on "$(OUTFILE_NAME)" file
 
 
 launch:
-	@$(LAUNCH_PREFLAGS) ./$(OUT_O_DIR)/$(OUTFILE_NAME)
+	@$(LAUNCH_PREFLAGS) ./$(OUT_O_DIR)/$(OUTFILE_NAME) $(LAUNCH_FLAGS)
 
 #FIXME: научится автоматически создавать динамические библиотеки сабмодулей. cd submodule_path && make DynLibGen
 

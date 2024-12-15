@@ -42,6 +42,7 @@
    "-Wtype-limits",
    "-Wwrite-strings",
    "-I./inc",
+   "-I./args_processing/inc",
    "-I./string_funcs/inc",
    "-c",
    "main.cpp",
@@ -93,6 +94,7 @@
    "-Wtype-limits",
    "-Wwrite-strings",
    "-I./inc",
+   "-I./args_processing/inc",
    "-I./string_funcs/inc",
    "-c",
    "src/diff_tree.cpp",
@@ -144,6 +146,7 @@
    "-Wtype-limits",
    "-Wwrite-strings",
    "-I./inc",
+   "-I./args_processing/inc",
    "-I./string_funcs/inc",
    "-c",
    "src/diff_funcs.cpp",
@@ -195,6 +198,7 @@
    "-Wtype-limits",
    "-Wwrite-strings",
    "-I./inc",
+   "-I./args_processing/inc",
    "-I./string_funcs/inc",
    "-c",
    "src/lang_grammar.cpp",
@@ -246,6 +250,7 @@
    "-Wtype-limits",
    "-Wwrite-strings",
    "-I./inc",
+   "-I./args_processing/inc",
    "-I./string_funcs/inc",
    "-c",
    "src/lang_logger.cpp",
@@ -297,6 +302,7 @@
    "-Wtype-limits",
    "-Wwrite-strings",
    "-I./inc",
+   "-I./args_processing/inc",
    "-I./string_funcs/inc",
    "-c",
    "src/lang_lexer.cpp",
@@ -348,12 +354,13 @@
    "-Wtype-limits",
    "-Wwrite-strings",
    "-I./inc",
+   "-I./args_processing/inc",
    "-I./string_funcs/inc",
    "-c",
-   "src/lang_asm_commands.cpp",
+   "src/lang_global_space.cpp",
    "-o",
-   "build/src/lang_asm_commands.o"
+   "build/src/lang_global_space.o"
   ],
-  "file": "src/lang_asm_commands.cpp"
+  "file": "src/lang_global_space.cpp"
  }
 ]
