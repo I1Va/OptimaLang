@@ -2,6 +2,7 @@
 #include <cstddef>
 #include <stdlib.h>
 #include <stdio.h>
+
 #include <string.h>
 
 #include <sys/types.h>
@@ -9,7 +10,6 @@
 #include "general.h"
 #include "lang_logger.h"
 #include "string_funcs.h"
-#include "lang_asm_commands.h"
 #include "lang_grammar.h"
 #include "diff_funcs.h"
 #include "diff_tree.h"
@@ -70,7 +70,7 @@ bool check_parser_err(FILE *stream, parsing_block_t *data) {
     return true;
 }
 
-bin_tree_elem_t *get_code_block(parsing_block_t *data) { // TODO: asm_code
+bin_tree_elem_t *get_code_block(parsing_block_t *data) {
     assert(data != NULL);
 
     lexem_t *tl = data->lexem_list;
@@ -89,13 +89,10 @@ bin_tree_elem_t *get_code_block(parsing_block_t *data) { // TODO: asm_code
     }
     (*tp)++;
 
-    OUT(data->asm_code_file_ptr);
-    HLT(data->asm_code_file_ptr);
-
     return val;
 }
 
-bin_tree_elem_t *get_additive_expression(parsing_block_t *data) { // TODO: asm_code
+bin_tree_elem_t *get_additive_expression(parsing_block_t *data) {
     assert(data != NULL);
 
     lexem_t *tl = data->lexem_list;
@@ -116,8 +113,6 @@ bin_tree_elem_t *get_additive_expression(parsing_block_t *data) { // TODO: asm_c
             return val;
         }
 
-        WRITE_OPER(data->asm_code_file_ptr, op);
-
         if (op == T_ADD) {
             val = _ADD(val, val2);
         } else {
@@ -128,7 +123,7 @@ bin_tree_elem_t *get_additive_expression(parsing_block_t *data) { // TODO: asm_c
     return val;
 }
 
-bin_tree_elem_t *get_multiplicative_expression(parsing_block_t *data) { // TODO: asm_code
+bin_tree_elem_t *get_multiplicative_expression(parsing_block_t *data) {
     assert(data != NULL);
 
     lexem_t *tl = data->lexem_list;
@@ -149,8 +144,6 @@ bin_tree_elem_t *get_multiplicative_expression(parsing_block_t *data) { // TODO:
             return val;
         }
 
-        WRITE_OPER(data->asm_code_file_ptr, op);
-
         if (op == T_MUL) {
             val = _MUL(val, val2);
         } else {
@@ -163,7 +156,7 @@ bin_tree_elem_t *get_multiplicative_expression(parsing_block_t *data) { // TODO:
 
 // there is should be pow grammar rule
 
-bin_tree_elem_t *get_direct_declarator(parsing_block_t *data) { // TODO: asm_code
+bin_tree_elem_t *get_direct_declarator(parsing_block_t *data) {
     assert(data != NULL);
 
     lexem_t *tl = data->lexem_list;
@@ -205,7 +198,7 @@ bin_tree_elem_t *get_direct_declarator(parsing_block_t *data) { // TODO: asm_cod
     }
 }
 
-bin_tree_elem_t *get_function(parsing_block_t *data) { // TODO: asm_code
+bin_tree_elem_t *get_function(parsing_block_t *data) {
     assert(data != NULL);
 
     lexem_t *tl = data->lexem_list;
@@ -234,7 +227,7 @@ bin_tree_elem_t *get_function(parsing_block_t *data) { // TODO: asm_code
     }
 }
 
-bin_tree_elem_t *get_primary_expression(parsing_block_t *data) { // TODO: asm_code
+bin_tree_elem_t *get_primary_expression(parsing_block_t *data) {
     assert(data != NULL);
 
     lexem_t *tl = data->lexem_list;
@@ -261,7 +254,7 @@ bin_tree_elem_t *get_primary_expression(parsing_block_t *data) { // TODO: asm_co
     }
 }
 
-bin_tree_elem_t *get_constant(parsing_block_t *data) { // TODO: asm_code
+bin_tree_elem_t *get_constant(parsing_block_t *data) {
     assert(data != NULL);
 
     lexem_t *tl = data->lexem_list;
@@ -276,14 +269,10 @@ bin_tree_elem_t *get_constant(parsing_block_t *data) { // TODO: asm_code
     val = tl[*tp].token_val.lval;
     (*tp)++;
 
-    // asm_code_start
-    PUSH_NUM(data->asm_code_file_ptr, val);
-    // asm_code_end
-
     return _NUM(val);
 }
 
-bin_tree_elem_t *get_identificator(parsing_block_t *data) { // TODO: asm_code
+bin_tree_elem_t *get_identificator(parsing_block_t *data) {
     assert(data != NULL);
 
     lexem_t *tl = data->lexem_list;

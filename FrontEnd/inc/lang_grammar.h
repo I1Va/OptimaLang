@@ -7,14 +7,6 @@
 #include "diff_tree.h"
 #include "string_funcs.h"
 
-lexem_t next_lexem(parsing_block_t *data);
-
-void token_list_dump(FILE *stream, parsing_block_t *data);
-void name_table_dump(FILE *stream, key_name_t *name_table, const size_t name_table_sz);
-void lexem_dump(FILE *stream, key_name_t *name_table, lexem_t lexem);
-
-void lex_scanner(parsing_block_t *data);
-
 void start_parser_err(parser_err_t *parser_err, lexem_t lexem, enum grammar_rule_num grule);
 void add_grule_to_parser_err(parser_err_t *parser_err, enum grammar_rule_num grule);
 void clear_parser_err(parser_err_t *parser_err);

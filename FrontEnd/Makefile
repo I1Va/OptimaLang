@@ -82,7 +82,7 @@ override CFLAGS += $(COMMONINC) # CFLAGS - environment variable. We can change i
 
 #/---------------------------PROJECT_SRC_CONFIG--------------------\#
 PROJECT_NAME = FrontEnd
-CSRC = main.cpp src/diff_tree.cpp src/diff_funcs.cpp src/lang_grammar.cpp src/lang_logger.cpp src/lang_lexer.cpp src/lang_asm_commands.cpp
+CSRC = main.cpp src/diff_tree.cpp src/diff_funcs.cpp src/lang_grammar.cpp src/lang_logger.cpp src/lang_lexer.cpp src/lang_global_space.cpp
 LOGS_DIR = ./logs
 OUT_O_DIR = build
 COMMONINC = -I./inc

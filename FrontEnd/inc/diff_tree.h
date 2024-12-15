@@ -90,12 +90,12 @@ struct bin_tree_t {
 };
 
 bool bin_tree_ctor(bin_tree_t *tree, const char log_path[]);
-bin_tree_elem_t *bin_tree_create_node(bin_tree_elem_t *left, bin_tree_elem_t *right, const bin_tree_elem_value_t data, void *tree = NULL);
+bin_tree_elem_t *bin_tree_create_node(bin_tree_elem_t *left, bin_tree_elem_t *right, const bin_tree_elem_value_t data);
 void bin_tree_print(bin_tree_elem_t *node, void (*outp_func)(char *dest, const size_t maxn_n, const bin_tree_elem_t *node));
 void bin_tree_rec_nodes_cnt(bin_tree_elem_t *node, size_t *nodes_cnt);
 void bin_tree_verify(const bin_tree_t tree, bin_tree_err_t *return_err);
-bin_tree_elem_t *get_constantode_copy(bin_tree_elem_t *node);
-bin_tree_elem_t *get_multiplicative_expressionree_copy(bin_tree_elem_t *root);
+bin_tree_elem_t *get_node_copy(bin_tree_elem_t *node);
+bin_tree_elem_t *get_msubtree_copy(bin_tree_elem_t *root);
 void sub_tree_dtor(bin_tree_elem_t *root);
 void mark_subtree(bin_tree_elem_t *root, bin_tree_t *tree);
 void bin_tree_dtor(bin_tree_t *tree);

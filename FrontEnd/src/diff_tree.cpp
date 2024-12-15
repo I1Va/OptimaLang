@@ -60,7 +60,7 @@ bool bin_tree_ctor(bin_tree_t *tree, const char log_path[]) {
     return false;
 }
 
-bin_tree_elem_t *bin_tree_create_node(bin_tree_elem_t *left, bin_tree_elem_t *right, const bin_tree_elem_value_t data, void *tree_ptr) {
+bin_tree_elem_t *bin_tree_create_node(bin_tree_elem_t *left, bin_tree_elem_t *right, const bin_tree_elem_value_t data) {
     bin_tree_elem_t *node = (bin_tree_elem_t *) calloc(1, sizeof(bin_tree_elem_t));
     if (node == NULL) {
         DEBUG_BT_LIST_ERROR(BT_ERR_ALLOC, "node alloc failed");
@@ -86,17 +86,17 @@ bin_tree_elem_t *bin_tree_create_node(bin_tree_elem_t *left, bin_tree_elem_t *ri
     return node;
 }
 
-bin_tree_elem_t *get_constantode_copy(bin_tree_elem_t *node) {
+bin_tree_elem_t *get_node_copy(bin_tree_elem_t *node) {
     assert(node != NULL);
 
-    bin_tree_elem_t *new_node = bin_tree_create_node(NULL, NULL, node->data, node->tree);
+    bin_tree_elem_t *new_node = bin_tree_create_node(NULL, NULL, node->data);
     new_node->is_node_left_son = node->is_node_left_son;
     new_node->constant_state = node->constant_state;
 
     return new_node;
 }
 
-bin_tree_elem_t *get_multiplicative_expressionree_copy(bin_tree_elem_t *root) {
+bin_tree_elem_t *get_msubtree_copy(bin_tree_elem_t *root) {
     assert(root != NULL);
 
     bin_tree_elem_t *root_copy  = NULL;
@@ -104,13 +104,13 @@ bin_tree_elem_t *get_multiplicative_expressionree_copy(bin_tree_elem_t *root) {
     bin_tree_elem_t *right_copy = NULL;
 
     if (root->left) {
-        left_copy = get_multiplicative_expressionree_copy(root->left);
+        left_copy = get_msubtree_copy(root->left);
     }
     if (root->right) {
-        right_copy = get_multiplicative_expressionree_copy(root->right);
+        right_copy = get_msubtree_copy(root->right);
     }
 
-    root_copy = get_constantode_copy(root);
+    root_copy = get_node_copy(root);
 
     root_copy->left = left_copy;
     root_copy->right = right_copy;

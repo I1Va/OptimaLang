@@ -101,4 +101,8 @@ struct parsing_block_t {
     FILE *asm_code_file_ptr;
 };
 
+bool parsing_block_t_ctor(parsing_block_t *data, char *text, key_name_t *name_table, lexem_t *lexem_list,
+str_storage_t **storage, const char asm_code_file_path[]);
+void parsing_block_t_dtor(parsing_block_t *data);
+
 #endif // LANG_GLOBAL_SPACE_H
