@@ -7,7 +7,10 @@
 
 #include <sys/types.h>
 
+#include "AST_io.h"
+#include "AST_proc.h"
 #include "general.h"
+#include "lang_global_space.h"
 #include "lang_logger.h"
 #include "string_funcs.h"
 #include "lang_grammar.h"
@@ -40,11 +43,15 @@ void clear_parser_err(parser_err_t *parser_err) {
     parser_err->grule_list_size = 0;
     parser_err->grule_list[0] = EMPTY_GRULE;
     parser_err->err_state = false;
+    parser_err->lex = {};
+    parser_err->lex.token_type = T_EMPTY;
 }
 
 bool check_parser_err(FILE *stream, parsing_block_t *data) {
     assert(stream);
     assert(data);
+
+
 
     if (!data->parser_err.err_state) {
         return false;
@@ -74,20 +81,170 @@ ast_tree_elem_t *get_code_block(parsing_block_t *data) {
     lexem_t *tl = data->lexem_list;
     size_t *tp = &(data->lexem_list_idx);
 
-    ast_tree_elem_t *val = get_additive_expression(data);
-    if (data->parser_err.err_state) {
-        add_grule_to_parser_err(&data->parser_err, GET_CODE_BLOCK);
-        return val;
+    ast_tree_elem_t *prev_node = NULL;
+    ast_tree_elem_t *node = NULL;
+
+    if (tl[*tp].token_type != T_O_FIG_BRACE) {
+        start_parser_err(&data->parser_err, tl[*tp], GET_CODE_BLOCK);
+        return NULL;
     }
 
-    lexem_t lex = tl[*tp];
-    if (lex.token_type != T_EOF) {
-        start_parser_err(&data->parser_err, lex, GET_CODE_BLOCK);
-        return val;
+    (*tp)++;
+
+    node = get_statement(data);
+    if (data->parser_err.err_state) {
+        add_grule_to_parser_err(&data->parser_err, GET_CODE_BLOCK);
+        return NULL;
+    }
+
+    if (tl[*tp].token_type != T_DIVIDER) {
+        start_parser_err(&data->parser_err, tl[*tp], GET_CODE_BLOCK);
+        return NULL;
     }
     (*tp)++;
 
+    while (tl[*tp].token_type != T_C_FIG_BRACE) {
+        prev_node = node;
+        node = get_statement(data);
+
+        if (data->parser_err.err_state) {
+            add_grule_to_parser_err(&data->parser_err, GET_CODE_BLOCK);
+            return NULL;
+        }
+
+        node = _OP(OP_DIVIDER, prev_node, node);
+
+        if (tl[*tp].token_type != T_DIVIDER) {
+            start_parser_err(&data->parser_err, tl[*tp], GET_CODE_BLOCK);
+            return NULL;
+        }
+        (*tp)++;
+
+    }
+    (*tp)++;
+
+    if (tl[*tp].token_type != T_EOF) {
+        start_parser_err(&data->parser_err, tl[*tp], GET_CODE_BLOCK);
+        return NULL;
+    }
+
+    (*tp)++;
+
+    return node;
+}
+
+void debug_lex(lexem_t lex, parsing_block_t *data) {
+    assert(data);
+
+    fprintf_title(stdout, "DEBUG_LEX", '-', STR_F_BORDER_SZ);
+    lexem_dump(stdout, data->name_table, lex);
+    printf("\n");
+    fprintf_border(stdout, '-', STR_F_BORDER_SZ, true);
+}
+
+ast_tree_elem_t *get_statement(parsing_block_t *data) {
+    assert(data != NULL);
+
+    lexem_t *tl = data->lexem_list;
+    size_t *tp = &(data->lexem_list_idx);
+
+    ast_tree_elem_t *val = NULL;
+
+    val = get_additive_expression(data);
+    if (!data->parser_err.err_state) {
+        return val;
+    }
+    clear_parser_err(&data->parser_err);
+    data->lexem_list_idx = *tp;
+
+
+
+    val = get_selection_statement(data);
+
+    if (!data->parser_err.err_state) {
+        return val;
+    }
+
+
+    add_grule_to_parser_err(&data->parser_err, GET_STATEMENT);
     return val;
+}
+
+ast_tree_elem_t *get_selection_statement(parsing_block_t *data) {
+    assert(data != NULL);
+
+    lexem_t *tl = data->lexem_list;
+    size_t *tp = &(data->lexem_list_idx);
+
+    ast_tree_elem_t *left_node = NULL;
+    ast_tree_elem_t *copy_node = NULL;
+    ast_tree_elem_t *right_node = NULL;
+
+    if (tl[*tp].token_type != T_IF) {
+        start_parser_err(&data->parser_err, tl[*tp], GET_SELECTION_STATEMENT);
+        return NULL;
+    }
+
+    (*tp)++;
+
+
+    if (tl[*tp].token_type != T_O_BRACE) {
+        start_parser_err(&data->parser_err, tl[*tp], GET_SELECTION_STATEMENT);
+        return NULL;
+    }
+
+    (*tp)++;
+
+    left_node = get_additive_expression(data);
+    if (data->parser_err.err_state) {
+        add_grule_to_parser_err(&data->parser_err, GET_SELECTION_STATEMENT);
+        return NULL;
+    }
+
+    if (tl[*tp].token_type != T_C_BRACE) {
+        start_parser_err(&data->parser_err, tl[*tp], GET_SELECTION_STATEMENT);
+        return NULL;
+    }
+
+    (*tp)++;
+
+    if (tl[*tp].token_type != T_O_FIG_BRACE) {
+        start_parser_err(&data->parser_err, tl[*tp], GET_SELECTION_STATEMENT);
+        return NULL;
+    }
+
+    (*tp)++;
+
+    bool cycled = false;
+
+    while (tl[*tp].token_type != T_C_FIG_BRACE) {
+        cycled = true;
+
+        copy_node = right_node;
+        right_node = get_statement(data);
+
+        if (data->parser_err.err_state) {
+            add_grule_to_parser_err(&data->parser_err, GET_SELECTION_STATEMENT);
+            return NULL;
+        }
+
+        right_node = _OP(OP_DIVIDER, copy_node, right_node);
+
+        if (tl[*tp].token_type != T_DIVIDER) {
+            start_parser_err(&data->parser_err, tl[*tp], GET_SELECTION_STATEMENT);
+            return NULL;
+        }
+
+        (*tp)++;
+    }
+    if (!cycled) {
+        start_parser_err(&data->parser_err, tl[*tp], GET_SELECTION_STATEMENT);
+        return NULL;
+    }
+    (*tp)++;
+
+
+    return _OP(OP_IF, left_node, right_node);
 }
 
 ast_tree_elem_t *get_additive_expression(parsing_block_t *data) {
@@ -97,6 +254,8 @@ ast_tree_elem_t *get_additive_expression(parsing_block_t *data) {
     size_t *tp = &(data->lexem_list_idx);
 
     ast_tree_elem_t *val = get_multiplicative_expression(data);
+
+
     if (data->parser_err.err_state) {
         add_grule_to_parser_err(&data->parser_err, GET_ADDITIVE_EXPRESSION);
         return val;
@@ -126,7 +285,11 @@ ast_tree_elem_t *get_multiplicative_expression(parsing_block_t *data) {
 
     lexem_t *tl = data->lexem_list;
     size_t *tp = &(data->lexem_list_idx);
+
     ast_tree_elem_t *val = get_direct_declarator(data);
+
+
+
     if (data->parser_err.err_state) {
         add_grule_to_parser_err(&data->parser_err, GET_MULTIPLICATIVE_EXPRESSION);
         return val;
@@ -159,6 +322,7 @@ ast_tree_elem_t *get_direct_declarator(parsing_block_t *data) {
 
     lexem_t *tl = data->lexem_list;
     size_t *tp = &(data->lexem_list_idx);
+
     if (tl[*tp].token_type == T_O_BRACE) {
         (*tp)++;
         ast_tree_elem_t *val = get_additive_expression(data);

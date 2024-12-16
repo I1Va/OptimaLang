@@ -39,7 +39,7 @@ enum token_t {
     T_ID = 13,
     T_IF = 14, // key_words
     T_WHILE = 15,
-
+    T_DIVIDER = 16,
 
 };
 
@@ -72,6 +72,8 @@ enum grammar_rule_num {
     GET_PRIMARY_EXPRESSION = 6,
     GET_CONSTANT = 7,
     GET_IDENTIFICATOR = 8,
+    GET_SELECTION_STATEMENT = 9,
+    GET_STATEMENT = 10,
 };
 
 struct parser_err_t {

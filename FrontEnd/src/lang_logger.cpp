@@ -1,3 +1,4 @@
+#include "lang_global_space.h"
 #include "lang_grammar.h"
 #include "lang_logger.h"
 #include "general.h"
@@ -25,6 +26,7 @@ void lexem_dump(FILE *stream, key_name_t *name_table, lexem_t lexem) {
         T_DESCR_(stream, T_ID, "%s", name_table[lexem.token_val.ival].name)
         T_DESCR_(stream, T_IF, "%s", name_table[lexem.token_val.ival].name)
         T_DESCR_(stream, T_WHILE, "%s", name_table[lexem.token_val.ival].name)
+        T_DESCR_(stream, T_DIVIDER, "%c", ';')
         default: fprintf(stream, "UNKNOWN_LEX(%d) ", lexem.token_type); break;
     }
     #undef T_DESCR_
@@ -62,7 +64,9 @@ void grule_dump(FILE *stream, enum grammar_rule_num grule) {
         GR_DESCR_(stream, GET_FUNCTION)
         GR_DESCR_(stream, GET_PRIMARY_EXPRESSION)
         GR_DESCR_(stream, GET_CONSTANT)
-        GR_DESCR_(stream,GET_IDENTIFICATOR)
+        GR_DESCR_(stream, GET_IDENTIFICATOR)
+        GR_DESCR_(stream, GET_SELECTION_STATEMENT)
+        GR_DESCR_(stream, GET_STATEMENT)
         default: fprintf(stream, "UNKNOWN_GRULE(%d) ", grule); break;
     }
     #undef GR_DESCR_

@@ -87,6 +87,7 @@ lexem_t next_lexem(parsing_block_t *data) {
         case '^': return {T_POW, {}, {}, 1};
         case EOF: return {T_EOF, {}, {}, 1};
         case '\0': return {T_EOF, {}, {}, 1};
+        case ';': return {T_DIVIDER, {}, {}, 1};
         default: ScannerError(*p, s[*p])
     }
     return {T_EOF};

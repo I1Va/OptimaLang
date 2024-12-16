@@ -457,7 +457,7 @@ void asm_code_read(asm_code_t *asm_code, const char path[], asm_err *return_err)
         int delta_ptr = 0;
         while (1) {
             sscanf(cur_line_ptr, "%s%n", asm_code->code[asm_temp_idx], &delta_ptr);
-            printf("com: %s\n", cur_line_ptr);
+            // printf("com: %s\n", cur_line_ptr);
             if (!delta_ptr) {
                 break;
             }
