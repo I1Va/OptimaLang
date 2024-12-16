@@ -30,15 +30,13 @@ enum token_t {
     T_C_BRACE = 8,
     T_O_FIG_BRACE = 9,
     T_C_FIG_BRACE = 10,
-
     T_EOL = 11, // '\n'
-
     T_SPACE = 12,
-
-
     T_ID = 13,
+
     T_IF = 14, // key_words
     T_WHILE = 15,
+
     T_DIVIDER = 16,
 
     T_MORE = 17,

@@ -1,28 +1,7 @@
-int val = 0;
-float moon = 323.53;
-int alive = 1.51 > 24;
+int f(int x) {
+    return x;
+};
 
 {
-    int val = 4;
-    float cur = 3554.44;
-    int puk;
-    if (var >= hjhjfw) {
-        int val = coc;
-        float x = cos(x) + ln(ln(x * 43 / sin(x)));
-        if (5 + 5 / 1 + 16 * sin(x)) {
-            while (1) {
-                int a;
-            };
-            if (var >= hjhjfw) {
-                int val = coc;
-                float x = cos(x) + ln(ln(x * 43 / sin(x)));
-                if (5 + 5 / 1 + 16 * sin(x)) {
-                    while (1) {
-                        int a;
-                    };
-                };
-            };
-        };
-    };
+    a;
 }
-
