@@ -49,6 +49,8 @@ enum token_t {
 
     T_INT = 22,
     T_FLOAT = 23,
+
+    T_ASSIGN = 24,
 };
 
 struct text_pos_t {
@@ -83,6 +85,8 @@ enum grammar_rule_num {
     GET_SELECTION_STATEMENT = 9,
     GET_STATEMENT = 10,
     GET_LOGICAL_EXPRESSION = 11,
+    GET_ASSIGNMENT = 12,
+
 };
 
 struct parser_err_t {

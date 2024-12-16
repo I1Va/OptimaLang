@@ -115,6 +115,7 @@ lexem_t next_lexem(parsing_block_t *data) {
         case EOF: return {T_EOF, {}, {}, 1};
         case '\0': return {T_EOF, {}, {}, 1};
         case ';': return {T_DIVIDER, {}, {}, 1};
+        case '=': return {T_ASSIGN, {}, {}, 1};
         default: break;
     }
 

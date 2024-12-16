@@ -34,6 +34,10 @@ void lexem_dump(FILE *stream, key_name_t *name_table, lexem_t lexem) {
         T_DESCR_(stream, T_LESS_EQ, "%s", "<=")
         T_DESCR_(stream, T_MORE_EQ, "%s", ">=")
         T_DESCR_(stream, T_EQ, "%s", "==")
+        T_DESCR_(stream, T_INT, "%s", "int")
+        T_DESCR_(stream, T_FLOAT, "%s", "float")
+        T_DESCR_(stream, T_ASSIGN, "%s", "=")
+
         default: fprintf(stream, "UNKNOWN_LEX(%d) ", lexem.token_type); break;
     }
     #undef T_DESCR_
@@ -78,6 +82,8 @@ void grule_dump(FILE *stream, enum grammar_rule_num grule) {
         GR_DESCR_(stream, GET_VARIABLE)
         GR_DESCR_(stream, GET_SELECTION_STATEMENT)
         GR_DESCR_(stream, GET_STATEMENT)
+        GR_DESCR_(stream, GET_ASSIGNMENT)
+        GR_DESCR_(stream, GET_LOGICAL_EXPRESSION);
         default: fprintf(stream, "UNKNOWN_GRULE(%d) ", grule); break;
     }
     #undef GR_DESCR_

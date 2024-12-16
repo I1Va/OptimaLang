@@ -17,6 +17,7 @@
 
 #include "diff_DSL.h"
 
+
 void start_parser_err(parser_err_t *parser_err, lexem_t lexem, enum grammar_rule_num grule) {
     assert(parser_err);
     assert(!parser_err->err_state);
@@ -91,16 +92,18 @@ ast_tree_elem_t *get_code_block(parsing_block_t *data) {
 
     (*tp)++;
 
+
     node = get_statement(data);
     if (data->parser_err.err_state) {
         add_grule_to_parser_err(&data->parser_err, GET_CODE_BLOCK);
         return NULL;
     }
-
+    // debug_lex(tl[*tp], data);
     if (tl[*tp].token_type != T_DIVIDER) {
         start_parser_err(&data->parser_err, tl[*tp], GET_CODE_BLOCK);
         return NULL;
     }
+
     (*tp)++;
 
     while (tl[*tp].token_type != T_C_FIG_BRACE) {
@@ -150,14 +153,20 @@ ast_tree_elem_t *get_statement(parsing_block_t *data) {
 
     ast_tree_elem_t *val = NULL;
 
+
+    val = get_assignment(data);
+    if (!data->parser_err.err_state) {
+        return val;
+    }
+    clear_parser_err(&data->parser_err);
+    data->lexem_list_idx = *tp;
+
     val = get_logical_expression(data);
     if (!data->parser_err.err_state) {
         return val;
     }
-
     clear_parser_err(&data->parser_err);
     data->lexem_list_idx = *tp;
-
 
 
     val = get_selection_statement(data);
@@ -196,12 +205,15 @@ ast_tree_elem_t *get_selection_statement(parsing_block_t *data) {
 
     (*tp)++;
 
+    check_parser_err(stdout, data);
+
     left_node = get_logical_expression(data);
+    // check_parser_err(stdout, data);
+
     if (data->parser_err.err_state) {
         add_grule_to_parser_err(&data->parser_err, GET_SELECTION_STATEMENT);
         return NULL;
     }
-
     if (tl[*tp].token_type != T_C_BRACE) {
         start_parser_err(&data->parser_err, tl[*tp], GET_SELECTION_STATEMENT);
         return NULL;
@@ -218,11 +230,19 @@ ast_tree_elem_t *get_selection_statement(parsing_block_t *data) {
 
     bool cycled = false;
 
+
+
     while (tl[*tp].token_type != T_C_FIG_BRACE) {
+        debug_lex(tl[*tp], data);
         cycled = true;
 
         copy_node = right_node;
         right_node = get_statement(data);
+
+        if (data->parser_err.err_state) {
+            add_grule_to_parser_err(&data->parser_err, GET_SELECTION_STATEMENT);
+            return NULL;
+        }
 
         if (data->parser_err.err_state) {
             add_grule_to_parser_err(&data->parser_err, GET_SELECTION_STATEMENT);
@@ -255,7 +275,6 @@ ast_tree_elem_t *get_logical_expression(parsing_block_t *data) {
     size_t *tp = &(data->lexem_list_idx);
 
     ast_tree_elem_t *val = get_additive_expression(data);
-
 
     if (data->parser_err.err_state) {
         add_grule_to_parser_err(&data->parser_err, GET_LOGICAL_EXPRESSION);
@@ -389,6 +408,39 @@ ast_tree_elem_t *get_direct_declarator(parsing_block_t *data) {
     }
 }
 
+// ast_tree_elem_t *get_variable_initialization(parsing_block_t *data)
+
+ast_tree_elem_t *get_assignment(parsing_block_t *data) {
+    assert(data != NULL);
+
+    lexem_t *tl = data->lexem_list;
+    size_t *tp = &(data->lexem_list_idx);
+    // if (tl[*tp].token_type == T_INT || tl[*tp].token_type == T_FLOAT) {
+
+    // }
+
+    ast_tree_elem_t *left = get_variable(data);
+    if (data->parser_err.err_state) {
+        add_grule_to_parser_err(&data->parser_err, GET_ASSIGNMENT);
+        return NULL;
+    }
+
+    if (tl[*tp].token_type != T_ASSIGN) {
+        start_parser_err(&data->parser_err, tl[*tp], GET_ASSIGNMENT);
+        return NULL;
+    }
+
+    (*tp)++;
+    ast_tree_elem_t *right = get_logical_expression(data);
+    if (data->parser_err.err_state) {
+        add_grule_to_parser_err(&data->parser_err, GET_ASSIGNMENT);
+        return NULL;
+    }
+
+
+    return _ASSIGN(left, right);
+}
+
 ast_tree_elem_t *get_function(parsing_block_t *data) {
     assert(data != NULL);
 
@@ -478,10 +530,4 @@ ast_tree_elem_t *get_variable(parsing_block_t *data) {
     (*tp)++;
 
     return _VAR(var_name);
-}
-
-ast_tree_elem_t *get_type(parsing_block_t *data) {
-    assert(data);
-
-    return NULL;
 }
