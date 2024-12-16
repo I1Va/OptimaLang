@@ -346,8 +346,6 @@ ast_tree_elem_t *get_multiplicative_expression(parsing_block_t *data) {
     return val;
 }
 
-// there is should be pow grammar rule
-
 ast_tree_elem_t *get_direct_declarator(parsing_block_t *data) {
     assert(data != NULL);
 
@@ -427,7 +425,7 @@ ast_tree_elem_t *get_primary_expression(parsing_block_t *data) {
     size_t *tp = &(data->lexem_list_idx);
 
     if (tl[*tp].token_type == T_ID) {
-        ast_tree_elem_t *id_node = get_identificator(data);
+        ast_tree_elem_t *id_node = get_variable(data);
         if (data->parser_err.err_state) {
             add_grule_to_parser_err(&data->parser_err, GET_PRIMARY_EXPRESSION);
             return id_node;
@@ -452,27 +450,27 @@ ast_tree_elem_t *get_constant(parsing_block_t *data) {
 
     lexem_t *tl = data->lexem_list;
     size_t *tp = &(data->lexem_list_idx);
-    long long val = 0;
+    long double val = 0;
 
     if (tl[*tp].token_type != T_NUM) {
         start_parser_err(&data->parser_err, tl[*tp], GET_CONSTANT);
         return NULL;
     }
 
-    val = tl[*tp].token_val.lval;
+    val = tl[*tp].token_val.fval;
     (*tp)++;
 
     return _NUM(val);
 }
 
-ast_tree_elem_t *get_identificator(parsing_block_t *data) {
+ast_tree_elem_t *get_variable(parsing_block_t *data) {
     assert(data != NULL);
 
     lexem_t *tl = data->lexem_list;
     size_t *tp = &(data->lexem_list_idx);
 
     if (tl[*tp].token_type != T_ID) {
-        start_parser_err(&data->parser_err, tl[*tp], GET_IDENTIFICATOR);
+        start_parser_err(&data->parser_err, tl[*tp], GET_VARIABLE);
         return NULL;
     }
 
@@ -480,4 +478,10 @@ ast_tree_elem_t *get_identificator(parsing_block_t *data) {
     (*tp)++;
 
     return _VAR(var_name);
+}
+
+ast_tree_elem_t *get_type(parsing_block_t *data) {
+    assert(data);
+
+    return NULL;
 }

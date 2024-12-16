@@ -2,6 +2,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <assert.h>
+#include <math.h>
 
 #include "general.h"
 #include "lang_logger.h"
@@ -27,13 +28,24 @@ size_t add_to_name_table(char *new_name, key_name_t *name_table, size_t *name_ta
     return (*name_table_sz) - 1;
 }
 
+size_t scan_lval(long long *lval, char *p) {
+    size_t len = 0;
+
+    while (isdigit(*p)) {
+        *lval = 10 * (*lval) + *p - '0';
+        len++;
+        p++;
+    }
+
+    return len;
+}
+
 lexem_t next_lexem(parsing_block_t *data) {
     char *s = data->text;
     size_t *p = &data->text_idx;
 
     int c = s[(*p)++];
 
-    long long lval = 0;
     char bufer[MEDIUM_BUFER_SZ] = {};
     size_t bufer_idx = 0;
     char *str = NULL;
@@ -42,16 +54,29 @@ lexem_t next_lexem(parsing_block_t *data) {
 
     if (isdigit(c)) {
         lexem.token_type = T_NUM;
-        size_t start_p = *p;
 
-        while (isdigit(c)) {
-            lval = 10 * lval + c - '0';
-            c = s[(*p)++];
-        }
+        long long l_part = 0;
+        long long frac_part = 0;
+        long double fval = 0;
+
+        size_t len_l_part = 0;
+        size_t len_frac_part = 0;
+
         (*p)--;
 
-        lexem.token_val.lval = lval;
-        lexem.len = (*p) + 1 - start_p;
+        len_l_part = scan_lval(&l_part, s + *p);
+        (*p) += len_l_part;
+
+        if (s[*p] == '.') {
+            (*p)++;
+            len_frac_part = scan_lval(&frac_part, s + *p);
+            (*p) += len_frac_part;
+        }
+        printf("vals: %Ld, %Ld, %lu, %lu\n", l_part, frac_part, len_l_part, len_frac_part);
+        fval = (long double) l_part + (long double) (frac_part) / pow(10, len_frac_part);
+
+        lexem.token_val.fval = fval;
+        lexem.len = len_l_part + (len_frac_part > 0) + len_frac_part;
 
         return lexem;
     }

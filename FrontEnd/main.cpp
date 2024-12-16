@@ -57,6 +57,7 @@ int main(const int argc, const char *argv[]) {
         {"EMPTY_NAME", 10, T_EMPTY},
         {"if", 2, T_IF},
         {"while", 5, T_WHILE},
+        {"int", 3, T_INT},
     };
 
     parsing_block_t data = {};

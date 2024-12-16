@@ -11,7 +11,7 @@ const size_t PARSER_ERR_GRULE_LIST_SZ = 128;
 union token_value_t {
     int ival;
     long long lval;
-    long double dval;
+    long double fval;
 };
 
 enum token_t {
@@ -46,6 +46,9 @@ enum token_t {
     T_MORE_EQ = 19,
     T_LESS_EQ = 20,
     T_EQ = 21,
+
+    T_INT = 22,
+    T_FLOAT = 23,
 };
 
 struct text_pos_t {
@@ -76,7 +79,7 @@ enum grammar_rule_num {
     GET_FUNCTION = 5,
     GET_PRIMARY_EXPRESSION = 6,
     GET_CONSTANT = 7,
-    GET_IDENTIFICATOR = 8,
+    GET_VARIABLE = 8,
     GET_SELECTION_STATEMENT = 9,
     GET_STATEMENT = 10,
     GET_LOGICAL_EXPRESSION = 11,

@@ -13,7 +13,7 @@ void lexem_dump(FILE *stream, key_name_t *name_table, lexem_t lexem) {
         T_DESCR_(stream, T_EOF, "%s", "")
         T_DESCR_(stream, T_EMPTY, "%s", "")
 
-        T_DESCR_(stream, T_NUM, "%Ld", lexem.token_val.lval)
+        T_DESCR_(stream, T_NUM, "%Lg", lexem.token_val.fval)
         T_DESCR_(stream, T_ADD, "%c", '+')
         T_DESCR_(stream, T_MUL, "%c", '*')
         T_DESCR_(stream, T_SUB, "%c", '-')
@@ -75,7 +75,7 @@ void grule_dump(FILE *stream, enum grammar_rule_num grule) {
         GR_DESCR_(stream, GET_FUNCTION)
         GR_DESCR_(stream, GET_PRIMARY_EXPRESSION)
         GR_DESCR_(stream, GET_CONSTANT)
-        GR_DESCR_(stream, GET_IDENTIFICATOR)
+        GR_DESCR_(stream, GET_VARIABLE)
         GR_DESCR_(stream, GET_SELECTION_STATEMENT)
         GR_DESCR_(stream, GET_STATEMENT)
         default: fprintf(stream, "UNKNOWN_GRULE(%d) ", grule); break;
