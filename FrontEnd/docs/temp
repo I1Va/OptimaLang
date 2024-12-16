@@ -1,0 +1,6 @@
+#define STEP_OVER_GRULE_WITH_CHECK(data, grule_func, token)                                 \
+    if (data->lexem_list[data->lexem_list_idx].token_type != token) {                       \
+        start_parser_err(&data->parser_err, data->lexem_list[data->lexem_list_idx], grule); \
+        return NULL;                                                                        \
+    }                                                                                       \
+    data->lexem_list_idx++;                                                                 \

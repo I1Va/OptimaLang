@@ -5,6 +5,20 @@
     if (var >= hjhjfw) {
         int val = coc;
         float x = cos(x) + ln(ln(x * 43 / sin(x)));
+        if (5 + 5 / 1 + 16 * sin(x)) {
+            while (1) {
+                int a;
+            };
+            if (var >= hjhjfw) {
+                int val = coc;
+                float x = cos(x) + ln(ln(x * 43 / sin(x)));
+                if (5 + 5 / 1 + 16 * sin(x)) {
+                    while (1) {
+                        int a;
+                    };
+                };
+            };
+        };
     };
 }
 
