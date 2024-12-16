@@ -28,7 +28,30 @@
         start_parser_err(&data->parser_err, data->lexem_list[data->lexem_list_idx], grule); \
         return NULL;                                                                        \
     }                                                                                       \
+    data->lexem_list_idx++;
+
+#define STEP_OVER_GRULE_WITH_CHECK(data, grule_func, token)                                 \
+    if (data->lexem_list[data->lexem_list_idx].token_type != token) {                       \
+        start_parser_err(&data->parser_err, data->lexem_list[data->lexem_list_idx], grule); \
+        return NULL;                                                                        \
+    }                                                                                       \
     data->lexem_list_idx++;                                                                 \
+
+ast_tree_elem_t *try_grule(parsing_block_t *data, ast_tree_elem_t *(*grule_func)(parsing_block_t *data)) {
+    assert(data);
+    assert(grule_func);
+
+    size_t tp = data->lexem_list_idx;
+    ast_tree_elem_t *node = NULL;
+
+    node = grule_func(data);
+    if (!data->parser_err.err_state) {
+        return node;
+    }
+    clear_parser_err(&data->parser_err);
+    data->lexem_list_idx = tp;
+    return NULL;
+}
 
 void start_parser_err(parser_err_t *parser_err, lexem_t lexem, enum grammar_rule_num grule) {
     assert(parser_err);
@@ -88,65 +111,6 @@ bool check_parser_err(FILE *stream, parsing_block_t *data) {
     return true;
 }
 
-ast_tree_elem_t *get_code_block(parsing_block_t *data) {
-    assert(data != NULL);
-
-    lexem_t *tl = data->lexem_list;
-    size_t *tp = &(data->lexem_list_idx);
-
-    ast_tree_elem_t *prev_node = NULL;
-    ast_tree_elem_t *node = NULL;
-
-    if (tl[*tp].token_type != T_O_FIG_BRACE) {
-        start_parser_err(&data->parser_err, tl[*tp], GET_CODE_BLOCK);
-        return NULL;
-    }
-
-    (*tp)++;
-
-
-    node = get_statement(data);
-    if (data->parser_err.err_state) {
-        add_grule_to_parser_err(&data->parser_err, GET_CODE_BLOCK);
-        return NULL;
-    }
-    // debug_lex(tl[*tp], data);
-    if (tl[*tp].token_type != T_DIVIDER) {
-        start_parser_err(&data->parser_err, tl[*tp], GET_CODE_BLOCK);
-        return NULL;
-    }
-    (*tp)++;
-
-    while (tl[*tp].token_type != T_C_FIG_BRACE) {
-        prev_node = node;
-        node = get_statement(data);
-
-        if (data->parser_err.err_state) {
-            add_grule_to_parser_err(&data->parser_err, GET_CODE_BLOCK);
-            return NULL;
-        }
-
-        node = _OP(T_DIVIDER, prev_node, node);
-
-        if (tl[*tp].token_type != T_DIVIDER) {
-            start_parser_err(&data->parser_err, tl[*tp], GET_CODE_BLOCK);
-            return NULL;
-        }
-        (*tp)++;
-
-    }
-    (*tp)++;
-
-    if (tl[*tp].token_type != T_EOF) {
-        start_parser_err(&data->parser_err, tl[*tp], GET_CODE_BLOCK);
-        return NULL;
-    }
-
-    (*tp)++;
-
-    return node;
-}
-
 void debug_lex(lexem_t lex, parsing_block_t *data) {
     assert(data);
 
@@ -156,38 +120,34 @@ void debug_lex(lexem_t lex, parsing_block_t *data) {
     fprintf_border(stdout, '-', STR_F_BORDER_SZ, true);
 }
 
+ast_tree_elem_t *get_code_block(parsing_block_t *data) {
+    assert(data);
+
+    ast_tree_elem_t *statement_list = NULL;
+
+    STEP_OVER_TOKEN_WITH_CHECK(data, GET_CODE_BLOCK, T_O_FIG_BRACE)
+
+    statement_list = try_grule(data, get_statement_list);
+    CATCH_PARSE_ERROR(data, GET_CODE_BLOCK)
+
+    STEP_OVER_TOKEN_WITH_CHECK(data, GET_CODE_BLOCK, T_C_FIG_BRACE)
+
+    STEP_OVER_TOKEN_WITH_CHECK(data, GET_CODE_BLOCK, T_EOF)
+
+    return statement_list;
+}
+
 ast_tree_elem_t *get_expression(parsing_block_t *data) {
     assert(data);
 
     ast_tree_elem_t *node = get_logical_expression(data);
-    if (data->parser_err.err_state) {
-        add_grule_to_parser_err(&data->parser_err, GET_EXPRESSION);
-        return NULL;
-    }
+    CATCH_PARSE_ERROR(data, GET_EXPRESSION);
 
     return node;
 }
 
-ast_tree_elem_t *try_grule(parsing_block_t *data, ast_tree_elem_t *(*grule_func)(parsing_block_t *data)) {
-    assert(data);
-    assert(grule_func);
-
-    size_t tp = data->lexem_list_idx;
-    ast_tree_elem_t *node = NULL;
-
-    node = grule_func(data);
-    if (!data->parser_err.err_state) {
-        return node;
-    }
-    clear_parser_err(&data->parser_err);
-    data->lexem_list_idx = tp;
-    return NULL;
-}
-
 ast_tree_elem_t *get_statement(parsing_block_t *data) {
-    assert(data != NULL);
-
-    size_t tp = data->lexem_list_idx;
+    assert(data);
 
     ast_tree_elem_t *val = NULL;
 
@@ -197,35 +157,19 @@ ast_tree_elem_t *get_statement(parsing_block_t *data) {
     val = try_grule(data, get_variable_initialization);
     if (val) { return val; }
 
-    val = get_assignment(data);
-    if (!data->parser_err.err_state) {
-        return val;
-    }
-    clear_parser_err(&data->parser_err);
-    data->lexem_list_idx = tp;
+    val = try_grule(data, get_assignment);
+    if (val) { return val; }
 
-    val = get_expression(data);
-    if (!data->parser_err.err_state) {
-        return val;
-    }
-    clear_parser_err(&data->parser_err);
-    data->lexem_list_idx = tp;
+    val = try_grule(data, get_expression);
+    if (val) { return val; }
 
-    val = get_while(data);
-    if (!data->parser_err.err_state) {
-        return val;
-    }
-    clear_parser_err(&data->parser_err);
-    data->lexem_list_idx = tp;
+    val = try_grule(data, get_while);
+    if (val) { return val; }
 
 
     val = get_selection_statement(data);
+    CATCH_PARSE_ERROR(data, GET_STATEMENT)
 
-    if (!data->parser_err.err_state) {
-        return val;
-    }
-
-    add_grule_to_parser_err(&data->parser_err, GET_STATEMENT);
     return val;
 }
 
