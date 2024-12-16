@@ -26,6 +26,7 @@ ast_tree_elem_t *get_variable(parsing_block_t *data);
 ast_tree_elem_t *get_while(parsing_block_t *data);
 ast_tree_elem_t *get_expression(parsing_block_t *data);
 ast_tree_elem_t *get_assignment(parsing_block_t *data);
+ast_tree_elem_t *get_variable_initialization(parsing_block_t *data);
 
 void debug_lex(lexem_t lex, parsing_block_t *data);
 

@@ -160,10 +160,16 @@ ast_tree_elem_t *get_expression(parsing_block_t *data) {
 ast_tree_elem_t *get_statement(parsing_block_t *data) {
     assert(data != NULL);
 
-    lexem_t *tl = data->lexem_list;
     size_t tp = data->lexem_list_idx;
 
     ast_tree_elem_t *val = NULL;
+    val = get_variable_initialization(data);
+    if (!data->parser_err.err_state) {
+        return val;
+    }
+    check_parser_err(stdout, data);
+    clear_parser_err(&data->parser_err);
+    data->lexem_list_idx = tp;
 
     val = get_assignment(data);
     if (!data->parser_err.err_state) {
@@ -420,16 +426,44 @@ ast_tree_elem_t *get_direct_declarator(parsing_block_t *data) {
     }
 }
 
-// ast_tree_elem_t *get_variable_initialization(parsing_block_t *data)
+ast_tree_elem_t *get_variable_initialization(parsing_block_t *data) {
+    assert(data != NULL);
+
+    lexem_t *tl = data->lexem_list;
+    size_t *tp = &(data->lexem_list_idx);
+    ast_tree_elem_t *type_node = NULL;
+    ast_tree_elem_t *main_node = NULL;
+
+    if (!(tl[*tp].token_type == T_INT || tl[*tp].token_type == T_FLOAT)) {
+        start_parser_err(&data->parser_err, tl[*tp], GET_VARIABLE_INITIALIZATION);
+        return NULL;
+    }
+
+    type_node = _TYPE(tl[*tp].token_type);
+    (*tp)++;
+
+    size_t prev_tp = *tp;
+    main_node = get_assignment(data);
+    if (!data->parser_err.err_state) {
+        return _INIT(type_node, main_node);
+    }
+    *tp = prev_tp;
+    clear_parser_err(&data->parser_err);
+
+    main_node = get_variable(data);
+    if (data->parser_err.err_state) {
+        add_grule_to_parser_err(&data->parser_err, GET_VARIABLE_INITIALIZATION);
+        return NULL;
+    }
+
+    return _INIT(type_node, main_node);
+}
 
 ast_tree_elem_t *get_assignment(parsing_block_t *data) {
     assert(data != NULL);
 
     lexem_t *tl = data->lexem_list;
     size_t *tp = &(data->lexem_list_idx);
-    // if (tl[*tp].token_type == T_INT || tl[*tp].token_type == T_FLOAT) {
-
-    // }
 
     ast_tree_elem_t *left = get_variable(data);
     if (data->parser_err.err_state) {

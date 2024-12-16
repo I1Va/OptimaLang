@@ -1,0 +1,5 @@
+UNKNOWN_OBJECT(7)
+UNKNOWN_OBJECT(7)
+?16?
+out;
+hlt;
