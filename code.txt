@@ -1,9 +1,8 @@
 {
-    biba = 736;
-    boba = 73774;
-    lupa = biba + boba * 52 * cos(13 * variablesix);
-
-    if (matan > proga) {
-        kpm_down = 12;
+    while (abobabiba >= 412.43) {
+        x = x + 5;
+        cos(x) + 5;
+        var + var + cos(x);
     };
 }
+

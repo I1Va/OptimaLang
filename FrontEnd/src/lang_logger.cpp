@@ -84,6 +84,8 @@ void grule_dump(FILE *stream, enum grammar_rule_num grule) {
         GR_DESCR_(stream, GET_STATEMENT)
         GR_DESCR_(stream, GET_ASSIGNMENT)
         GR_DESCR_(stream, GET_LOGICAL_EXPRESSION);
+        GR_DESCR_(stream, GET_EXPRESSION);
+        GR_DESCR_(stream, GET_WHILE);
         default: fprintf(stream, "UNKNOWN_GRULE(%d) ", grule); break;
     }
     #undef GR_DESCR_

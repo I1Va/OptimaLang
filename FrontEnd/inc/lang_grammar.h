@@ -23,7 +23,10 @@ ast_tree_elem_t *get_function(parsing_block_t *data);
 ast_tree_elem_t *get_primary_expression(parsing_block_t *data);
 ast_tree_elem_t *get_constant(parsing_block_t *data);
 ast_tree_elem_t *get_variable(parsing_block_t *data);
+ast_tree_elem_t *get_while(parsing_block_t *data);
+ast_tree_elem_t *get_expression(parsing_block_t *data);
 ast_tree_elem_t *get_assignment(parsing_block_t *data);
+
 void debug_lex(lexem_t lex, parsing_block_t *data);
 
 #endif // LANG_GRAMMAR_H

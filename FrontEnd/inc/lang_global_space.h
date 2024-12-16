@@ -86,7 +86,8 @@ enum grammar_rule_num {
     GET_STATEMENT = 10,
     GET_LOGICAL_EXPRESSION = 11,
     GET_ASSIGNMENT = 12,
-
+    GET_EXPRESSION = 13,
+    GET_WHILE = 14,
 };
 
 struct parser_err_t {
