@@ -18,7 +18,7 @@ ast_tree_elem_t *get_multiplicative_expression(parsing_block_t *data);
 ast_tree_elem_t *get_direct_declarator(parsing_block_t *data);
 ast_tree_elem_t *get_statement(parsing_block_t *data);
 ast_tree_elem_t *get_selection_statement(parsing_block_t *data);
-
+ast_tree_elem_t *get_logical_expression(parsing_block_t *data);
 ast_tree_elem_t *get_function(parsing_block_t *data);
 ast_tree_elem_t *get_primary_expression(parsing_block_t *data);
 ast_tree_elem_t *get_constant(parsing_block_t *data);

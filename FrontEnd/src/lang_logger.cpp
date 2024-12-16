@@ -2,7 +2,9 @@
 #include "lang_grammar.h"
 #include "lang_logger.h"
 #include "general.h"
-#include "assert.h"
+#include "string_funcs.h"
+
+#include <assert.h>
 
 void lexem_dump(FILE *stream, key_name_t *name_table, lexem_t lexem) {
     #define T_DESCR_(stream, lex, fmt, val) case lex: fprintf(stream, #lex"(" fmt ")", val); break;
@@ -27,19 +29,28 @@ void lexem_dump(FILE *stream, key_name_t *name_table, lexem_t lexem) {
         T_DESCR_(stream, T_IF, "%s", name_table[lexem.token_val.ival].name)
         T_DESCR_(stream, T_WHILE, "%s", name_table[lexem.token_val.ival].name)
         T_DESCR_(stream, T_DIVIDER, "%c", ';')
+        T_DESCR_(stream, T_LESS, "%c", '<')
+        T_DESCR_(stream, T_MORE, "%c", '>')
+        T_DESCR_(stream, T_LESS_EQ, "%s", "<=")
+        T_DESCR_(stream, T_MORE_EQ, "%s", ">=")
+        T_DESCR_(stream, T_EQ, "%s", "==")
         default: fprintf(stream, "UNKNOWN_LEX(%d) ", lexem.token_type); break;
     }
     #undef T_DESCR_
 }
 
 void lexem_list_dump(FILE *stream, parsing_block_t *data) {
+    fprintf_title(stream, "LEXEM_LIST_DUMP", '-', STR_F_BORDER_SZ);
+
     printf("len: [%lu]\n", data->lexem_list_size);
     for (size_t i = 0; i < data->lexem_list_size; i++) {
         lexem_t lexem = data->lexem_list[i];
         lexem_dump(stream, data->name_table, lexem);
-        fprintf(stream, " ");
+        fprintf(stream, "\n");
     }
     fprintf(stream, "\n");
+
+    fprintf_border(stream, '-', STR_F_BORDER_SZ, true);
 }
 
 void name_table_dump(FILE *stream, key_name_t *name_table, const size_t name_table_sz) {

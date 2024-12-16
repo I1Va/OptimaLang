@@ -41,6 +41,11 @@ enum token_t {
     T_WHILE = 15,
     T_DIVIDER = 16,
 
+    T_MORE = 17,
+    T_LESS = 18,
+    T_MORE_EQ = 19,
+    T_LESS_EQ = 20,
+    T_EQ = 21,
 };
 
 struct text_pos_t {
@@ -74,6 +79,7 @@ enum grammar_rule_num {
     GET_IDENTIFICATOR = 8,
     GET_SELECTION_STATEMENT = 9,
     GET_STATEMENT = 10,
+    GET_LOGICAL_EXPRESSION = 11,
 };
 
 struct parser_err_t {

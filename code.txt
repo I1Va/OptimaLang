@@ -1,15 +1,9 @@
 {
-    if (52) {
-        2006;
-        val + ln(42);
-        14 * sin(x) + 5;
-        if (52) {
-            2006;
-            val + ln(42);
-            14 * sin(x) + 5;
+    if (weight > 52) {
+        13 * 4 * cos(sin(val)) + 48 * sqrt(x);
+        1300 / 13 + 4;
+        if (height <= 13) {
+            13 + 3 > 53;
         };
     };
-
-    34 + ln(x) + 3 * var * idx + (4);
-    13906 * moons + lack + of + sleep / ln(cock);
 }

@@ -75,6 +75,8 @@ lexem_t next_lexem(parsing_block_t *data) {
         return lexem;
     }
 
+
+
     switch (c) {
         case '+': return {T_ADD, {}, {}, 1}; case '-': return {T_SUB, {}, {}, 1};
         case '*': return {T_MUL, {}, {}, 1};
@@ -88,8 +90,30 @@ lexem_t next_lexem(parsing_block_t *data) {
         case EOF: return {T_EOF, {}, {}, 1};
         case '\0': return {T_EOF, {}, {}, 1};
         case ';': return {T_DIVIDER, {}, {}, 1};
-        default: ScannerError(*p, s[*p])
+        default: break;
     }
+
+    char c_next = s[(*p)];
+    if (c == '>' && c_next == '=') {
+        (*p)++;
+        return {T_MORE_EQ, {}, {}, 1};
+    }
+    if (c == '<' && c_next == '=') {
+        (*p)++;
+        return {T_LESS_EQ, {}, {}, 1};
+    }
+    if (c == '=' && c_next == '=') {
+        (*p)++;
+        return {T_EQ, {}, {}, 1};
+    }
+    if (c == '>' && c_next != '=') {
+        return {T_MORE, {}, {}, 1};
+    }
+    if (c == '<' && c_next != '=') {
+        return {T_LESS, {}, {}, 1};
+    }
+
+    debug("UNKNOWN_SYMS: %c %c", c, c_next);
     return {T_EOF};
 }
 
@@ -109,7 +133,7 @@ void lex_scanner(parsing_block_t *data) {
     size_t token_idx = 0;
     text_pos_t cur_text_pos = {};
 
-    printf("text: '%s'\n", data->text);
+    // printf("text: '%s'\n", data->text);
 
     while (1) {
         lexem_t lexem = next_lexem(data);

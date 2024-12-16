@@ -1,0 +1,15 @@
+{
+    if (52) {
+        2006;
+        val + ln(42);
+        14 * sin(x) + 5;
+        if (52) {
+            2006;
+            val + ln(42);
+            14 * sin(x) + 5;
+        };
+    };
+
+    34 + ln(x) + 3 * var * idx + (4);
+    13906 * moons + lack + of + sleep / ln(matan);
+}
