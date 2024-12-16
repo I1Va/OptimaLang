@@ -96,6 +96,7 @@ enum grammar_rule_num {
     GET_FUNCTION_INITIALIZATION = 18,
     GET_FUNC_IDENTIFICATOR = 19,
     GET_STATEMENT_LIST = 20,
+    GET_GLOBAL_STATEMENT = 21,
 };
 
 struct parser_err_t {

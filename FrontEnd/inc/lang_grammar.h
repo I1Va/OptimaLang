@@ -29,7 +29,9 @@ ast_tree_elem_t *get_assignment(parsing_block_t *data);
 ast_tree_elem_t *get_variable_initialization_with_assignment(parsing_block_t *data);
 ast_tree_elem_t *get_variable_initialization(parsing_block_t *data);
 ast_tree_elem_t *get_func_identificator(parsing_block_t *data);
-ast_tree_elem_t *get_statement_list(parsing_block_t *data);
+ast_tree_elem_t *get_grule_divided_list(parsing_block_t *data, int *empty, ast_tree_elem_t *(*grule_func)(parsing_block_t *data));
+ast_tree_elem_t *get_function_initialization(parsing_block_t *data);
+ast_tree_elem_t *get_global_statement(parsing_block_t *data);
 
 void debug_lex(lexem_t lex, parsing_block_t *data);
 
