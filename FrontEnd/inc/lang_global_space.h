@@ -51,6 +51,8 @@ enum token_t {
     T_FLOAT = 23,
 
     T_ASSIGN = 24,
+    T_COMMA = 25,
+    T_RETURN = 26,
 };
 
 struct text_pos_t {
@@ -78,7 +80,7 @@ enum grammar_rule_num {
     GET_ADDITIVE_EXPRESSION = 2,
     GET_MULTIPLICATIVE_EXPRESSION = 3,
     GET_DIRECT_DECLARATOR = 4,
-    GET_FUNCTION = 5,
+    GET_ONE_ARG_FUNCTION_CALL = 5,
     GET_PRIMARY_EXPRESSION = 6,
     GET_CONSTANT = 7,
     GET_VARIABLE = 8,
@@ -89,6 +91,11 @@ enum grammar_rule_num {
     GET_EXPRESSION = 13,
     GET_WHILE = 14,
     GET_VARIABLE_INITIALIZATION = 15,
+    GET_VARIABLE_INITIALIZATION_WITH_ASSIGNMENT = 16,
+    GET_FUNC_SEPARATED_INIT_ARGS = 17,
+    GET_FUNCTION_INITIALIZATION = 18,
+    GET_FUNC_IDENTIFICATOR = 19,
+    GET_STATEMENT_LIST = 20,
 };
 
 struct parser_err_t {

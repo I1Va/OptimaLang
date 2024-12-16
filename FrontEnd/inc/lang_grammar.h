@@ -19,14 +19,16 @@ ast_tree_elem_t *get_direct_declarator(parsing_block_t *data);
 ast_tree_elem_t *get_statement(parsing_block_t *data);
 ast_tree_elem_t *get_selection_statement(parsing_block_t *data);
 ast_tree_elem_t *get_logical_expression(parsing_block_t *data);
-ast_tree_elem_t *get_function(parsing_block_t *data);
+ast_tree_elem_t *get_one_arg_function_call(parsing_block_t *data);
 ast_tree_elem_t *get_primary_expression(parsing_block_t *data);
 ast_tree_elem_t *get_constant(parsing_block_t *data);
 ast_tree_elem_t *get_variable(parsing_block_t *data);
 ast_tree_elem_t *get_while(parsing_block_t *data);
 ast_tree_elem_t *get_expression(parsing_block_t *data);
 ast_tree_elem_t *get_assignment(parsing_block_t *data);
+ast_tree_elem_t *get_variable_initialization_with_assignment(parsing_block_t *data);
 ast_tree_elem_t *get_variable_initialization(parsing_block_t *data);
+ast_tree_elem_t *get_func_identificator(parsing_block_t *data);
 
 void debug_lex(lexem_t lex, parsing_block_t *data);
 

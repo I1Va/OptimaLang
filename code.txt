@@ -1,5 +1,7 @@
 {
     int val = 4;
     float cur = 3554.44;
+    int puk;
+    
 }
 

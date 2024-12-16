@@ -76,7 +76,7 @@ void grule_dump(FILE *stream, enum grammar_rule_num grule) {
         GR_DESCR_(stream, GET_ADDITIVE_EXPRESSION)
         GR_DESCR_(stream, GET_MULTIPLICATIVE_EXPRESSION)
         GR_DESCR_(stream, GET_DIRECT_DECLARATOR)
-        GR_DESCR_(stream, GET_FUNCTION)
+        GR_DESCR_(stream, GET_ONE_ARG_FUNCTION_CALL)
         GR_DESCR_(stream, GET_PRIMARY_EXPRESSION)
         GR_DESCR_(stream, GET_CONSTANT)
         GR_DESCR_(stream, GET_VARIABLE)
@@ -87,6 +87,11 @@ void grule_dump(FILE *stream, enum grammar_rule_num grule) {
         GR_DESCR_(stream, GET_EXPRESSION)
         GR_DESCR_(stream, GET_WHILE)
         GR_DESCR_(stream, GET_VARIABLE_INITIALIZATION)
+        GR_DESCR_(stream, GET_VARIABLE_INITIALIZATION_WITH_ASSIGNMENT)
+        GR_DESCR_(stream, GET_FUNC_SEPARATED_INIT_ARGS)
+        GR_DESCR_(stream, GET_FUNCTION_INITIALIZATION)
+        GR_DESCR_(stream, GET_FUNC_IDENTIFICATOR)
+        GR_DESCR_(stream, GET_STATEMENT_LIST)
         default: fprintf(stream, "UNKNOWN_GRULE(%d) ", grule); break;
     }
     #undef GR_DESCR_
