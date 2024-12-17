@@ -11,6 +11,7 @@
 #include "AST_proc.h"
 #include "lang_global_space.h"
 #include "lang_lexer.h"
+#include "lang_logger.h"
 #include "string_funcs.h"
 #include "lang_grammar.h"
 #include "front_args_proc.h"
@@ -47,7 +48,7 @@ int main(const int argc, const char *argv[]) {
     ast_tree_ctor(&tree, LOG_FILE_PATH);
 
     lexem_t lexem_list[LEXEM_LIST_MAX_SIZE] = {};
-    key_name_t name_table[NAME_TABLE_MAX_SIZE] =
+    keyword_t keywords_table[] =
     {
         {"EMPTY_NAME", 10, T_EMPTY},
         {"if", 2, T_IF},
@@ -57,15 +58,19 @@ int main(const int argc, const char *argv[]) {
         {"return", 6, T_RETURN},
         {"else", 4, T_ELSE},
     };
+    const size_t keywords_table_sz = sizeof(keywords_table) / sizeof(keyword_t);
+
+    name_t name_table[NAME_TABLE_MAX_SIZE] = {};
 
     parsing_block_t data = {};
-    parsing_block_t_ctor(&data, text.str_ptr, name_table, lexem_list, &storage, main_config.output_file);
+    parsing_block_t_ctor(&data, text.str_ptr, keywords_table, keywords_table_sz, name_table, lexem_list, &storage, main_config.output_file);
 
 
     lex_scanner(&data);
 
 
     tree.root = get_code_block(&data);
+    // name_table_dump(stdout, &data);
     if (check_parser_err(stdout, &data)) {
         CLEAR_MEMORY(exit_mark);
     }

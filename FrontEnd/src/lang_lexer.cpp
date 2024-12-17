@@ -13,19 +13,30 @@ bool char_in_str_lex(int c) {
     return ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z') || (c == '_');
 }
 
-size_t add_to_name_table(char *new_name, key_name_t *name_table, size_t *name_table_sz) {
-    assert(new_name);
-    assert(name_table);
-    assert(name_table_sz);
-
-    for (size_t name_idx = 0; name_idx < *name_table_sz; name_idx++) {
-        if (strcmp(new_name, name_table[name_idx].name) == 0) {
-            return name_idx;
+int get_index_in_name_table(char *new_name, parsing_block_t *data) {
+    for (size_t name_idx = 0; name_idx < data->name_table_sz; name_idx++) {
+        if (strcmp(new_name, data->name_table[name_idx].name) == 0) {
+            return (int) name_idx;
         }
     }
-    name_table[(*name_table_sz)++] = {new_name, strlen(new_name), T_ID};
+    return -1;
+}
 
-    return (*name_table_sz) - 1;
+int get_index_in_keyword_table(char *new_name, parsing_block_t *data) {
+    for (size_t name_idx = 0; name_idx < data->keywords_table_sz; name_idx++) {
+        if (strcmp(new_name, data->keywords_table[name_idx].name) == 0) {
+            return (int) name_idx;
+        }
+    }
+    return -1;
+}
+
+int add_to_name_table(char *new_name, parsing_block_t *data) {
+    assert(new_name);
+    assert(data);
+
+    data->name_table[data->name_table_sz++] = {new_name, strlen(new_name), T_ID};
+    return (int) data->name_table_sz - 1;
 }
 
 size_t scan_lval(long long *lval, char *p) {
@@ -91,16 +102,26 @@ lexem_t next_lexem(parsing_block_t *data) {
         str = get_new_str_ptr(data->storage, bufer_idx);
         strncpy(str, bufer, bufer_idx); // FIXME: можно ускорить
 
-        size_t name_idx = add_to_name_table(str, data->name_table, &data->name_table_sz);
+        int keyword_idx = get_index_in_keyword_table(str, data);
+        if (keyword_idx == -1) {
+            int name_idx = get_index_in_name_table(str, data);
+            if (name_idx == -1) {
+                name_idx = add_to_name_table(str, data);
+            }
 
-        lexem.token_type = data->name_table[name_idx].token_type;
-        lexem.token_val.ival = (int) name_idx;
-        lexem.len = data->name_table[name_idx].len;
+            lexem.token_type = data->name_table[name_idx].token_type;
+            lexem.token_val.ival = name_idx;
+            lexem.key_word_state = false;
+            lexem.len = data->name_table[name_idx].len;
+        } else { // FIXME: фу, кринж, копипаст
+            lexem.token_type = data->keywords_table[keyword_idx].token_type;
+            lexem.token_val.ival = keyword_idx;
+            lexem.key_word_state = true;
+            lexem.len = data->keywords_table[keyword_idx].len;
+        }
 
         return lexem;
     }
-
-
 
     switch (c) {
         case '+': return {T_ADD, {}, {}, 1}; case '-': return {T_SUB, {}, {}, 1};
@@ -178,15 +199,4 @@ void lex_scanner(parsing_block_t *data) {
     data->lexem_list_size = token_idx;
 
     lexem_list_dump(stdout, data);
-}
-
-size_t get_name_table_sz(key_name_t *name_table) {
-    size_t sz = 0;
-
-    while (name_table && name_table->name) {
-        sz++;
-        name_table++;
-    }
-
-    return sz;
 }

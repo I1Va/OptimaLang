@@ -65,9 +65,17 @@ struct lexem_t {
 
     text_pos_t text_pos;
     size_t len;
+
+    bool key_word_state;
 };
 
-struct key_name_t {
+struct keyword_t {
+    const char *name;
+    size_t len;
+    token_t token_type;
+};
+
+struct name_t {
     char *name;
     size_t len;
     token_t token_type;
@@ -112,7 +120,9 @@ struct parsing_block_t {
     char *text;
     size_t text_idx;
 
-    key_name_t *name_table;
+    keyword_t *keywords_table;
+    size_t keywords_table_sz;
+    name_t *name_table;
     size_t name_table_sz;
 
     lexem_t *lexem_list;
@@ -126,8 +136,11 @@ struct parsing_block_t {
     FILE *asm_code_file_ptr;
 };
 
-bool parsing_block_t_ctor(parsing_block_t *data, char *text, key_name_t *name_table, lexem_t *lexem_list,
-str_storage_t **storage, const char asm_code_file_path[]);
+
+bool parsing_block_t_ctor(parsing_block_t *data, char *text,
+    keyword_t keywords_table[], const size_t keywords_table_sz, name_t *name_table,
+    lexem_t *lexem_list, str_storage_t **storage, const char asm_code_file_path[]);
+
 void parsing_block_t_dtor(parsing_block_t *data);
 
 #endif // LANG_GLOBAL_SPACE_H

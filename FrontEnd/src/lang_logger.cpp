@@ -6,7 +6,7 @@
 
 #include <assert.h>
 
-void lexem_dump(FILE *stream, key_name_t *name_table, lexem_t lexem) {
+void lexem_dump(FILE *stream, parsing_block_t *data, lexem_t lexem) {
     #define T_DESCR_(stream, lex, fmt, val) case lex: fprintf(stream, #lex"(" fmt ")", val); break;
     fprintf(stream, "[l:%3lu, s:%3lu]: ", lexem.text_pos.lines + 1, lexem.text_pos.syms + 1);
     switch (lexem.token_type) {
@@ -24,9 +24,9 @@ void lexem_dump(FILE *stream, key_name_t *name_table, lexem_t lexem) {
         T_DESCR_(stream, T_EOL, "%s", "\\n")
         T_DESCR_(stream, T_SPACE, "%c", ' ')
         T_DESCR_(stream, T_POW, "%s", "^")
-        T_DESCR_(stream, T_ID, "%s", name_table[lexem.token_val.ival].name)
-        T_DESCR_(stream, T_IF, "%s", name_table[lexem.token_val.ival].name)
-        T_DESCR_(stream, T_WHILE, "%s", name_table[lexem.token_val.ival].name)
+        T_DESCR_(stream, T_ID, "%s", data->name_table[lexem.token_val.ival].name)
+        T_DESCR_(stream, T_IF, "%s", data->keywords_table[lexem.token_val.ival].name)
+        T_DESCR_(stream, T_WHILE, "%s", data->keywords_table[lexem.token_val.ival].name)
         T_DESCR_(stream, T_DIVIDER, "%c", ';')
         T_DESCR_(stream, T_LESS, "%c", '<')
         T_DESCR_(stream, T_MORE, "%c", '>')
@@ -38,6 +38,8 @@ void lexem_dump(FILE *stream, key_name_t *name_table, lexem_t lexem) {
         T_DESCR_(stream, T_ASSIGN, "%s", "=")
         T_DESCR_(stream, T_COMMA, "%c", ',')
         T_DESCR_(stream, T_RETURN, "%s", "return")
+        T_DESCR_(stream, T_ELSE, "%s", "else")
+
 
         default: fprintf(stream, "UNKNOWN_LEX(%d) ", lexem.token_type); break;
     }
@@ -50,7 +52,7 @@ void lexem_list_dump(FILE *stream, parsing_block_t *data) {
     printf("len: [%lu]\n", data->lexem_list_size);
     for (size_t i = 0; i < data->lexem_list_size; i++) {
         lexem_t lexem = data->lexem_list[i];
-        lexem_dump(stream, data->name_table, lexem);
+        lexem_dump(stream, data, lexem);
         fprintf(stream, "\n");
     }
     fprintf(stream, "\n");
@@ -58,11 +60,11 @@ void lexem_list_dump(FILE *stream, parsing_block_t *data) {
     fprintf_border(stream, '-', STR_F_BORDER_SZ, true);
 }
 
-void name_table_dump(FILE *stream, key_name_t *name_table, const size_t name_table_sz) {
-    fprintf(stream, "name_table[%p]\n{\n", name_table);
+void name_table_dump(FILE *stream, parsing_block_t *data) {
+    fprintf(stream, "name_table[%p]\n{\n", data->name_table);
 
-    for (size_t i = 0; i < name_table_sz; i++) {
-        fprintf(stream, "    [%lu] = {'%s', [%d]}\n", i, name_table[i].name, name_table[i].token_type);
+    for (size_t i = 0; i < data->name_table_sz; i++) {
+        fprintf(stream, "    [%lu] = {'%s', [%d]}\n", i, data->name_table[i].name, data->name_table[i].token_type);
     }
 
     fprintf(stream, "}\n");
@@ -95,6 +97,7 @@ void grule_dump(FILE *stream, enum grammar_rule_num grule) {
         GR_DESCR_(stream, GET_STATEMENT_LIST)
         GR_DESCR_(stream, GET_GLOBAL_STATEMENT)
         GR_DESCR_(stream, GET_GRULE_DIVIDED_LIST)
+        GR_DESCR_(stream, GET_FUNCTION_CALL)
 
         default: fprintf(stream, "UNKNOWN_GRULE(%d) ", grule); break;
     }

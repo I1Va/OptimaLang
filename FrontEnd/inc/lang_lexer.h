@@ -11,10 +11,13 @@ const size_t LEXEM_LIST_MAX_SIZE = BUFSIZ;
 const size_t NAME_TABLE_MAX_SIZE = 1024;
 
 bool char_in_str_lex(int c);
-size_t add_to_name_table(char *new_name, key_name_t *name_table, size_t *name_table_sz);
+
+int get_index_in_name_table(char *new_name, parsing_block_t *data);
+int get_index_in_keyword_table(char *new_name, parsing_block_t *data);
+int add_to_name_table(char *new_name, parsing_block_t *data);
 lexem_t next_lexem(parsing_block_t *data);
 void text_pos_update(text_pos_t *text_pos, const lexem_t lexem);
 void lex_scanner(parsing_block_t *data);
-size_t get_name_table_sz(key_name_t *name_table);
+size_t scan_lval(long long int*, char*);
 
 #endif // LANG_LEXER_H

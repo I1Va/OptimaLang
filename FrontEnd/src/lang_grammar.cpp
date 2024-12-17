@@ -13,6 +13,7 @@
 #include "lang_global_space.h"
 #include "lang_logger.h"
 #include "string_funcs.h"
+#include "lang_logger.h"
 #include "lang_grammar.h"
 
 #include "diff_DSL.h"
@@ -93,7 +94,7 @@ bool check_parser_err(FILE *stream, parsing_block_t *data) {
     fprintf_title(stream, "SYNTAX_ERROR", '-', STR_F_BORDER_SZ);
 
     fprintf(stream, "ERROR_LEXEM: ");
-    lexem_dump(stream, data->name_table, data->parser_err.lex);
+    lexem_dump(stream, data, data->parser_err.lex);
     printf("\n");
 
     fprintf(stream, "ERROR_PATH: \n");
@@ -112,7 +113,7 @@ void debug_lex(lexem_t lex, parsing_block_t *data) {
     assert(data);
 
     fprintf_title(stdout, "DEBUG_LEX", '-', STR_F_BORDER_SZ);
-    lexem_dump(stdout, data->name_table, lex);
+    lexem_dump(stdout, data, lex);
     printf("\n");
     fprintf_border(stdout, '-', STR_F_BORDER_SZ, true);
 }
