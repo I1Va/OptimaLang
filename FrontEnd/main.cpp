@@ -38,11 +38,6 @@ int main(const int argc, const char *argv[]) {
 
     main_config_print(stdout, &main_config);
 
-
-
-
-
-
     str_storage_t *storage = str_storage_t_ctor(CHUNK_SIZE);
     str_t text = read_text_from_file(main_config.input_file);
 

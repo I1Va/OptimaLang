@@ -1,5 +1,5 @@
 #include <assert.h>
-#include <cstddef>
+#include <stddef.h>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -17,16 +17,16 @@
 
 #include "diff_DSL.h"
 
-#define CATCH_PARSE_ERROR(data, grule)                     \
+#define CATCH_PARSE_ERROR(data, grule, exit_com)           \
     if (data->parser_err.err_state) {                      \
         add_grule_to_parser_err(&data->parser_err, grule); \
-        return NULL;                                       \
+        exit_com;                                          \
     }
 
-#define STEP_OVER_TOKEN_WITH_CHECK(data, grule, token)                                       \
+#define STEP_OVER_TOKEN_WITH_CHECK(data, grule, token, exit_com)                            \
     if (data->lexem_list[data->lexem_list_idx].token_type != token) {                       \
-        start_parser_err(data, data->lexem_list[data->lexem_list_idx], grule); \
-        return NULL;                                                                        \
+        start_parser_err(data, data->lexem_list[data->lexem_list_idx], grule);              \
+        exit_com;                                                                           \
     }                                                                                       \
     data->lexem_list_idx++;
 
@@ -126,16 +126,21 @@ ast_tree_elem_t *get_code_block(parsing_block_t *data) {
     empty = 1;
     global_statement_list = get_grule_divided_list(data, &empty, get_global_statement);
 
-    STEP_OVER_TOKEN_WITH_CHECK(data, GET_CODE_BLOCK, T_EOF)
+    STEP_OVER_TOKEN_WITH_CHECK(data, GET_CODE_BLOCK, T_EOF, CLEAR_MEMORY(exit_mark))
 
     return _GLOBAL(global_statement_list);
+
+    exit_mark:
+
+    sub_tree_dtor(global_statement_list);
+    return NULL;
 }
 
 ast_tree_elem_t *get_expression(parsing_block_t *data) {
     assert(data);
 
     ast_tree_elem_t *node = get_logical_expression(data);
-    CATCH_PARSE_ERROR(data, GET_EXPRESSION);
+    CATCH_PARSE_ERROR(data, GET_EXPRESSION, return NULL);
 
     return node;
 }
@@ -162,7 +167,7 @@ ast_tree_elem_t *get_statement(parsing_block_t *data) {
 
 
     val = get_selection_statement(data);
-    CATCH_PARSE_ERROR(data, GET_STATEMENT)
+    CATCH_PARSE_ERROR(data, GET_STATEMENT, return NULL)
 
     return val;
 }
@@ -179,7 +184,7 @@ ast_tree_elem_t *get_global_statement(parsing_block_t *data) {
     if (val) { return val; }
 
     val = try_grule(data, get_variable_initialization);
-    CATCH_PARSE_ERROR(data, GET_GLOBAL_STATEMENT)
+    CATCH_PARSE_ERROR(data, GET_GLOBAL_STATEMENT, return NULL)
 
     return val;
 }
@@ -195,41 +200,49 @@ ast_tree_elem_t *get_selection_statement(parsing_block_t *data) {
 
     int empty = 0;
 
-    STEP_OVER_TOKEN_WITH_CHECK(data, GET_SELECTION_STATEMENT, T_IF)
+    STEP_OVER_TOKEN_WITH_CHECK(data, GET_SELECTION_STATEMENT, T_IF, CLEAR_MEMORY(exit_mark))
 
-    STEP_OVER_TOKEN_WITH_CHECK(data, GET_SELECTION_STATEMENT, T_O_BRACE)
+    STEP_OVER_TOKEN_WITH_CHECK(data, GET_SELECTION_STATEMENT, T_O_BRACE, CLEAR_MEMORY(exit_mark))
 
     expr_node = get_expression(data);
-    CATCH_PARSE_ERROR(data, GET_SELECTION_STATEMENT);
+    CATCH_PARSE_ERROR(data, GET_SELECTION_STATEMENT, CLEAR_MEMORY(exit_mark));
 
-    STEP_OVER_TOKEN_WITH_CHECK(data, GET_SELECTION_STATEMENT, T_C_BRACE)
+    STEP_OVER_TOKEN_WITH_CHECK(data, GET_SELECTION_STATEMENT, T_C_BRACE, CLEAR_MEMORY(exit_mark))
 
 
-    STEP_OVER_TOKEN_WITH_CHECK(data, GET_SELECTION_STATEMENT, T_O_FIG_BRACE)
+    STEP_OVER_TOKEN_WITH_CHECK(data, GET_SELECTION_STATEMENT, T_O_FIG_BRACE, CLEAR_MEMORY(exit_mark))
     empty = 1;
     if_body_node = get_grule_divided_list(data, &empty, get_statement);
-    CATCH_PARSE_ERROR(data, GET_SELECTION_STATEMENT)
+    CATCH_PARSE_ERROR(data, GET_SELECTION_STATEMENT, CLEAR_MEMORY(exit_mark))
     if (empty) {
         start_parser_err(data, data->lexem_list[data->lexem_list_idx], GET_SELECTION_STATEMENT);
         return NULL;
     }
-    STEP_OVER_TOKEN_WITH_CHECK(data, GET_SELECTION_STATEMENT, T_C_FIG_BRACE)
+    STEP_OVER_TOKEN_WITH_CHECK(data, GET_SELECTION_STATEMENT, T_C_FIG_BRACE, CLEAR_MEMORY(exit_mark))
 
     if (tl[*tp].token_type == T_ELSE) {
-        STEP_OVER_TOKEN_WITH_CHECK(data, GET_SELECTION_STATEMENT, T_ELSE)
+        STEP_OVER_TOKEN_WITH_CHECK(data, GET_SELECTION_STATEMENT, T_ELSE, CLEAR_MEMORY(exit_mark))
 
-        STEP_OVER_TOKEN_WITH_CHECK(data, GET_SELECTION_STATEMENT, T_O_FIG_BRACE)
+        STEP_OVER_TOKEN_WITH_CHECK(data, GET_SELECTION_STATEMENT, T_O_FIG_BRACE, CLEAR_MEMORY(exit_mark))
         empty = 1;
         else_body_node = get_grule_divided_list(data, &empty, get_statement);
-        CATCH_PARSE_ERROR(data, GET_SELECTION_STATEMENT)
+        CATCH_PARSE_ERROR(data, GET_SELECTION_STATEMENT, CLEAR_MEMORY(exit_mark))
         if (empty) {
             start_parser_err(data, data->lexem_list[data->lexem_list_idx], GET_SELECTION_STATEMENT);
             return NULL;
         }
-        STEP_OVER_TOKEN_WITH_CHECK(data, GET_SELECTION_STATEMENT, T_C_FIG_BRACE)
+        STEP_OVER_TOKEN_WITH_CHECK(data, GET_SELECTION_STATEMENT, T_C_FIG_BRACE, CLEAR_MEMORY(exit_mark))
     }
 
     return _OP(T_IF, expr_node, _OP(T_ELSE, if_body_node, else_body_node));
+
+    exit_mark:
+
+    sub_tree_dtor(expr_node);
+    sub_tree_dtor(if_body_node);
+    sub_tree_dtor(else_body_node);
+
+    return NULL;
 }
 
 bool check_token_on_logical_class(const token_t token) {
@@ -252,19 +265,26 @@ ast_tree_elem_t *get_logical_expression(parsing_block_t *data) {
     ast_tree_elem_t *new_node = NULL;
 
     node = get_additive_expression(data);
-    CATCH_PARSE_ERROR(data, GET_LOGICAL_EXPRESSION);
+    CATCH_PARSE_ERROR(data, GET_LOGICAL_EXPRESSION, CLEAR_MEMORY(exit_mark));
 
     while (check_token_on_logical_class(tl[*tp].token_type)) {
         int op_num = tl[*tp].token_type;
         (*tp)++;
 
         new_node = get_additive_expression(data);
-        CATCH_PARSE_ERROR(data, GET_LOGICAL_EXPRESSION)
+        CATCH_PARSE_ERROR(data, GET_LOGICAL_EXPRESSION, CLEAR_MEMORY(exit_mark))
 
         node = _OP(op_num, node, new_node);
     }
 
     return node;
+
+    exit_mark:
+
+    sub_tree_dtor(node);
+    sub_tree_dtor(new_node);
+
+    return NULL;
 }
 
 bool check_token_on_additive_class(const token_t token) {
@@ -284,19 +304,26 @@ ast_tree_elem_t *get_additive_expression(parsing_block_t *data) {
     ast_tree_elem_t *new_node = NULL;
 
     node = get_multiplicative_expression(data);
-    CATCH_PARSE_ERROR(data, GET_ADDITIVE_EXPRESSION)
+    CATCH_PARSE_ERROR(data, GET_ADDITIVE_EXPRESSION, CLEAR_MEMORY(exit_mark))
 
     while (check_token_on_additive_class(tl[*tp].token_type)) {
         int op_num = tl[*tp].token_type;
         (*tp)++;
 
         new_node = get_multiplicative_expression(data);
-        CATCH_PARSE_ERROR(data, GET_MULTIPLICATIVE_EXPRESSION)
+        CATCH_PARSE_ERROR(data, GET_MULTIPLICATIVE_EXPRESSION, CLEAR_MEMORY(exit_mark))
 
         node = _OP(op_num, node, new_node);
     }
 
     return node;
+
+    exit_mark:
+
+    sub_tree_dtor(node);
+    sub_tree_dtor(new_node);
+
+    return NULL;
 }
 
 bool check_token_on_multiplicative_class(const token_t token) {
@@ -316,19 +343,26 @@ ast_tree_elem_t *get_multiplicative_expression(parsing_block_t *data) {
     ast_tree_elem_t *new_node = NULL;
 
     node = get_direct_declarator(data);
-    CATCH_PARSE_ERROR(data, GET_MULTIPLICATIVE_EXPRESSION)
+    CATCH_PARSE_ERROR(data, GET_MULTIPLICATIVE_EXPRESSION, CLEAR_MEMORY(exit_mark))
 
     while (check_token_on_multiplicative_class(tl[*tp].token_type)) {
         int op_num = tl[*tp].token_type;
         (*tp)++;
 
         new_node = get_direct_declarator(data);
-        CATCH_PARSE_ERROR(data, GET_MULTIPLICATIVE_EXPRESSION)
+        CATCH_PARSE_ERROR(data, GET_MULTIPLICATIVE_EXPRESSION, CLEAR_MEMORY(exit_mark))
 
         node = _OP(op_num, node, new_node);
     }
 
     return node;
+
+    exit_mark:
+
+    sub_tree_dtor(node);
+    sub_tree_dtor(new_node);
+
+    return NULL;
 }
 
 ast_tree_elem_t *get_direct_declarator(parsing_block_t *data) {
@@ -341,29 +375,30 @@ ast_tree_elem_t *get_direct_declarator(parsing_block_t *data) {
         (*tp)++;
 
         ast_tree_elem_t *val = get_additive_expression(data);
-        CATCH_PARSE_ERROR(data, GET_DIRECT_DECLARATOR)
+        CATCH_PARSE_ERROR(data, GET_DIRECT_DECLARATOR, return NULL);
 
-        STEP_OVER_TOKEN_WITH_CHECK(data, GET_DIRECT_DECLARATOR, T_C_BRACE)
+        STEP_OVER_TOKEN_WITH_CHECK(data, GET_DIRECT_DECLARATOR, T_C_BRACE, return NULL);
 
         return val;
     }
 
     if (tl[*tp].token_type == T_ID && tl[(*tp) + 1].token_type == T_O_BRACE) {
         ast_tree_elem_t *func_node = get_function_call(data);
-        CATCH_PARSE_ERROR(data, GET_DIRECT_DECLARATOR)
+        CATCH_PARSE_ERROR(data, GET_DIRECT_DECLARATOR, return NULL)
 
         return func_node;
     }
 
     if (tl[*tp].token_type == T_ID || tl[*tp].token_type == T_NUM) {
         ast_tree_elem_t *prim_node = get_primary_expression(data);
-        CATCH_PARSE_ERROR(data, GET_DIRECT_DECLARATOR)
+        CATCH_PARSE_ERROR(data, GET_DIRECT_DECLARATOR, return NULL)
 
         return prim_node;
     }
 
     start_parser_err(data, tl[*tp], GET_DIRECT_DECLARATOR);
     return NULL;
+
 }
 
 bool check_token_on_type_class(const token_t token) {
@@ -399,12 +434,19 @@ ast_tree_elem_t *get_variable_initialization(parsing_block_t *data) {
     ast_tree_elem_t *main_node = NULL;
 
     type_node = get_type(data);
-    CATCH_PARSE_ERROR(data, GET_VARIABLE_INITIALIZATION)
+    CATCH_PARSE_ERROR(data, GET_VARIABLE_INITIALIZATION, CLEAR_MEMORY(exit_mark))
 
     main_node = get_variable(data);
-    CATCH_PARSE_ERROR(data, GET_VARIABLE_INITIALIZATION)
+    CATCH_PARSE_ERROR(data, GET_VARIABLE_INITIALIZATION, CLEAR_MEMORY(exit_mark))
 
     return _INIT(type_node, main_node);
+
+    exit_mark:
+
+    sub_tree_dtor(type_node);
+    sub_tree_dtor(main_node);
+
+    return NULL;
 }
 
 ast_tree_elem_t *get_variable_initialization_with_assignment(parsing_block_t *data) {
@@ -414,12 +456,19 @@ ast_tree_elem_t *get_variable_initialization_with_assignment(parsing_block_t *da
     ast_tree_elem_t *main_node = NULL;
 
     type_node = get_type(data);
-    CATCH_PARSE_ERROR(data, GET_VARIABLE_INITIALIZATION_WITH_ASSIGNMENT)
+    CATCH_PARSE_ERROR(data, GET_VARIABLE_INITIALIZATION_WITH_ASSIGNMENT, CLEAR_MEMORY(exit_mark))
 
     main_node = get_assignment(data);
-    CATCH_PARSE_ERROR(data, GET_VARIABLE_INITIALIZATION_WITH_ASSIGNMENT)
+    CATCH_PARSE_ERROR(data, GET_VARIABLE_INITIALIZATION_WITH_ASSIGNMENT, CLEAR_MEMORY(exit_mark))
 
     return _INIT(type_node, main_node);
+
+    exit_mark:
+
+    sub_tree_dtor(type_node);
+    sub_tree_dtor(main_node);
+
+    return NULL;
 }
 
 ast_tree_elem_t *get_func_separated_init_args(parsing_block_t *data) {
@@ -434,7 +483,7 @@ ast_tree_elem_t *get_func_separated_init_args(parsing_block_t *data) {
     while (tl[*tp].token_type != T_C_BRACE) {
         copy_node = init_args;
         init_args = get_variable_initialization(data);
-        CATCH_PARSE_ERROR(data, GET_FUNC_SEPARATED_INIT_ARGS)
+        CATCH_PARSE_ERROR(data, GET_FUNC_SEPARATED_INIT_ARGS, CLEAR_MEMORY(exit_mark))
 
         if (!(tl[*tp].token_type == T_COMMA || tl[*tp].token_type == T_C_BRACE)) {
             start_parser_err(data, tl[*tp], GET_FUNC_SEPARATED_INIT_ARGS);
@@ -445,6 +494,13 @@ ast_tree_elem_t *get_func_separated_init_args(parsing_block_t *data) {
     }
 
     return init_args;
+
+    exit_mark:
+
+    sub_tree_dtor(init_args);
+    sub_tree_dtor(copy_node);
+
+    return NULL;
 }
 
 ast_tree_elem_t *get_grule_divided_list(parsing_block_t *data, int *empty, ast_tree_elem_t *(*grule_func)(parsing_block_t *data)) {
@@ -462,12 +518,20 @@ ast_tree_elem_t *get_grule_divided_list(parsing_block_t *data, int *empty, ast_t
         copy_node = right_node;
         right_node = statement_node;
 
-        STEP_OVER_TOKEN_WITH_CHECK(data, GET_GRULE_DIVIDED_LIST, T_DIVIDER)
+        STEP_OVER_TOKEN_WITH_CHECK(data, GET_GRULE_DIVIDED_LIST, T_DIVIDER, CLEAR_MEMORY(exit_mark))
 
         right_node = _OP(T_DIVIDER, copy_node, right_node);
     }
 
     return right_node;
+
+    exit_mark:
+
+    sub_tree_dtor(copy_node);
+    sub_tree_dtor(right_node);
+    sub_tree_dtor(statement_node);
+
+    return NULL;
 }
 
 ast_tree_elem_t *get_function_initialization(parsing_block_t *data) {
@@ -479,32 +543,33 @@ ast_tree_elem_t *get_function_initialization(parsing_block_t *data) {
     ast_tree_elem_t *func_body_node = NULL;
     ast_tree_elem_t *statement_list = NULL;
     ast_tree_elem_t *return_node = NULL;
+    int empty = 0;
 
     return_type_node = get_type(data);
-    CATCH_PARSE_ERROR(data, GET_FUNCTION_INITIALIZATION)
+    CATCH_PARSE_ERROR(data, GET_FUNCTION_INITIALIZATION, CLEAR_MEMORY(exit_mark))
 
     func_identificator = get_func_identificator(data);
-    CATCH_PARSE_ERROR(data, GET_FUNCTION_INITIALIZATION)
+    CATCH_PARSE_ERROR(data, GET_FUNCTION_INITIALIZATION, CLEAR_MEMORY(exit_mark))
 
 
-    STEP_OVER_TOKEN_WITH_CHECK(data, GET_FUNCTION_INITIALIZATION, T_O_BRACE)
+    STEP_OVER_TOKEN_WITH_CHECK(data, GET_FUNCTION_INITIALIZATION, T_O_BRACE, CLEAR_MEMORY(exit_mark))
 
     args_node = get_func_separated_init_args(data);
-    CATCH_PARSE_ERROR(data, GET_FUNCTION_INITIALIZATION)
+    CATCH_PARSE_ERROR(data, GET_FUNCTION_INITIALIZATION, CLEAR_MEMORY(exit_mark))
 
-    STEP_OVER_TOKEN_WITH_CHECK(data, GET_FUNCTION_INITIALIZATION, T_C_BRACE)
+    STEP_OVER_TOKEN_WITH_CHECK(data, GET_FUNCTION_INITIALIZATION, T_C_BRACE, CLEAR_MEMORY(exit_mark))
 
 
-    STEP_OVER_TOKEN_WITH_CHECK(data, GET_FUNCTION_INITIALIZATION, T_O_FIG_BRACE)
+    STEP_OVER_TOKEN_WITH_CHECK(data, GET_FUNCTION_INITIALIZATION, T_O_FIG_BRACE, CLEAR_MEMORY(exit_mark))
 
-    int empty = 1; // ignoring empty function body
+    empty = 1; // ignoring empty function body
     statement_list = get_grule_divided_list(data, &empty, get_statement);
-    CATCH_PARSE_ERROR(data, GET_FUNCTION_INITIALIZATION)
-    STEP_OVER_TOKEN_WITH_CHECK(data, GET_FUNCTION_INITIALIZATION, T_RETURN);
+    CATCH_PARSE_ERROR(data, GET_FUNCTION_INITIALIZATION, CLEAR_MEMORY(exit_mark))
+    STEP_OVER_TOKEN_WITH_CHECK(data, GET_FUNCTION_INITIALIZATION, T_RETURN, CLEAR_MEMORY(exit_mark));
     return_node = try_grule(data, get_expression);
-    STEP_OVER_TOKEN_WITH_CHECK(data, GET_FUNCTION_INITIALIZATION, T_DIVIDER);
+    STEP_OVER_TOKEN_WITH_CHECK(data, GET_FUNCTION_INITIALIZATION, T_DIVIDER, CLEAR_MEMORY(exit_mark));
 
-    STEP_OVER_TOKEN_WITH_CHECK(data, GET_FUNCTION_INITIALIZATION, T_C_FIG_BRACE)
+    STEP_OVER_TOKEN_WITH_CHECK(data, GET_FUNCTION_INITIALIZATION, T_C_FIG_BRACE, CLEAR_MEMORY(exit_mark))
 
     func_body_node = _FUNC_BODY(NULL, NULL);
     func_body_node->left = return_node;
@@ -514,6 +579,17 @@ ast_tree_elem_t *get_function_initialization(parsing_block_t *data) {
     func_identificator->right = func_body_node;
 
     return _INIT(return_type_node, func_identificator);
+
+    exit_mark:
+
+    sub_tree_dtor(return_type_node);
+    sub_tree_dtor(func_identificator);
+    sub_tree_dtor(args_node);
+    sub_tree_dtor(func_body_node);
+    sub_tree_dtor(statement_list);
+    sub_tree_dtor(return_node);
+
+    return NULL;
 }
 
 ast_tree_elem_t *get_function_call(parsing_block_t *data) {
@@ -527,40 +603,57 @@ ast_tree_elem_t *get_function_call(parsing_block_t *data) {
     size_t *tp = &(data->lexem_list_idx);
 
     func_identificator = get_func_identificator(data);
-    CATCH_PARSE_ERROR(data, GET_FUNCTION_CALL);
+    CATCH_PARSE_ERROR(data, GET_FUNCTION_CALL, CLEAR_MEMORY(exit_mark));
 
-    STEP_OVER_TOKEN_WITH_CHECK(data, GET_FUNCTION_CALL, T_O_BRACE);
+    STEP_OVER_TOKEN_WITH_CHECK(data, GET_FUNCTION_CALL, T_O_BRACE, CLEAR_MEMORY(exit_mark));
 
     while (tl[*tp].token_type != T_C_BRACE) {
         copy_node = args_node;
         args_node = get_expression(data);
-        CATCH_PARSE_ERROR(data, GET_FUNCTION_CALL)
+        CATCH_PARSE_ERROR(data, GET_FUNCTION_CALL, CLEAR_MEMORY(exit_mark))
         args_node = _OP(T_COMMA, copy_node, args_node);
 
         if (tl[*tp].token_type == T_C_BRACE) {
             break;
         }
 
-        STEP_OVER_TOKEN_WITH_CHECK(data, GET_FUNCTION_CALL, T_COMMA);
+        STEP_OVER_TOKEN_WITH_CHECK(data, GET_FUNCTION_CALL, T_COMMA, CLEAR_MEMORY(exit_mark));
     }
 
-    STEP_OVER_TOKEN_WITH_CHECK(data, GET_FUNCTION_CALL, T_C_BRACE);
+    STEP_OVER_TOKEN_WITH_CHECK(data, GET_FUNCTION_CALL, T_C_BRACE, CLEAR_MEMORY(exit_mark));
 
     return _CALL(func_identificator, args_node);
+
+    exit_mark:
+
+    sub_tree_dtor(func_identificator);
+    sub_tree_dtor(args_node);
+    sub_tree_dtor(copy_node);
+
+    return NULL;
 }
 
 ast_tree_elem_t *get_assignment(parsing_block_t *data) {
     assert(data);
 
-    ast_tree_elem_t *left = get_variable(data);
-    CATCH_PARSE_ERROR(data, GET_ASSIGNMENT)
+    ast_tree_elem_t *left = NULL;
+    ast_tree_elem_t *right = NULL;
 
-    STEP_OVER_TOKEN_WITH_CHECK(data, GET_ASSIGNMENT, T_ASSIGN)
+    left = get_variable(data);
+    CATCH_PARSE_ERROR(data, GET_ASSIGNMENT, CLEAR_MEMORY(exit_mark))
 
-    ast_tree_elem_t *right = get_expression(data);
-    CATCH_PARSE_ERROR(data, GET_ASSIGNMENT)
+    STEP_OVER_TOKEN_WITH_CHECK(data, GET_ASSIGNMENT, T_ASSIGN, CLEAR_MEMORY(exit_mark))
+
+    right = get_expression(data);
+    CATCH_PARSE_ERROR(data, GET_ASSIGNMENT, CLEAR_MEMORY(exit_mark))
 
     return _ASSIGN(left, right);
+
+    exit_mark:
+
+    sub_tree_dtor(left);
+    sub_tree_dtor(right);
+    return NULL;
 }
 
 ast_tree_elem_t *get_primary_expression(parsing_block_t *data) {
@@ -595,30 +688,38 @@ ast_tree_elem_t *get_while(parsing_block_t *data) {
 
     ast_tree_elem_t *left_node = NULL;
     ast_tree_elem_t *right_node = NULL;
+    int empty = 0;
 
-    STEP_OVER_TOKEN_WITH_CHECK(data, GET_WHILE, T_WHILE)
+    STEP_OVER_TOKEN_WITH_CHECK(data, GET_WHILE, T_WHILE, CLEAR_MEMORY(exit_mark))
 
-    STEP_OVER_TOKEN_WITH_CHECK(data, GET_WHILE, T_O_BRACE)
+    STEP_OVER_TOKEN_WITH_CHECK(data, GET_WHILE, T_O_BRACE, CLEAR_MEMORY(exit_mark))
 
     left_node = get_expression(data);
-    CATCH_PARSE_ERROR(data, GET_WHILE)
+    CATCH_PARSE_ERROR(data, GET_WHILE, CLEAR_MEMORY(exit_mark))
 
-    STEP_OVER_TOKEN_WITH_CHECK(data, GET_WHILE, T_C_BRACE)
+    STEP_OVER_TOKEN_WITH_CHECK(data, GET_WHILE, T_C_BRACE, CLEAR_MEMORY(exit_mark))
 
-    STEP_OVER_TOKEN_WITH_CHECK(data, GET_WHILE, T_O_FIG_BRACE)
+    STEP_OVER_TOKEN_WITH_CHECK(data, GET_WHILE, T_O_FIG_BRACE, CLEAR_MEMORY(exit_mark))
 
-    int empty = 1;
+    empty = 1;
     right_node = get_grule_divided_list(data, &empty, get_statement);
-    CATCH_PARSE_ERROR(data, GET_WHILE);
+    CATCH_PARSE_ERROR(data, GET_WHILE, CLEAR_MEMORY(exit_mark));
     if (empty) {
         start_parser_err(data, data->lexem_list[data->lexem_list_idx], GET_WHILE);
         return NULL;
     }
 
-    STEP_OVER_TOKEN_WITH_CHECK(data, GET_SELECTION_STATEMENT, T_C_FIG_BRACE)
+    STEP_OVER_TOKEN_WITH_CHECK(data, GET_SELECTION_STATEMENT, T_C_FIG_BRACE, CLEAR_MEMORY(exit_mark))
 
 
     return _OP(T_WHILE, left_node, right_node);
+
+    exit_mark:
+
+    sub_tree_dtor(left_node);
+    sub_tree_dtor(right_node);
+
+    return NULL;
 }
 
 ast_tree_elem_t *get_constant(parsing_block_t *data) {
