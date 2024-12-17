@@ -43,73 +43,73 @@ const size_t INDENT = 4;
 // {"pop" , POP_COM, write_universal_pop},
 // {"LABEL:", LABEL_COM, write_label}
 
-void asm_write_op(FILE *stream, int op_num) {
-    switch (op_num) {
-        case OP_MUL: fprintf(stream, "mult;\n"); break;
-        case OP_DIV: fprintf(stream, "div;\n"); break;
-        case OP_SUB: fprintf(stream, "sub;\n"); break;
-        case OP_ADD: fprintf(stream, "add;\n"); break;
-        default: debug("unknown operation: '%d'", op_num); fprintf(stream, "?%d?\n", op_num); break;
-    }
-}
+// void asm_write_op(FILE *stream, int op_num) {
+//     switch (op_num) {
+//         case OP_MUL: fprintf(stream, "mult;\n"); break;
+//         case OP_DIV: fprintf(stream, "div;\n"); break;
+//         case OP_SUB: fprintf(stream, "sub;\n"); break;
+//         case OP_ADD: fprintf(stream, "add;\n"); break;
+//         default: debug("unknown operation: '%d'", op_num); fprintf(stream, "?%d?\n", op_num); break;
+//     }
+// }
 
-void asm_write_hlt(FILE *stream) {
-    fprintf(stream, "hlt;\n");
-}
+// void asm_write_hlt(FILE *stream) {
+//     fprintf(stream, "hlt;\n");
+// }
 
-void asm_write_out(FILE *stream) {
-    fprintf(stream, "out;\n");
-}
+// void asm_write_out(FILE *stream) {
+//     fprintf(stream, "out;\n");
+// }
 
-void asm_write_push_lval(FILE *stream, long long lval) {
-    fprintf(stream, "push %Ld;\n", lval);
-}
+// void asm_write_push_lval(FILE *stream, long long lval) {
+//     fprintf(stream, "push %Ld;\n", lval);
+// }
 
-void asm_write_unknown_object(FILE *stream, int num) {
-    fprintf(stream, "UNKNOWN_OBJECT(%d)\n", num);
-}
+// void asm_write_unknown_object(FILE *stream, int num) {
+//     fprintf(stream, "UNKNOWN_OBJECT(%d)\n", num);
+// }
 
-void translate_ast_to_asm_code(FILE *stream, ast_tree_elem_t *node) {
-    assert(node);
-    static ast_tree_elem_t *root = node;
+// void translate_ast_to_asm_code(FILE *stream, ast_tree_elem_t *node) {
+//     assert(node);
+//     static ast_tree_elem_t *root = node;
 
-    if (node->data.type == NODE_NUM) {
-        asm_write_push_lval(stream, node->data.value.lval);
-    } else if (node->data.type == NODE_FUNC) {
-        printf("!THERE IS SHOULD BE NODE_FUNC PROCESSING!\n");
-    } else if (node->data.type == NODE_OP) {
-        if (!node->left || !node->right) {
-            debug("!node->left || !node->right. exit");
-        }
+//     if (node->data.type == NODE_NUM) {
+//         asm_write_push_lval(stream, node->data.value.lval);
+//     } else if (node->data.type == NODE_FUNC) {
+//         printf("!THERE IS SHOULD BE NODE_FUNC PROCESSING!\n");
+//     } else if (node->data.type == NODE_OP) {
+//         if (!node->left || !node->right) {
+//             debug("!node->left || !node->right. exit");
+//         }
 
-        translate_ast_to_asm_code(stream, node->right);
-        translate_ast_to_asm_code(stream, node->left);
+//         translate_ast_to_asm_code(stream, node->right);
+//         translate_ast_to_asm_code(stream, node->left);
 
-        asm_write_op(stream, node->data.value.ival);
-    } else {
-        asm_write_unknown_object(stream, node->data.type);
-    }
+//         asm_write_op(stream, node->data.value.ival);
+//     } else {
+//         asm_write_unknown_object(stream, node->data.type);
+//     }
 
-    if (node == root) {
-        asm_write_out(stream);
-        asm_write_hlt(stream);
-        fclose(stream);
-    }
-}
+//     if (node == root) {
+//         asm_write_out(stream);
+//         asm_write_hlt(stream);
+//         fclose(stream);
+//     }
+// }
 
-void assembler_make_bin_code(const char asm_code_path[], const char bin_code_path[]) {
-    char bufer[MEDIUM_BUFER_SZ] = {};
+// void assembler_make_bin_code(const char asm_code_path[], const char bin_code_path[]) {
+//     char bufer[MEDIUM_BUFER_SZ] = {};
 
-    snprintf(bufer, MEDIUM_BUFER_SZ, "cd ./assembler && make launch -f Makefile LAUNCH_FLAGS=\"-i=./.%s -o=./.%s\"", asm_code_path, bin_code_path);
-    system(bufer);
-}
+//     snprintf(bufer, MEDIUM_BUFER_SZ, "cd ./assembler && make launch -f Makefile LAUNCH_FLAGS=\"-i=./.%s -o=./.%s\"", asm_code_path, bin_code_path);
+//     system(bufer);
+// }
 
-void processor_execute_bin_code(const char bin_code_path[]) {
-    char bufer[MEDIUM_BUFER_SZ] = {};
+// void processor_execute_bin_code(const char bin_code_path[]) {
+//     char bufer[MEDIUM_BUFER_SZ] = {};
 
-    snprintf(bufer, MEDIUM_BUFER_SZ, "cd ./processor && make launch -f Makefile LAUNCH_FLAGS=\"-i=./.%s\"", bin_code_path);
-    system(bufer);
-}
+//     snprintf(bufer, MEDIUM_BUFER_SZ, "cd ./processor && make launch -f Makefile LAUNCH_FLAGS=\"-i=./.%s\"", bin_code_path);
+//     system(bufer);
+// }
 
 const char ASM_CODE_PATH[] = "./asm_code.txt";
 const char BIN_CODE_PATH[] = "./bin_code.txt";
@@ -129,7 +129,7 @@ int main(const int argc, const char *argv[]) {
 
     get_options(argc, argv, options, n_options);
 
-    // main_config_print(stdout, &main_config);
+    main_config_print(stdout, &main_config);
     // fprintf_grn(stdout, "POINT\n");
 
     str_storage_t *storage = str_storage_t_ctor(CHUNK_SIZE);
@@ -142,21 +142,23 @@ int main(const int argc, const char *argv[]) {
 
     tree.root = load_ast_tree(text.str_ptr, &storage, bufer);
 
+    ast_tree_file_dump("ast_copy.txt", &tree, 4);
+
     FILE *asm_code_file_ptr = fopen(ASM_CODE_PATH, "w");
     if (!asm_code_file_ptr) {
         debug("open '%s' failed", main_config.output_file);
         CLEAR_MEMORY(exit_mark);
     }
 
-    translate_ast_to_asm_code(asm_code_file_ptr, tree.root);
+    // translate_ast_to_asm_code(asm_code_file_ptr, tree.root);
 
-    assembler_make_bin_code(ASM_CODE_PATH, BIN_CODE_PATH);
+    // assembler_make_bin_code(ASM_CODE_PATH, BIN_CODE_PATH);
 
-    processor_execute_bin_code(BIN_CODE_PATH);
+    // processor_execute_bin_code(BIN_CODE_PATH);
 
     convert_subtree_to_dot(tree.root, &dot_code, &storage);
-    dot_code_render(&dot_dir, &dot_code);
 
+    dot_code_render(&dot_dir, &dot_code);
 
     FREE(text.str_ptr);
     sub_tree_dtor(tree.root);

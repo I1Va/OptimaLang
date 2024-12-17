@@ -235,7 +235,7 @@ ast_tree_elem_t *get_selection_statement(parsing_block_t *data) {
         STEP_OVER_TOKEN_WITH_CHECK(data, GET_SELECTION_STATEMENT, T_C_FIG_BRACE, CLEAR_MEMORY(exit_mark))
     }
 
-    return _OP(T_IF, expr_node, _OP(T_ELSE, if_body_node, else_body_node));
+    return _OP(T_IF, expr_node, _ELSE(if_body_node, else_body_node));
 
     exit_mark:
 

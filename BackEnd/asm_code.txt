@@ -1,3 +1,0 @@
-UNKNOWN_OBJECT(10)
-out;
-hlt;
