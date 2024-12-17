@@ -7,7 +7,7 @@
 
 #include "string_funcs.h"
 
-void start_parser_err(parser_err_t *parser_err, lexem_t lexem, enum grammar_rule_num grule);
+void start_parser_err(parsing_block_t *data, lexem_t lexem, enum grammar_rule_num grule);
 void add_grule_to_parser_err(parser_err_t *parser_err, enum grammar_rule_num grule);
 void clear_parser_err(parser_err_t *parser_err);
 bool check_parser_err(FILE *stream, parsing_block_t *data);
@@ -19,7 +19,7 @@ ast_tree_elem_t *get_direct_declarator(parsing_block_t *data);
 ast_tree_elem_t *get_statement(parsing_block_t *data);
 ast_tree_elem_t *get_selection_statement(parsing_block_t *data);
 ast_tree_elem_t *get_logical_expression(parsing_block_t *data);
-ast_tree_elem_t *get_one_arg_function_call(parsing_block_t *data);
+ast_tree_elem_t *get_function_call(parsing_block_t *data);
 ast_tree_elem_t *get_primary_expression(parsing_block_t *data);
 ast_tree_elem_t *get_constant(parsing_block_t *data);
 ast_tree_elem_t *get_variable(parsing_block_t *data);

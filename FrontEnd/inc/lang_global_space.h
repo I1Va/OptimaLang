@@ -51,6 +51,7 @@ enum token_t {
     T_ASSIGN = 24,
     T_COMMA = 25,
     T_RETURN = 26,
+    T_ELSE = 27,
 };
 
 struct text_pos_t {
@@ -95,6 +96,8 @@ enum grammar_rule_num {
     GET_FUNC_IDENTIFICATOR = 19,
     GET_STATEMENT_LIST = 20,
     GET_GLOBAL_STATEMENT = 21,
+    GET_FUNCTION_CALL = 22,
+    GET_GRULE_DIVIDED_LIST = 23,
 };
 
 struct parser_err_t {

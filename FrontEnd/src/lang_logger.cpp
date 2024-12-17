@@ -8,11 +8,10 @@
 
 void lexem_dump(FILE *stream, key_name_t *name_table, lexem_t lexem) {
     #define T_DESCR_(stream, lex, fmt, val) case lex: fprintf(stream, #lex"(" fmt ")", val); break;
-    fprintf(stream, "[l:%lu, s:%lu]", lexem.text_pos.lines + 1, lexem.text_pos.syms + 1);
+    fprintf(stream, "[l:%3lu, s:%3lu]: ", lexem.text_pos.lines + 1, lexem.text_pos.syms + 1);
     switch (lexem.token_type) {
         T_DESCR_(stream, T_EOF, "%s", "")
         T_DESCR_(stream, T_EMPTY, "%s", "")
-
         T_DESCR_(stream, T_NUM, "%Lg", lexem.token_val.fval)
         T_DESCR_(stream, T_ADD, "%c", '+')
         T_DESCR_(stream, T_MUL, "%c", '*')
@@ -95,6 +94,7 @@ void grule_dump(FILE *stream, enum grammar_rule_num grule) {
         GR_DESCR_(stream, GET_FUNC_IDENTIFICATOR)
         GR_DESCR_(stream, GET_STATEMENT_LIST)
         GR_DESCR_(stream, GET_GLOBAL_STATEMENT)
+        GR_DESCR_(stream, GET_GRULE_DIVIDED_LIST)
 
         default: fprintf(stream, "UNKNOWN_GRULE(%d) ", grule); break;
     }

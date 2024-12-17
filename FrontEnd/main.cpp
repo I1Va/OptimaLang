@@ -60,6 +60,7 @@ int main(const int argc, const char *argv[]) {
         {"int", 3, T_INT},
         {"float", 5, T_FLOAT},
         {"return", 6, T_RETURN},
+        {"else", 4, T_ELSE},
     };
 
     parsing_block_t data = {};
