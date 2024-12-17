@@ -39,10 +39,6 @@ void main_config_dtor(main_config_t *conf);
 
 void main_config_print(FILE *stream, main_config_t *conf);
 
-// #define ASSERT(error, end_instruction)                                                                                    \
-//     fprintf_red(stderr, "{%s} [%s: %d]: descr{%s}\n", __FILE_NAME__, __PRETTY_FUNCTION__, __LINE__, get_descr(error));    \
-//     end_instruction;
-
 enum arg_err_code {
     ARG_ERR_OK = 0,
     ARG_ERR_NULLPTR = 1, // TODO: подравняй нумерацию
