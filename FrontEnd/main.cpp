@@ -94,9 +94,7 @@ int main(const int argc, const char *argv[]) {
     exit_mark:
     FREE(text.str_ptr);
     str_storage_t_dtor(storage);
-    sub_tree_dtor(tree.root);
     parsing_block_t_dtor(&data);
-    ast_tree_dtor(&tree);
 
 
     return EXIT_FAILURE;

@@ -98,6 +98,8 @@ void grule_dump(FILE *stream, enum grammar_rule_num grule) {
         GR_DESCR_(stream, GET_GLOBAL_STATEMENT)
         GR_DESCR_(stream, GET_GRULE_DIVIDED_LIST)
         GR_DESCR_(stream, GET_FUNCTION_CALL)
+        GR_DESCR_(stream, GET_SCOPE)
+        GR_DESCR_(stream, GET_TYPE)
 
         default: fprintf(stream, "UNKNOWN_GRULE(%d) ", grule); break;
     }

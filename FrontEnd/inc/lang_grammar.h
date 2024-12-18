@@ -39,7 +39,9 @@ bool check_token_on_multiplicative_class(const token_t token);
 bool check_token_on_type_class(const token_t token);
 ast_tree_elem_t *get_type(parsing_block_t *data);
 ast_tree_elem_t* get_func_separated_init_args(parsing_block_t*);
+ast_tree_elem_t *get_scope(parsing_block_t *data, int *empty);
+ast_tree_elem_t *get_cont_ret_break(parsing_block_t *data);
 
-void debug_lex(lexem_t lex, parsing_block_t *data);
+void dump_last_lex(parsing_block_t *data);
 
 #endif // LANG_GRAMMAR_H
