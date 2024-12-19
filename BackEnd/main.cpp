@@ -61,7 +61,7 @@ int main(const int argc, const char *argv[]) {
         CLEAR_MEMORY(exit_mark);
     }
 
-    STACK_INIT(&call_stack, 0, sizeof(call_t), tree.log_file_ptr, &stack_error);
+    STACK_INIT(&call_stack, 0, sizeof(var_t), tree.log_file_ptr, &stack_error);
     if (stack_error != STK_ERR_OK) {
         debug("stack init failed");
         CLEAR_MEMORY(exit_mark)

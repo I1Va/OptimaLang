@@ -1,10 +1,25 @@
-#include <stdlib.h>
-#include <assert.h>
+#ifndef AST_TRANSLATOR_H
+#define AST_TRANSLATOR_H
 
-#include "general.h"
-#include "AST_proc.h"
+#include <string.h>
 #include "AST_io.h"
+
 #include "stack_funcs.h"
+
+const size_t MAX_FUNC_TABLE_SZ = 128;
+
+void translate_node_to_asm_code(ast_tree_elem_t *node, stack_t *var_stack);
+void var_stack_remove_local_variables(stack_t *var_stack);
+void translate_ast_to_asm_code(const char path[], ast_tree_elem_t *root, stack_t *var_stack);
+
+struct var_t {
+    int deep;
+    int type;
+    int name_id;
+    char *name;
+    int loc_addr;
+};
+
 
 enum token_t {
     T_EOF = -1,
@@ -51,86 +66,11 @@ enum token_t {
 };
 
 struct func_info_t {
-    size_t init_addr;
     int return_type_num;
-
     size_t argc;
-    int   *arg_type_nums;
-    int   *arg_name_ids;
-
+    int name_id;
     char *name;
 };
 
-struct tr_global_t {
-    func_info_t *func_table;
-    stack_t var_stack;
-};
 
-struct tr_local_t {
-    size_t deep;
-};
-
-struct asm_info_t {
-
-};
-
-enum act_nums {
-    OLD_STACK_FRAME_RESTORE = 0,
-    INIT_LOC_VAR = 1,
-};
-
-struct call_t {
-    act_nums act_type;
-    int frame_pointer;
-    int scope_deep;
-
-    int var_type;
-    int var_name_id;
-    int var_scope_deep;
-    int var_loc_ram;
-
-};
-
-// {"in"    , IN_COM, write_simple_com},
-// {"outc"   , OUTC_COM, write_simple_com},
-// {"out"   , OUT_COM, write_simple_com},
-// {"add"   , ADD_COM, write_simple_com},
-// {"sub"   , SUB_COM, write_simple_com},
-// {"mult"  , MULT_COM, write_simple_com},
-// {"jmp"   , JMP_COM, write_jump},
-// {"ja"    , JA_COM, write_conditional_jmp},
-// {"jae"   , JAE_COM, write_conditional_jmp},
-// {"jb"    , JB_COM, write_conditional_jmp},
-// {"jbe"   , JBE_COM, write_conditional_jmp},
-// {"je"    , JE_COM, write_conditional_jmp},
-// {"jne"   , JNE_COM, write_conditional_jmp},
-// {"hlt"   , HLT_COM, write_simple_com},
-// {"call"  , CALL_COM, write_call_com},
-// {"ret"   , RET_COM, write_simple_com},
-// {"draw"  , DRAW_COM, write_simple_com},
-// {"div"   , DIV_COM, write_simple_com},
-// {"sqrt"  , SQRT_COM, write_simple_com},
-// {"push" , PUSH_COM, write_universal_push},
-// {"pop" , POP_COM, write_universal_pop},
-// {"LABEL:", LABEL_COM, write_label}
-
-
-void translate_ast_to_asm_code(ast_tree_elem_t *node, stack_t *call_stack);
-
-
-
-
-
-void translate_func_args_init(size_t *argc, ast_tree_elem_t *node, stack_t *call_stack);
-
-void translate_ast_to_asm_code(const char path[], ast_tree_elem_t *root, stack_t *call_stack);
-void translate_function_init(ast_tree_elem_t *node, stack_t *call_stack);
-void translate_node_to_asm_code(ast_tree_elem_t *node, stack_t *call_stack);
-
-void asm_write_op(FILE *stream, int op_num);
-void asm_write_hlt(FILE *stream);
-void asm_write_out(FILE *stream);
-void asm_write_push_lval(FILE *stream, long long lval);
-void asm_pop_mem_addr_plus_reg(FILE *stream, int addr, const char reg[], int indent = 0);
-void asm_write_unknown_object(FILE *stream, int num);
-void asm_write_function_label(FILE *stream, const char label[]);
+#endif // AST_TRANSLATOR_H

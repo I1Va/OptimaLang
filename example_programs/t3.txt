@@ -1,23 +1,29 @@
+{
+
 int factorial(int n) {
     int ans = 1;
     while (n > 0) {
         ans = ans * n;
         n = n - 1;
     };
+
     return ans;
 };
 
-int get_answer(int n) {
-    return factorial(n);
+int check(int x) {
+    if (x > 1) {
+        ln(cos(15 * x));
+        int var = 1;
+        int var = 2;
+        int var = 2;
+        int var = 2;
+        return 1;
+    };
 };
 
-
-int main(int args) {
-    if (52 * 4) {
-        factorial(n);
-    } else {
-        get_answer(n);
-    };
-
+int main(int args, int qwargs, int puks, int keks) {
+    factorial(45);
     return 0;
 };
+
+}

@@ -1,9 +1,81 @@
+
+;#=========Function========#
 factorial:
-    pop [AX+0];
+;#=======Input=Action======#
+push AX
+push BX
+pop AX
+;#=======End=Action========#
+
+;#========Init=Local=======#
+pop [AX+1]; // 'n' init
+push BX;
+push 1;
+pop BX; stack_ptr++
+;#========End=Init=========#
+
+;#========Func=Body========#
+;#========End=Body=========#
+
+;#=======Leave=Action======#
+push AX;
+pop BX; stack_pointer = frame_pointer
+ret;;#=======End=Function======#
+
+;#=========Function========#
 check:
-    pop [AX+0];
+;#=======Input=Action======#
+push AX
+push BX
+pop AX
+;#=======End=Action========#
+
+;#========Init=Local=======#
+pop [AX+1]; // 'x' init
+push BX;
+push 1;
+pop BX; stack_ptr++
+;#========End=Init=========#
+
+;#========Func=Body========#
+;#========End=Body=========#
+
+;#=======Leave=Action======#
+push AX;
+pop BX; stack_pointer = frame_pointer
+ret;;#=======End=Function======#
+
+;#=========Function========#
 main:
-    pop [AX+3];
-    pop [AX+2];
-    pop [AX+1];
-    pop [AX+0];
+;#=======Input=Action======#
+push AX
+push BX
+pop AX
+;#=======End=Action========#
+
+;#========Init=Local=======#
+pop [AX+1]; // 'args' init
+push BX;
+push 1;
+pop BX; stack_ptr++
+pop [AX+2]; // 'qwargs' init
+push BX;
+push 1;
+pop BX; stack_ptr++
+pop [AX+3]; // 'puks' init
+push BX;
+push 1;
+pop BX; stack_ptr++
+pop [AX+4]; // 'keks' init
+push BX;
+push 1;
+pop BX; stack_ptr++
+;#========End=Init=========#
+
+;#========Func=Body========#
+;#========End=Body=========#
+
+;#=======Leave=Action======#
+push AX;
+pop BX; stack_pointer = frame_pointer
+ret;;#=======End=Function======#

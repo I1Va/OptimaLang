@@ -800,10 +800,11 @@ ast_tree_elem_t *get_func_identificator(parsing_block_t *data) {
         return NULL;
     }
 
-    char *func_id = data->name_table[tl[*tp].token_val.ival].name;
+    int func_name_id = tl[*tp].token_val.ival;
+    char *func_name = data->name_table[tl[*tp].token_val.ival].name;
     (*tp)++;
 
-    return _FUNC_ID(func_id);
+    return _FUNC_ID(func_name, func_name_id);
 }
 
 #undef CATCH_PARSE_ERROR
