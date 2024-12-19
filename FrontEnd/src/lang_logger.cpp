@@ -27,7 +27,7 @@ void lexem_dump(FILE *stream, parsing_block_t *data, lexem_t lexem) {
         T_DESCR_(stream, T_ID, "%s", data->name_table[lexem.token_val.ival].name)
         T_DESCR_(stream, T_IF, "%s", data->keywords_table[lexem.token_val.ival].name)
         T_DESCR_(stream, T_WHILE, "%s", data->keywords_table[lexem.token_val.ival].name)
-        T_DESCR_(stream, T_DIVIDER, "%c", ';')
+        T_DESCR_(stream, T_SEMICOLON, "%c", ';')
         T_DESCR_(stream, T_LESS, "%c", '<')
         T_DESCR_(stream, T_MORE, "%c", '>')
         T_DESCR_(stream, T_LESS_EQ, "%s", "<=")

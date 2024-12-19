@@ -9,8 +9,11 @@
 #include "assembler/inc/general.h"
 #include "general.h"
 #include "AST_proc.h"
+#include "stack_err_proc.h"
+#include "stack_funcs.h"
 #include "string_funcs.h"
 #include "back_args_proc.h"
+#include "ast_translator.h"
 
 
 const char LOG_FILE_PATH[] = "./logs/log.html";
@@ -24,6 +27,7 @@ const char BIN_CODE_PATH[] = "./bin_code.txt";
 
 int main(const int argc, const char *argv[]) {
     char bufer[BUFSIZ] = {};
+    stk_err stack_error = STK_ERR_OK;
 
     main_config_t main_config = {};
 
@@ -43,10 +47,11 @@ int main(const int argc, const char *argv[]) {
     str_storage_t *storage = str_storage_t_ctor(CHUNK_SIZE);
     str_t text = read_text_from_file(main_config.input_file);
 
-    ast_tree_t tree = {};
+    ast_tree_t tree = {}; ast_tree_ctor(&tree, LOG_FILE_PATH);
     dot_code_t dot_code = {}; dot_code_t_ctor(&dot_code, LIST_DOT_CODE_PARS);
     dot_dir_t dot_dir = {}; dot_dir_ctor(&dot_dir, DOT_DIR_PATH, DOT_FILE_NAME, DOT_IMG_NAME);
-    ast_tree_ctor(&tree, LOG_FILE_PATH);
+    stack_t call_stack = {};;
+
 
     tree.root = load_ast_tree(text.str_ptr, &storage, bufer);
 
@@ -56,7 +61,13 @@ int main(const int argc, const char *argv[]) {
         CLEAR_MEMORY(exit_mark);
     }
 
-    // translate_ast_to_asm_code(asm_code_file_ptr, tree.root);
+    STACK_INIT(&call_stack, 0, sizeof(call_t), tree.log_file_ptr, &stack_error);
+    if (stack_error != STK_ERR_OK) {
+        debug("stack init failed");
+        CLEAR_MEMORY(exit_mark)
+    }
+
+    translate_ast_to_asm_code(ASM_CODE_PATH, tree.root, &call_stack);
 
     // assembler_make_bin_code(ASM_CODE_PATH, BIN_CODE_PATH);
 
@@ -66,6 +77,7 @@ int main(const int argc, const char *argv[]) {
 
     dot_code_render(&dot_dir, &dot_code);
 
+    stack_destroy(&call_stack);
     FREE(text.str_ptr);
     sub_tree_dtor(tree.root);
     str_storage_t_dtor(storage);
@@ -74,6 +86,7 @@ int main(const int argc, const char *argv[]) {
 
     exit_mark:
     FREE(text.str_ptr);
+    stack_destroy(&call_stack);
     sub_tree_dtor(tree.root);
     str_storage_t_dtor(storage);
 

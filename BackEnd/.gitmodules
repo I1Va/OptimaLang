@@ -16,3 +16,6 @@
 [submodule "assembler/string_funcs"]
 	path = assembler/string_funcs
 	url = https://github.com/I1Va/string_funcs.git
+[submodule "stack"]
+	path = stack
+	url = https://github.com/I1Va/stack.git

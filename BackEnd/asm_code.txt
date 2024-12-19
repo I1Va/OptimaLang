@@ -1,0 +1,9 @@
+factorial:
+    pop [AX+0];
+check:
+    pop [AX+0];
+main:
+    pop [AX+3];
+    pop [AX+2];
+    pop [AX+1];
+    pop [AX+0];

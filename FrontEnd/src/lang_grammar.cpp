@@ -535,9 +535,9 @@ ast_tree_elem_t *get_grule_divided_list(parsing_block_t *data, int *empty, ast_t
         copy_node = right_node;
         right_node = statement_node;
 
-        STEP_OVER_TOKEN_WITH_CHECK(data, GET_GRULE_DIVIDED_LIST, T_DIVIDER, CLEAR_MEMORY(exit_mark))
+        STEP_OVER_TOKEN_WITH_CHECK(data, GET_GRULE_DIVIDED_LIST, T_SEMICOLON, CLEAR_MEMORY(exit_mark))
 
-        right_node = _OP(T_DIVIDER, copy_node, right_node);
+        right_node = _SEMICOLON(copy_node, right_node);
     }
 
     return right_node;
@@ -567,9 +567,9 @@ ast_tree_elem_t *get_scope(parsing_block_t *data, int *empty) {
         right_node = get_statement(data);
         CATCH_PARSE_ERROR(data, GET_SCOPE, CLEAR_MEMORY(exit_mark))
 
-        STEP_OVER_TOKEN_WITH_CHECK(data, GET_SCOPE, T_DIVIDER, CLEAR_MEMORY(exit_mark))
+        STEP_OVER_TOKEN_WITH_CHECK(data, GET_SCOPE, T_SEMICOLON, CLEAR_MEMORY(exit_mark))
 
-        right_node = _OP(T_DIVIDER, copy_node, right_node);
+        right_node = _SEMICOLON(copy_node, right_node);
     }
 
     STEP_OVER_TOKEN_WITH_CHECK(data, GET_SCOPE, T_C_FIG_BRACE, CLEAR_MEMORY(exit_mark));
@@ -782,11 +782,11 @@ ast_tree_elem_t *get_variable(parsing_block_t *data) {
         start_parser_err(data, tl[*tp], GET_VARIABLE);
         return NULL;
     }
-
+    int name_idx = tl[*tp].token_val.ival;
     char *var_name = data->name_table[tl[*tp].token_val.ival].name;
     (*tp)++;
 
-    return _VAR(var_name);
+    return _VAR(var_name, name_idx);
 }
 
 ast_tree_elem_t *get_func_identificator(parsing_block_t *data) {

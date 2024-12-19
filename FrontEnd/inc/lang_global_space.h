@@ -37,7 +37,7 @@ enum token_t {
     T_IF = 14, // key_words
     T_WHILE = 15,
 
-    T_DIVIDER = 16,
+    T_SEMICOLON = 16,
 
     T_MORE = 17,
     T_LESS = 18,

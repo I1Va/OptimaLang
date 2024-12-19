@@ -43,3 +43,6 @@
 [submodule "BackEnd/assembler/string_funcs"]
 	path = BackEnd/assembler/string_funcs
 	url = https://github.com/I1Va/string_funcs.git
+[submodule "BackEnd/stack"]
+	path = BackEnd/stack
+	url = https://github.com/I1Va/stack.git
