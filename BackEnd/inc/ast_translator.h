@@ -78,6 +78,7 @@ struct func_info_t {
 
 void translate_reserved_print_call(ast_tree_elem_t *node);
 void translate_reserved_input_call(ast_tree_elem_t *node);
+void translate_reserved_sqrt_call(ast_tree_elem_t *node);
 
 void init_stacks(FILE *log_file_ptr);
 void translate_ast_to_asm_code(const char path[], ast_tree_t *tree);

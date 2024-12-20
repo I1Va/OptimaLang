@@ -31,7 +31,8 @@ int if_counter = 0;
 reserved_func_info_t reserved_func_name_table[] =
 {
     {"print", AST_VOID, 1, translate_reserved_print_call},
-    {"input", AST_INT, 0, translate_reserved_input_call}
+    {"input", AST_INT, 0, translate_reserved_input_call},
+    {"sqrt", AST_FLOAT, 1, translate_reserved_sqrt_call},
 };
 size_t reserved_func_name_table_sz = sizeof(reserved_func_name_table) / sizeof(reserved_func_info_t);
 
@@ -55,6 +56,21 @@ void translate_reserved_input_call(ast_tree_elem_t *node) {
 
     fprintf(asm_code_ptr,
                           "in; call input\n"
+                        );
+}
+
+void translate_reserved_sqrt_call(ast_tree_elem_t *node) {
+    assert(node);
+    CHECK_NODE_TYPE(node, NODE_CALL);
+
+    char *func_name = node->left->data.value.sval;
+    if (strcmp(func_name, "sqrt") != 0) {
+        RAISE_TR_ERROR("reserve call error: expected 'sqrt', got '%s'", func_name);
+        return;
+    }
+
+    fprintf(asm_code_ptr,
+                          "sqrt; call sqrt\n"
                         );
 }
 
@@ -486,6 +502,7 @@ void translate_if(ast_tree_elem_t *node) {
                          "jmp if_check_%d:\n"
                          "if_start_%d:\n", if_counter, if_counter);
 
+    stack_push(&cond_stack, &if_counter);
     stack_push(&cond_stack, &if_counter);
     if_counter++;
 

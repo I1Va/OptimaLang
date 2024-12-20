@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <math.h>
 
+#include "AST_io.h"
 #include "general.h"
 #include "lang_logger.h"
 #include "lang_global_space.h"
@@ -62,13 +63,16 @@ lexem_t next_lexem(parsing_block_t *data) {
     char *str = NULL;
 
     lexem_t lexem = {};
-
-    if (isdigit(c)) {
+    if (isdigit(c) || (c == '-' && isdigit(s[*p]))) {
         lexem.token_type = AST_NUM;
 
         long long l_part = 0;
         long long frac_part = 0;
         long double fval = 0;
+        bool negative = (c == '-');
+        if (negative) {
+            (*p)++;
+        }
 
         size_t len_l_part = 0;
         size_t len_frac_part = 0;
@@ -86,7 +90,9 @@ lexem_t next_lexem(parsing_block_t *data) {
         printf("vals: %Ld, %Ld, %lu, %lu\n", l_part, frac_part, len_l_part, len_frac_part);
         fval = (long double) l_part + (long double) (frac_part) / pow(10, len_frac_part);
 
+        if (negative) {fval = -fval;}
         lexem.token_val.fval = fval;
+
         lexem.len = len_l_part + (len_frac_part > 0) + len_frac_part;
 
         return lexem;
@@ -136,7 +142,6 @@ lexem_t next_lexem(parsing_block_t *data) {
         case EOF: return {AST_EOF, {}, {}, 1};
         case '\0': return {AST_EOF, {}, {}, 1};
         case ';': return {AST_SEMICOLON, {}, {}, 1};
-        case '=': return {AST_ASSIGN, {}, {}, 1};
         case ',': return {AST_COMMA, {}, {}, 1};
         default: break;
     }
@@ -153,6 +158,9 @@ lexem_t next_lexem(parsing_block_t *data) {
     if (c == '=' && c_next == '=') {
         (*p)++;
         return {AST_EQ, {}, {}, 1};
+    }
+    if (c == '=' && c_next != '=') {
+        return {AST_ASSIGN, {}, {}, 1};
     }
     if (c == '>' && c_next != '=') {
         return {AST_MORE, {}, {}, 1};
