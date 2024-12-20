@@ -1,9 +1,12 @@
-{
+int var = 17;
 
-int main() {
-    int a = 777;
-    print(a);
+int func() {
+    print(var);
+
     return 0;
 };
 
-}
+int main() {
+    func();
+    return 0;
+};

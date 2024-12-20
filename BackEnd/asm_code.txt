@@ -1,8 +1,16 @@
-jmp __MAIN_LAUNCH:
-
+push 17;
+; // 'var' init, loc_addr: 0
+push rsp;
+push 1;
+add;
+pop rsp; stack_ptr++
+;#====Init_Var=Assinment===#
+pop [0]; // 'var' assinment
+;#======End=Assinment======#
 
 ;#=========Function========#
-main:
+jmp func_end:;
+func:
 ;#=======Input=Action======#
 push rbp
 push rsp
@@ -13,18 +21,7 @@ pop rbp
 ;#========End=Init=========#
 
 ;#========Func=Body========#
-;#========Var=Init=========#
-push 777;
-; // 'a' init, loc_addr: 0
-push rsp;
-push 1;
-add;
-pop rsp; stack_ptr++
-;#========End=Init=========#
-;#====Init_Var=Assinment===#
-pop [rbp+0]; // 'a' assinment
-;#======End=Assinment======#
-push [rbp+0]; // acces to 'a'
+push [0]; // access to 'var'
 ;#==========Call===========#
 
 out;
@@ -40,9 +37,38 @@ push rbp;
 pop rsp; stack_pointer = frame_pointer
 pop  rbp;
 ret;
+func_end:;
 ;#=======End=Function======#
 
+;#=========Function========#
+jmp main_end:;
+main:
+;#=======Input=Action======#
+push rbp
+push rsp
+pop rbp
+;#=======End=Action========#
 
-__MAIN_LAUNCH:
+;#=========Init=Args=======#
+;#========End=Init=========#
+
+;#========Func=Body========#
+;#==========Call===========#
+
+call func:
+;#=========End=Call========#
+;#========Var=Return=======#
+push 0;
+pop rax
+;#========End=Return=======#
+;#========End=Body=========#
+
+;#=======Leave=Action======#
+push rbp;
+pop rsp; stack_pointer = frame_pointer
+pop  rbp;
+ret;
+main_end:;
+;#=======End=Function======#
 call main:
 hlt;

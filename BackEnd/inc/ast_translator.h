@@ -85,7 +85,7 @@ int get_func_idx_in_name_table(func_info_t func_info);
 int get_func_idx_in_reserved_name_table(func_info_t func_info);
 void add_function_to_name_table(func_info_t func_info);
 
-int get_var_from_frame(int name_id);
+var_t get_var_from_frame(int name_id);
 void var_t_fprintf(FILE *stream, void *elem_ptr);
 int add_var_into_frame(var_t var);
 void translate_func_args_init(size_t *argc, ast_tree_elem_t *node);

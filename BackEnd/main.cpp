@@ -26,7 +26,7 @@ const char ASM_CODE_PATH[] = "./asm_code.txt";
 const char BIN_CODE_PATH[] = "./bin_code.txt";
 
 int main(const int argc, const char *argv[]) {
-    setbuf(stderr, 0);
+    setbuf(stderr, 0); // FIXME: remove after debugging
 
     char bufer[BUFSIZ] = {};
     stk_err stack_error = STK_ERR_OK;

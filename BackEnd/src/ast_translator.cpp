@@ -19,7 +19,12 @@
 
 #define RAISE_TR_ERROR(str_, ...) fprintf_red(stderr, "{%s} [%s: %d]: translator_error{" str_ "}\n", __FILE_NAME__, __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__); abort();
 
-static FILE *asm_code_ptr = NULL;
+const size_t ASM_BORDER_SIZE = 27;
+
+const var_t POISON_VAR = {-1, -1, -1, NULL};
+const char FRAME_PTR_REG_PLUS[] = "rbp+";
+
+FILE *asm_code_ptr = NULL;
 int cur_scope_deep = 0;
 int cur_frame_ptr = 0;
 int while_counter = 0;
@@ -58,19 +63,15 @@ size_t func_table_sz = 0;
 
 stack_t cond_stack = {};
 stack_t var_stack = {};
-
-
-
-
+stack_t global_var_stack = {};
 
 void init_stacks(FILE *log_file_ptr) {
-
     STACK_INIT(&cond_stack, 0, sizeof(int), log_file_ptr, NULL);
     STACK_INIT(&var_stack, 0, sizeof(var_t), log_file_ptr, NULL);
+    STACK_INIT(&global_var_stack, 0, sizeof(ast_tree_elem_t *), log_file_ptr, NULL);
 }
 
 void translate_ast_to_asm_code(const char path[], ast_tree_t *tree) {
-
     assert(path);
     assert(tree);
 
@@ -84,14 +85,19 @@ void translate_ast_to_asm_code(const char path[], ast_tree_t *tree) {
     }
 
     setbuf(asm_code_ptr, 0); // FIXME: remove after debugging
-
-    fprintf(asm_code_ptr, "jmp __MAIN_LAUNCH:\n\n");
+    // fprintf(asm_code_ptr, "jmp __MAIN_LAUNCH:\n\n");
     translate_node_to_asm_code(tree->root);
+
+    // __MAIN_LAUNCH:
+    // fprintf(asm_code_ptr,
+    //                  "\n\n__MAIN_LAUNCH:\n"
+    //                  ";#=====Global=Vars=Init====#\n");
+
+    // translate_global_vars_init();
+
     fprintf(asm_code_ptr,
-                         "\n\n__MAIN_LAUNCH:\n"
-                         "call main:\n"
-                         "hlt;\n"
-                         );
+                        "call main:\n"
+                        "hlt;\n");
 }
 
 size_t count_node_type_in_subtreeas(ast_tree_elem_t *node, const enum node_types node_type) {
@@ -113,28 +119,32 @@ size_t count_node_type_in_subtreeas(ast_tree_elem_t *node, const enum node_types
 }
 
 void var_stack_remove_local_variables() {
-
     var_t last_elem = {};
     stack_get_elem(&var_stack, &last_elem, var_stack.size - 1);
 
     while (last_elem.deep > cur_scope_deep && var_stack.size) {
+        if (last_elem.deep == 0) {
+            break; // don't remove global variables
+        }
         stack_pop(&var_stack);
         stack_get_elem(&var_stack, &last_elem, var_stack.size - 1);
     }
 }
 
-int get_var_from_frame(int name_id) {
+var_t get_var_from_frame(int name_id) {
     var_t var_info = {};
 
-    for (int i = (int) var_stack.size; i >= cur_frame_ptr; i--) {
-
+    if (var_stack.size == 0) {
+        return POISON_VAR;
+    }
+    for (int i = (int) var_stack.size - 1; i >= cur_frame_ptr; i--) {
         stack_get_elem(&var_stack, &var_info, (size_t) i);
-        if (var_info.name_id == name_id) {
 
-            return i;
+        if (var_info.name_id == name_id) {
+            return var_info;
         }
     }
-    return -1;
+    return POISON_VAR;
 }
 
 void var_t_fprintf(FILE *stream, void *elem_ptr) {
@@ -144,14 +154,34 @@ void var_t_fprintf(FILE *stream, void *elem_ptr) {
         var.loc_addr, var.type, var.name, var.name_id, var.deep);
 }
 
+bool var_t_equal(const var_t v1, const var_t v2) {
+    if (v1.name == NULL && v2.name != NULL) {
+        return false;
+    }
+    if (v1.name != NULL && v2.name == NULL) {
+        return false;
+    }
+
+    bool name_eq = (v1.name == NULL) && (v2.name == NULL);
+    if (v1.name != NULL && v2.name != NULL) {
+        name_eq = name_eq || strcmp(v1.name, v2.name);
+    }
+
+    return v1.deep == v2.deep               &&
+           v1.loc_addr == v2.loc_addr       &&
+           v1.name_id  == v2.deep           &&
+           name_eq                          &&
+           v1.type == v2.type;
+}
+
 int add_var_into_frame(var_t var) {
-
-    int stack_idx = get_var_from_frame(var.name_id);
-    if (stack_idx != -1) {
-
+    var_t found_var = get_var_from_frame(var.name_id);
+    if (!var_t_equal(found_var, POISON_VAR)) {
+        dump_global_info(stderr);
         RAISE_TR_ERROR("variable '%s' redefenition", var.name);
         return -1;
     }
+
     var_t prev_var = {};
     if (var_stack.size) {
         stack_get_elem(&var_stack, &prev_var, var_stack.size - 1);
@@ -166,7 +196,6 @@ int add_var_into_frame(var_t var) {
 }
 
 void translate_func_args_init(size_t *argc, ast_tree_elem_t *node) {
-
     assert(node);
     assert(node->right);
     CHECK_NODE_TYPE(node, NODE_COMMA);
@@ -179,7 +208,6 @@ void translate_func_args_init(size_t *argc, ast_tree_elem_t *node) {
     var_init_node = node->right; // var_init
 
     if (node->left) {
-
         translate_func_args_init(argc, node->left);
     }
 
@@ -200,11 +228,12 @@ void translate_func_args_init(size_t *argc, ast_tree_elem_t *node) {
 }
 
 void var_stack_restore_old_frame() {
-
     var_t last_elem = {};
     stack_get_elem(&var_stack, &last_elem, var_stack.size - 1);
     for (int i = (int) var_stack.size; i >= cur_frame_ptr; i--) {
-
+        if (last_elem.deep == 0) {
+            break; // don't remove global variables
+        }
         stack_pop(&var_stack);
     }
 }
@@ -215,14 +244,15 @@ void translate_function_init(ast_tree_elem_t *node) {
     assert(node->data.type == NODE_FUNC_INIT);
 
     size_t argc = 0;
-    func_info_t func_info;
+    func_info_t func_info = {};
 
     func_info.return_type_num = node->left->data.value.ival;
     func_info.name = node->right->data.value.sval;
 
-    add_function_to_name_table(func_info);
+    fprintf(asm_code_ptr,
 
-    fprintf(asm_code_ptr,"\n;#=========Function========#\n"
+                         "\n;#=========Function========#\n"
+                         "jmp %s_end:;\n"
                          "%s:\n"
                          ";#=======Input=Action======#\n"
                          "push rbp\n"
@@ -230,15 +260,17 @@ void translate_function_init(ast_tree_elem_t *node) {
                          "pop rbp\n"
                          ";#=======End=Action========#\n"
                          "\n;#=========Init=Args=======#\n",
-                         func_info.name);
+                         func_info.name, func_info.name);
 
     node = node->right; // func_id
     CHECK_NODE_TYPE(node, NODE_FUNC_ID)
 
     if (node->left) {
-
         translate_func_args_init(&argc, node->left); // write_args_initialization
     }
+
+    func_info.argc = argc;
+    add_function_to_name_table(func_info);
 
     fprintf(asm_code_ptr, ";#========End=Init=========#\n");
 
@@ -257,7 +289,9 @@ void translate_function_init(ast_tree_elem_t *node) {
                         "pop rsp; stack_pointer = frame_pointer\n"
                         "pop  rbp;\n"
                         "ret;\n"
-                        ";#=======End=Function======#\n");
+                        "%s_end:;\n"
+                        ";#=======End=Function======#\n",
+                        func_info.name);
 
     var_stack_restore_old_frame(); // call stack loc vars clearing + restore old_frame
 }
@@ -280,11 +314,9 @@ void translate_semicolon(ast_tree_elem_t *node) {
     CHECK_NODE_TYPE(node, NODE_SEMICOLON);
 
     if (node->left) {
-
         translate_node_to_asm_code(node->left);
     }
     if (node->right) {
-
         translate_node_to_asm_code(node->right);
     }
 }
@@ -307,7 +339,6 @@ void translate_op(ast_tree_elem_t *node) {
 
             translate_num(node);
         } else if (node->data.type == NODE_VAR) {
-
             translate_var(node);
         } else {
             RAISE_TR_ERROR("translate_op doesn't support node_type: {%d}", node->data.type);
@@ -323,7 +354,6 @@ void translate_op(ast_tree_elem_t *node) {
     translate_op(node->left);
 
     switch (node->data.value.ival) {
-
         case AST_ADD: fprintf(asm_code_ptr, "add;\n"); break;
         case AST_MUL: fprintf(asm_code_ptr, "mult;\n"); break;
         case AST_SUB: fprintf(asm_code_ptr, "sub;\n"); break;
@@ -550,7 +580,7 @@ void translate_func_call(ast_tree_elem_t *node) {
     }
     func_info_t call_func_info = func_name_table[func_name_table_idx];
     if (call_func_info.argc != argc) {
-        RAISE_TR_ERROR("%s call error: expected %lu arguments, got '%lu'", call_func_info.name, call_func_info.argc, argc);
+        RAISE_TR_ERROR("'%s' call error: expected %lu arguments, got '%lu'", call_func_info.name, call_func_info.argc, argc);
         return;
     }
 
@@ -594,51 +624,43 @@ void translate_assign(ast_tree_elem_t *node) {
     assert(node->left);
     CHECK_NODE_TYPE(node, NODE_ASSIGN);
 
-    var_t var_info = {};
-    var_info.name = node->left->data.value.sval;
-    var_info.name_id = node->left->data.value.ival;
-    var_info.deep = cur_scope_deep;
+    char *var_name = node->left->data.value.sval;
+    int var_name_id = node->left->data.value.ival;
 
     translate_node_to_asm_code(node->right); // push right part of assign
 
-    var_info.loc_addr = get_var_from_frame(var_info.name_id);
-    if (var_info.loc_addr == -1) {
-
-        RAISE_TR_ERROR("var '%s' not initialized", var_info.name);
+    var_t found_var = get_var_from_frame(var_name_id);
+    if (var_t_equal(found_var, POISON_VAR)) {
+        RAISE_TR_ERROR("var '%s' not initialized", var_name);
         return;
     }
 
     fprintf(asm_code_ptr,
                          "pop [rbp+%d]; // '%s' assinment\n",
-                         var_info.loc_addr, var_info.name);
+                         found_var.loc_addr, found_var.name);
 }
 
 void translate_var_init(ast_tree_elem_t *node) {
-
     assert(node);
     CHECK_NODE_TYPE(node, NODE_VAR_INIT);
 
-    fprintf(asm_code_ptr,   ";#========Var=Init=========#\n");
-
     var_t var_info = {};
     bool with_assignment = false;
+    ast_tree_elem_t *name_node = node->right;
+    const char *REG_PLUS = FRAME_PTR_REG_PLUS;
     var_info.type    = node->left->data.type;
     var_info.deep    = cur_scope_deep;
 
-    ast_tree_elem_t *name_node = node->right;
+    var_info.name_id = name_node->left->data.value.ival;
+    var_info.name    = name_node->left->data.value.sval;
+    var_info.loc_addr = add_var_into_frame(var_info);
+    STACK_DUMP(&var_stack, stdout, var_t_fprintf);
+    bool global_state = (var_info.deep == 0);
 
     if (name_node->data.type == NODE_ASSIGN) {
-
         with_assignment = true;
-        var_info.name_id = name_node->left->data.value.ival;
-        var_info.name    = name_node->left->data.value.sval;
         translate_node_to_asm_code(name_node->right); // push right part of assignment
-    } else {
-        var_info.name_id = name_node->data.value.ival;
-        var_info.name = name_node->data.value.sval;
     }
-
-    var_info.loc_addr = add_var_into_frame(var_info);
 
     fprintf(asm_code_ptr,
                         "; // '%s' init, loc_addr: %d\n"
@@ -648,38 +670,38 @@ void translate_var_init(ast_tree_elem_t *node) {
                         "pop rsp; stack_ptr++\n",
                         var_info.name, var_info.loc_addr);
 
-    fprintf(asm_code_ptr, ";#========End=Init=========#\n");
-    if (with_assignment) {
+    if (global_state) {REG_PLUS = "";}
 
+    if (with_assignment) {
         fprintf(asm_code_ptr,
-                             ";#====Init_Var=Assinment===#\n"
-                             "pop [rbp+%d]; // '%s' assinment\n"
-                             ";#======End=Assinment======#\n",
-                             var_info.loc_addr, var_info.name);
+                            ";#====Init_Var=Assinment===#\n"
+                            "pop [%s%d]; // '%s' assinment\n"
+                            ";#======End=Assinment======#\n",
+                            REG_PLUS, var_info.loc_addr, var_info.name);
     }
 }
 
 void translate_var(ast_tree_elem_t *node) {
-
     assert(node);
     CHECK_NODE_TYPE(node, NODE_VAR);
 
-    var_t var_info = {};
-    var_info.name = node->data.value.sval;
-    var_info.name_id = node->data.value.ival;
-    var_info.deep = cur_scope_deep;
+    char *var_name = node->data.value.sval;
+    int var_name_id = node->data.value.ival;
 
-    var_info.loc_addr = get_var_from_frame(var_info.name_id);
+    var_t found_var = get_var_from_frame(var_name_id);
+    bool global_state = (found_var.deep == 0);
 
-    if (var_info.loc_addr == -1) {
-
-        RAISE_TR_ERROR("var '%s' not initialized", var_info.name);
+    if (var_t_equal(found_var, POISON_VAR)) {
+        RAISE_TR_ERROR("var '%s' not initialized", var_name);
         return;
     }
 
+    const char *REG_PLUS = FRAME_PTR_REG_PLUS;
+    if (global_state) {REG_PLUS = "";}
+
     fprintf(asm_code_ptr,
-                         "push [rbp+%d]; // acces to '%s'\n",
-                         var_info.loc_addr, var_info.name);
+                         "push [%s%d]; // access to '%s'\n",
+                         REG_PLUS, found_var.loc_addr, found_var.name);
 }
 
 void translate_return(ast_tree_elem_t *node) {
@@ -701,20 +723,4 @@ void translate_return(ast_tree_elem_t *node) {
 
     fprintf(asm_code_ptr, ";#========End=Return=======#\n");
 }
-
-void fprintf_asm_title(FILE *stream, const char tittle[], const size_t bord_sz) {
-
-    assert(tittle != NULL);
-
-    size_t tittle_sz = strlen(tittle);
-    if (bord_sz < tittle_sz) {
-
-        return;
-    }
-    size_t len = bord_sz - tittle_sz;
-    fprintf_border(stream, '=', len / 2, false);
-    fprintf(stream, "%s", tittle);
-    fprintf_border(stream, '=', (len + 1) / 2, true);
-}
-
 #undef RAISE_TR_ERROR

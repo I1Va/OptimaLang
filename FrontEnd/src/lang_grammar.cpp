@@ -123,10 +123,10 @@ ast_tree_elem_t *get_code_block(parsing_block_t *data) {
     int empty = 0;
 
     empty = 1;
-    global_statement_list = get_scope(data, &empty);
+    global_statement_list = get_statement_list_untill_eof(data, &empty);
     CATCH_PARSE_ERROR(data, GET_CODE_BLOCK, CLEAR_MEMORY(exit_mark))
 
-    STEP_OVER_TOKEN_WITH_CHECK(data, GET_CODE_BLOCK,AST_EOF, CLEAR_MEMORY(exit_mark))
+    STEP_OVER_TOKEN_WITH_CHECK(data, GET_CODE_BLOCK, AST_EOF, CLEAR_MEMORY(exit_mark))
 
     return global_statement_list;
 
@@ -547,6 +547,35 @@ ast_tree_elem_t *get_grule_divided_list(parsing_block_t *data, int *empty, ast_t
     sub_tree_dtor(copy_node);
     sub_tree_dtor(right_node);
     sub_tree_dtor(statement_node);
+
+    return NULL;
+}
+
+ast_tree_elem_t *get_statement_list_untill_eof(parsing_block_t *data, int *empty) {
+    assert(data);
+
+    ast_tree_elem_t *copy_node = NULL;
+    ast_tree_elem_t *right_node = NULL;
+
+    *empty = 1;
+
+    while (data->lexem_list[data->lexem_list_idx].token_type != AST_EOF) {
+        *empty = 0;
+        copy_node = right_node;
+        right_node = get_statement(data);
+        CATCH_PARSE_ERROR(data, GET_SCOPE, CLEAR_MEMORY(exit_mark))
+
+        STEP_OVER_TOKEN_WITH_CHECK(data, GET_SCOPE,AST_SEMICOLON, CLEAR_MEMORY(exit_mark))
+
+        right_node = _SEMICOLON(copy_node, right_node);
+    }
+
+    return right_node;
+
+    exit_mark:
+
+    sub_tree_dtor(copy_node);
+    sub_tree_dtor(right_node);
 
     return NULL;
 }
