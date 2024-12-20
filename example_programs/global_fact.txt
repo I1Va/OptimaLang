@@ -1,0 +1,16 @@
+int var = 1;
+int n = 1;
+
+int factorial() {
+    int cond = input();
+    while (n <= cond) {
+        var = var * n;
+        n = n + 1;
+    };
+    return var;
+};
+
+int main() {
+    print(factorial());
+    return 0;
+};

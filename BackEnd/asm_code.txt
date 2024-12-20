@@ -1,44 +1,3 @@
-push 17;
-; // 'var' init, loc_addr: 0
-push rsp;
-push 1;
-add;
-pop rsp; stack_ptr++
-;#====Init_Var=Assinment===#
-pop [0]; // 'var' assinment
-;#======End=Assinment======#
-
-;#=========Function========#
-jmp func_end:;
-func:
-;#=======Input=Action======#
-push rbp
-push rsp
-pop rbp
-;#=======End=Action========#
-
-;#=========Init=Args=======#
-;#========End=Init=========#
-
-;#========Func=Body========#
-push [0]; // access to 'var'
-;#==========Call===========#
-
-out;
-;#=========End=Call========#
-;#========Var=Return=======#
-push 0;
-pop rax
-;#========End=Return=======#
-;#========End=Body=========#
-
-;#=======Leave=Action======#
-push rbp;
-pop rsp; stack_pointer = frame_pointer
-pop  rbp;
-ret;
-func_end:;
-;#=======End=Function======#
 
 ;#=========Function========#
 jmp main_end:;
@@ -53,10 +12,38 @@ pop rbp
 ;#========End=Init=========#
 
 ;#========Func=Body========#
-;#==========Call===========#
+;#=============If==========#
+jmp if_check_0:
+if_start_0:
+;#========#If_body#=========#
+push 1;
+;call print
+    out;
+    push 10;
+    outc;
+;#========#End_body#========#
+jmp if_end_0:
+else_start_0:
+;#=======#Else_body#========#
+push 0;
+;call print
+    out;
+    push 10;
+    outc;
+;#========#End_body#========#
+jmp if_end_0:
+if_check_0:
 
-call func:
-;#=========End=Call========#
+push 52;
+push 102;
+more;
+;#========Condition========#
+push 0
+je else_start_0:
+jmp if_start_0:
+;#======End=Condition=======#
+if_end_0:
+;#=========End=IF=========#
 ;#========Var=Return=======#
 push 0;
 pop rax

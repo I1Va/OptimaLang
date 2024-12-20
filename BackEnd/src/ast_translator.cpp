@@ -19,8 +19,6 @@
 
 #define RAISE_TR_ERROR(str_, ...) fprintf_red(stderr, "{%s} [%s: %d]: translator_error{" str_ "}\n", __FILE_NAME__, __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__); abort();
 
-const size_t ASM_BORDER_SIZE = 27;
-
 const var_t POISON_VAR = {-1, -1, -1, NULL};
 const char FRAME_PTR_REG_PLUS[] = "rbp+";
 
@@ -30,10 +28,35 @@ int cur_frame_ptr = 0;
 int while_counter = 0;
 int if_counter = 0;
 
-// int return_type_num;
-//     size_t argc;
-//     int name_id;
-//     char *name;
+reserved_func_info_t reserved_func_name_table[] =
+{
+    {"print", AST_VOID, 1, translate_reserved_print_call},
+    {"input", AST_INT, 0, translate_reserved_input_call}
+};
+size_t reserved_func_name_table_sz = sizeof(reserved_func_name_table) / sizeof(reserved_func_info_t);
+
+
+func_info_t func_name_table[MAX_FUNC_TABLE_SZ] = {};
+size_t func_table_sz = 0;
+
+stack_t cond_stack = {};
+stack_t var_stack = {};
+stack_t global_var_stack = {};
+
+void translate_reserved_input_call(ast_tree_elem_t *node) {
+    assert(node);
+    CHECK_NODE_TYPE(node, NODE_CALL);
+
+    char *func_name = node->left->data.value.sval;
+    if (strcmp(func_name, "input") != 0) {
+        RAISE_TR_ERROR("reserve call error: expected 'input', got '%s'", func_name);
+        return;
+    }
+
+    fprintf(asm_code_ptr,
+                          "in; call input\n"
+                        );
+}
 
 void translate_reserved_print_call(ast_tree_elem_t *node) {
     assert(node);
@@ -45,25 +68,12 @@ void translate_reserved_print_call(ast_tree_elem_t *node) {
         return;
     }
 
-    fprintf(asm_code_ptr, ";#==========Call===========#\n"
-                          "\nout;\n"
-                          ";#=========End=Call========#\n"
+    fprintf(asm_code_ptr, ";call print\n"
+                          "    out;\n"
+                          "    push 10;\n"
+                          "    outc;\n"
                         );
 }
-
-reserved_func_info_t reserved_func_name_table[] =
-{
-    {"print", AST_VOID, 1, translate_reserved_print_call},
-};
-
-size_t reserved_func_name_table_sz = sizeof(reserved_func_name_table) / sizeof(reserved_func_info_t);
-
-func_info_t func_name_table[MAX_FUNC_TABLE_SZ] = {};
-size_t func_table_sz = 0;
-
-stack_t cond_stack = {};
-stack_t var_stack = {};
-stack_t global_var_stack = {};
 
 void init_stacks(FILE *log_file_ptr) {
     STACK_INIT(&cond_stack, 0, sizeof(int), log_file_ptr, NULL);
@@ -330,13 +340,11 @@ void translate_num(ast_tree_elem_t *node) {
 }
 
 void translate_op(ast_tree_elem_t *node) {
-
     assert(node);
 
     if (!node->left && !node->right) {
 
         if (node->data.type == NODE_NUM) {
-
             translate_num(node);
         } else if (node->data.type == NODE_VAR) {
             translate_var(node);
@@ -358,6 +366,11 @@ void translate_op(ast_tree_elem_t *node) {
         case AST_MUL: fprintf(asm_code_ptr, "mult;\n"); break;
         case AST_SUB: fprintf(asm_code_ptr, "sub;\n"); break;
         case AST_DIV: fprintf(asm_code_ptr, "div;\n"); break;
+        case AST_LESS: fprintf(asm_code_ptr, "less;\n"); break;
+        case AST_LESS_EQ: fprintf(asm_code_ptr, "lesseq;\n"); break;
+        case AST_MORE: fprintf(asm_code_ptr, "more;\n"); break;
+        case AST_MORE_EQ: fprintf(asm_code_ptr, "moreeq;\n"); break;
+        case AST_EQ: fprintf(asm_code_ptr, "eq;\n"); break;
     }
 }
 
@@ -463,10 +476,11 @@ void translate_while_condition(ast_tree_elem_t *node, int curr_counter) {
 }
 
 void translate_if(ast_tree_elem_t *node) {
-
     assert(node);
     CHECK_NODE_TYPE(node, NODE_IF);
     int save_counter = 0;
+    ast_tree_elem_t *node_cond = node->left;
+    node = node->right; // else_node
 
     fprintf(asm_code_ptr,";#=============If==========#\n"
                          "jmp if_check_%d:\n"
@@ -476,32 +490,27 @@ void translate_if(ast_tree_elem_t *node) {
     if_counter++;
 
     // if body
+    write_asm_tittle(asm_code_ptr, "If_body");
     translate_node_to_asm_code(node->left);
-
-
     stack_pop(&cond_stack, &save_counter);
-
-    fprintf(asm_code_ptr, "jmp if_end_%d:\n\n", save_counter);
+    write_asm_tittle(asm_code_ptr, "End_body");
+    fprintf(asm_code_ptr, "jmp if_end_%d:\n", save_counter);
 
     // else body
-    fprintf(asm_code_ptr, "else_start_%d:\n\n", save_counter);
+    fprintf(asm_code_ptr, "else_start_%d:\n", save_counter);
+    write_asm_tittle(asm_code_ptr, "Else_body");
     if (node->right) {
-
-
-        translate_node_to_asm_code(node->left);
-
+        translate_node_to_asm_code(node->right);
         stack_pop(&cond_stack, &save_counter);
     }
-    fprintf(asm_code_ptr, "jmp if_end_%d:\n\n", save_counter);
-
-
+    write_asm_tittle(asm_code_ptr, "End_body");
+    fprintf(asm_code_ptr, "jmp if_end_%d:\n", save_counter);
 
     fprintf(asm_code_ptr, "if_check_%d:\n\n", save_counter);
 
 
     //Condition
-
-    translate_if_condition(node->left, save_counter);
+    translate_if_condition(node_cond, save_counter);
 
     fprintf(asm_code_ptr, "if_end_%d:\n"
                           ";#=========End=IF=========#\n",
@@ -515,10 +524,10 @@ void translate_if_condition(ast_tree_elem_t *node, int curr_counter) {
     translate_node_to_asm_code(node); // stack push cond
 
     fprintf(asm_code_ptr,   ";#========Condition========#\n"
-                            "\npush 0\n"
-                            "jne if_start_%d:\n"
-                            "je  else_start_%d:\n"
-                            "#======End=Condition=======#\n",
+                            "push 0\n"
+                            "je else_start_%d:\n"
+                            "jmp if_start_%d:\n"
+                            ";#======End=Condition=======#\n",
                             curr_counter, curr_counter);
 }
 
@@ -584,9 +593,9 @@ void translate_func_call(ast_tree_elem_t *node) {
         return;
     }
 
-    fprintf(asm_code_ptr, ";#==========Call===========#\n"
-                          "\ncall %s:\n"
-                          ";#=========End=Call========#\n",
+    fprintf(asm_code_ptr,
+                          "call %s:\n"
+                          "push rax; push return value\n",
                           func_info.name);
 }
 
@@ -626,18 +635,23 @@ void translate_assign(ast_tree_elem_t *node) {
 
     char *var_name = node->left->data.value.sval;
     int var_name_id = node->left->data.value.ival;
+    bool global_state = false;
 
     translate_node_to_asm_code(node->right); // push right part of assign
 
     var_t found_var = get_var_from_frame(var_name_id);
+    global_state = (found_var.deep == 0);
     if (var_t_equal(found_var, POISON_VAR)) {
         RAISE_TR_ERROR("var '%s' not initialized", var_name);
         return;
     }
 
+    const char *REG_PLUS = FRAME_PTR_REG_PLUS;
+    if (global_state) {REG_PLUS = "";}
+
     fprintf(asm_code_ptr,
-                         "pop [rbp+%d]; // '%s' assinment\n",
-                         found_var.loc_addr, found_var.name);
+                         "pop [%s%d]; // '%s' assinment\n",
+                        REG_PLUS, found_var.loc_addr, found_var.name);
 }
 
 void translate_var_init(ast_tree_elem_t *node) {
@@ -654,7 +668,6 @@ void translate_var_init(ast_tree_elem_t *node) {
     var_info.name_id = name_node->left->data.value.ival;
     var_info.name    = name_node->left->data.value.sval;
     var_info.loc_addr = add_var_into_frame(var_info);
-    STACK_DUMP(&var_stack, stdout, var_t_fprintf);
     bool global_state = (var_info.deep == 0);
 
     if (name_node->data.type == NODE_ASSIGN) {
@@ -723,4 +736,31 @@ void translate_return(ast_tree_elem_t *node) {
 
     fprintf(asm_code_ptr, ";#========End=Return=======#\n");
 }
+
+void fprintf_asm_border(FILE* stream, const char bord_char, const size_t bord_sz, bool new_line) {
+    assert(stream);
+    fputc('#', stream);
+    for (size_t i = 0; i < bord_sz - 1; i++) {
+        fputc(bord_char, stream);
+    }
+    fputc('#', stream);
+    if (new_line) {
+        fputc('\n', stream);
+    }
+}
+
+void write_asm_tittle(FILE *stream, const char tittle[], const size_t bord_sz) {
+    assert(tittle != NULL);
+
+    size_t tittle_sz = strlen(tittle);
+    if (bord_sz < tittle_sz + 1) {
+        return;
+    }
+    size_t len = bord_sz - tittle_sz - 1;
+    fputc(';', stream);
+    fprintf_asm_border(stream, '=', len / 2, false);
+    fprintf(stream, "%s", tittle);
+    fprintf_asm_border(stream, '=', (len + 1) / 2, true);
+}
+
 #undef RAISE_TR_ERROR

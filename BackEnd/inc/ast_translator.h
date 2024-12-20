@@ -8,7 +8,7 @@
 #include "stack_funcs.h"
 
 const size_t MAX_FUNC_TABLE_SZ = 128;
-const size_t ASM_TITTLE_BORD_SIZE = 32;
+const size_t ASM_BORDER_SIZE = 27;
 
 struct var_t {
     int deep;
@@ -76,6 +76,8 @@ struct func_info_t {
     size_t argc;
 };
 
+void translate_reserved_print_call(ast_tree_elem_t *node);
+void translate_reserved_input_call(ast_tree_elem_t *node);
 
 void init_stacks(FILE *log_file_ptr);
 void translate_ast_to_asm_code(const char path[], ast_tree_t *tree);
@@ -101,7 +103,9 @@ void translate_func_call(ast_tree_elem_t *node);
 void translate_var_init(ast_tree_elem_t *node);
 size_t count_node_type_in_subtreeas(ast_tree_elem_t *node, const enum node_types node_type);
 void translate_return(ast_tree_elem_t *node);
-void fprintf_asm_title(FILE *stream, const char tittle[], const size_t bord_sz = ASM_TITTLE_BORD_SIZE);
+void write_asm_tittle(FILE *stream, const char tittle[], const size_t bord_sz=ASM_BORDER_SIZE);
+void fprintf_asm_border(FILE* stream, const char bord_char, const size_t bord_sz, bool new_line);
+
 void translate_assign(ast_tree_elem_t *node);
 void translate_scope(ast_tree_elem_t *node);
 void translate_semicolon(ast_tree_elem_t *node);

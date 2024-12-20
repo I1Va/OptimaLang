@@ -1,12 +1,8 @@
-int var = 17;
-
-int func() {
-    print(var);
-
-    return 0;
-};
-
 int main() {
-    func();
+    if (102 > 52) {
+        print(1);
+    } else {
+        print(0);
+    };
     return 0;
 };
