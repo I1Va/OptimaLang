@@ -246,7 +246,7 @@ ast_tree_elem_t *get_selection_statement(parsing_block_t *data) {
 
     }
 
-    return _OP(T_IF, expr_node, _ELSE(if_body_node, else_body_node));
+    return _IF(expr_node, _ELSE(if_body_node, else_body_node));
 
     exit_mark:
 
@@ -507,7 +507,7 @@ ast_tree_elem_t *get_func_separated_init_args(parsing_block_t *data) {
             (*tp)++;
         }
 
-        init_args = _OP(T_COMMA, copy_node, init_args);
+        init_args = _COMMA(copy_node, init_args);
     }
 
     return init_args;
@@ -647,7 +647,7 @@ ast_tree_elem_t *get_function_call(parsing_block_t *data) {
         copy_node = args_node;
         args_node = get_expression(data);
         CATCH_PARSE_ERROR(data, GET_FUNCTION_CALL, CLEAR_MEMORY(exit_mark))
-        args_node = _OP(T_COMMA, copy_node, args_node);
+        args_node = _COMMA(copy_node, args_node);
 
         if (tl[*tp].token_type == T_C_BRACE) {
             break;

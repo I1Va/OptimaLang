@@ -8,10 +8,6 @@
 
 const size_t MAX_FUNC_TABLE_SZ = 128;
 
-void translate_node_to_asm_code(ast_tree_elem_t *node, stack_t *var_stack);
-void var_stack_remove_local_variables(stack_t *var_stack);
-void translate_ast_to_asm_code(const char path[], ast_tree_elem_t *root, stack_t *var_stack);
-
 struct var_t {
     int deep;
     int type;
@@ -72,5 +68,27 @@ struct func_info_t {
     char *name;
 };
 
+
+void init_stacks(FILE *log_file_ptr);
+void translate_ast_to_asm_code(const char path[], ast_tree_t *tree);
+void var_stack_remove_local_variables();
+int get_func_idx_in_name_table(func_info_t func_info);
+void add_function_to_name_table(func_info_t func_info);
+int get_var_in_frame(int name_id);
+void var_t_fprintf(FILE *stream, void *elem_ptr);
+int add_var_into_frame(var_t var);
+void translate_func_args_init(size_t *argc, ast_tree_elem_t *node);
+void var_stack_restore_old_frame();
+void translate_function_init(ast_tree_elem_t *node);
+void translate_node_to_asm_code(ast_tree_elem_t *node);
+void translate_while(ast_tree_elem_t *node);
+void translate_while_condition(ast_tree_elem_t *node, int curr_counter);
+void translate_if(ast_tree_elem_t *node);
+void translate_if_condition(ast_tree_elem_t *node, int curr_counter);
+void translate_func_call_args(size_t *argc, ast_tree_elem_t *node);
+void translate_func_call(ast_tree_elem_t *node);
+void translate_var_init(ast_tree_elem_t *node);
+size_t count_node_type_in_subtreeas(ast_tree_elem_t *node, const enum node_types node_type);
+void translate_return(ast_tree_elem_t *node);
 
 #endif // AST_TRANSLATOR_H

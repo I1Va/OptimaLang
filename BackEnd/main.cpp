@@ -61,13 +61,7 @@ int main(const int argc, const char *argv[]) {
         CLEAR_MEMORY(exit_mark);
     }
 
-    STACK_INIT(&call_stack, 0, sizeof(var_t), tree.log_file_ptr, &stack_error);
-    if (stack_error != STK_ERR_OK) {
-        debug("stack init failed");
-        CLEAR_MEMORY(exit_mark)
-    }
-
-    translate_ast_to_asm_code(ASM_CODE_PATH, tree.root, &call_stack);
+    translate_ast_to_asm_code(ASM_CODE_PATH, &tree);
 
     // assembler_make_bin_code(ASM_CODE_PATH, BIN_CODE_PATH);
 

@@ -2,80 +2,168 @@
 ;#=========Function========#
 factorial:
 ;#=======Input=Action======#
-push AX
-push BX
-pop AX
+push rbp
+push rsp
+pop rbp
 ;#=======End=Action========#
 
-;#========Init=Local=======#
-pop [AX+1]; // 'n' init
-push BX;
+;#=========Init=Args=======#
+pop [rbp+1]; // 'n' init
+push rsp;
 push 1;
-pop BX; stack_ptr++
+pop rsp; stack_ptr++
 ;#========End=Init=========#
 
 ;#========Func=Body========#
+;#========Var=Init=========#
+; // 'ans' init, loc_addr: 2
+push rsp;
+push 1;
+pop rsp; stack_ptr++
+;#========End=Init=========#
+;#========Var=Assinment=========#
+pop [rbp+2]; // 'ans' assinment
+;#========End=Assinment=========#
+;#===========While=========#
+jmp while_check_0:
+while_start_0:
+
+
+while_check_0:
+
+;#========Condition========#
+
+push 0
+jne while_start_0:
+
+.while_end_0:
+;#=======End=While========#
+;#========Var=Return=======#
+pop rax
+;#========End=Return=======#
 ;#========End=Body=========#
 
 ;#=======Leave=Action======#
-push AX;
-pop BX; stack_pointer = frame_pointer
-ret;;#=======End=Function======#
+push rbp;
+pop rsp; stack_pointer = frame_pointer
+ret;
+;#=======End=Function======#
 
 ;#=========Function========#
 check:
 ;#=======Input=Action======#
-push AX
-push BX
-pop AX
+push rbp
+push rsp
+pop rbp
 ;#=======End=Action========#
 
-;#========Init=Local=======#
-pop [AX+1]; // 'x' init
-push BX;
+;#=========Init=Args=======#
+pop [rbp+1]; // 'x' init
+push rsp;
 push 1;
-pop BX; stack_ptr++
+pop rsp; stack_ptr++
 ;#========End=Init=========#
 
 ;#========Func=Body========#
+;#=============If==========#
+jmp if_check_0:
+if_start_0:
+jmp if_end_0:
+
+else_start_0:
+
+jmp if_end_0:
+
+if_check_0:
+
+;#========Condition========#
+
+push 0
+jne if_start_0:
+je  else_start_0:
+#======End=Condition=======#
+if_end_0:
+;#=========End=IF=========#
 ;#========End=Body=========#
 
 ;#=======Leave=Action======#
-push AX;
-pop BX; stack_pointer = frame_pointer
-ret;;#=======End=Function======#
+push rbp;
+pop rsp; stack_pointer = frame_pointer
+ret;
+;#=======End=Function======#
+
+;#=========Function========#
+func:
+;#=======Input=Action======#
+push rbp
+push rsp
+pop rbp
+;#=======End=Action========#
+
+;#=========Init=Args=======#
+;#========End=Init=========#
+
+;#========Func=Body========#
+;#========Var=Return=======#
+pop rax
+;#========End=Return=======#
+;#========End=Body=========#
+
+;#=======Leave=Action======#
+push rbp;
+pop rsp; stack_pointer = frame_pointer
+ret;
+;#=======End=Function======#
 
 ;#=========Function========#
 main:
 ;#=======Input=Action======#
-push AX
-push BX
-pop AX
+push rbp
+push rsp
+pop rbp
 ;#=======End=Action========#
 
-;#========Init=Local=======#
-pop [AX+1]; // 'args' init
-push BX;
+;#=========Init=Args=======#
+pop [rbp+1]; // 'args' init
+push rsp;
 push 1;
-pop BX; stack_ptr++
-pop [AX+2]; // 'qwargs' init
-push BX;
+pop rsp; stack_ptr++
+pop [rbp+2]; // 'qwargs' init
+push rsp;
 push 1;
-pop BX; stack_ptr++
-pop [AX+3]; // 'puks' init
-push BX;
+pop rsp; stack_ptr++
+pop [rbp+3]; // 'puks' init
+push rsp;
 push 1;
-pop BX; stack_ptr++
-pop [AX+4]; // 'keks' init
-push BX;
+pop rsp; stack_ptr++
+pop [rbp+4]; // 'keks' init
+push rsp;
 push 1;
-pop BX; stack_ptr++
+pop rsp; stack_ptr++
 ;#========End=Init=========#
 
 ;#========Func=Body========#
+;#========Var=Init=========#
+; // 'primo' init, loc_addr: 5
+push rsp;
+push 1;
+pop rsp; stack_ptr++
+;#========End=Init=========#
+;#==========Call===========#
+
+call factorial:
+;#=========End=Call========#
+;#==========Call===========#
+
+call func:
+;#=========End=Call========#
+;#========Var=Return=======#
+pop rax
+;#========End=Return=======#
 ;#========End=Body=========#
 
 ;#=======Leave=Action======#
-push AX;
-pop BX; stack_pointer = frame_pointer
-ret;;#=======End=Function======#
+push rbp;
+pop rsp; stack_pointer = frame_pointer
+ret;
+;#=======End=Function======#
