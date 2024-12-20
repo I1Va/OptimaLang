@@ -4,9 +4,11 @@
 #include <string.h>
 #include "AST_io.h"
 
+#include "AST_proc.h"
 #include "stack_funcs.h"
 
 const size_t MAX_FUNC_TABLE_SZ = 128;
+const size_t ASM_TITTLE_BORD_SIZE = 32;
 
 struct var_t {
     int deep;
@@ -61,20 +63,29 @@ enum token_t {
 
 };
 
-struct func_info_t {
+struct reserved_func_info_t {
+    const char *name;
     int return_type_num;
     size_t argc;
-    int name_id;
+    void (*translate_func)(ast_tree_elem_t *node);
+};
+
+struct func_info_t {
     char *name;
+    int return_type_num;
+    size_t argc;
 };
 
 
 void init_stacks(FILE *log_file_ptr);
 void translate_ast_to_asm_code(const char path[], ast_tree_t *tree);
 void var_stack_remove_local_variables();
+
 int get_func_idx_in_name_table(func_info_t func_info);
+int get_func_idx_in_reserved_name_table(func_info_t func_info);
 void add_function_to_name_table(func_info_t func_info);
-int get_var_in_frame(int name_id);
+
+int get_var_from_frame(int name_id);
 void var_t_fprintf(FILE *stream, void *elem_ptr);
 int add_var_into_frame(var_t var);
 void translate_func_args_init(size_t *argc, ast_tree_elem_t *node);
@@ -90,5 +101,11 @@ void translate_func_call(ast_tree_elem_t *node);
 void translate_var_init(ast_tree_elem_t *node);
 size_t count_node_type_in_subtreeas(ast_tree_elem_t *node, const enum node_types node_type);
 void translate_return(ast_tree_elem_t *node);
+void fprintf_asm_title(FILE *stream, const char tittle[], const size_t bord_sz = ASM_TITTLE_BORD_SIZE);
+void translate_assign(ast_tree_elem_t *node);
+void translate_scope(ast_tree_elem_t *node);
+void translate_semicolon(ast_tree_elem_t *node);
+void translate_var(ast_tree_elem_t *node);
+void dump_global_info(FILE *stream=stdout);
 
 #endif // AST_TRANSLATOR_H

@@ -26,6 +26,8 @@ const char ASM_CODE_PATH[] = "./asm_code.txt";
 const char BIN_CODE_PATH[] = "./bin_code.txt";
 
 int main(const int argc, const char *argv[]) {
+    setbuf(stderr, 0);
+
     char bufer[BUFSIZ] = {};
     stk_err stack_error = STK_ERR_OK;
 
@@ -55,13 +57,9 @@ int main(const int argc, const char *argv[]) {
 
     tree.root = load_ast_tree(text.str_ptr, &storage, bufer);
 
-    FILE *asm_code_file_ptr = fopen(ASM_CODE_PATH, "w");
-    if (!asm_code_file_ptr) {
-        debug("open '%s' failed", main_config.output_file);
-        CLEAR_MEMORY(exit_mark);
-    }
-
     translate_ast_to_asm_code(ASM_CODE_PATH, &tree);
+
+
 
     // assembler_make_bin_code(ASM_CODE_PATH, BIN_CODE_PATH);
 

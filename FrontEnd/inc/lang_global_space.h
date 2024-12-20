@@ -3,6 +3,7 @@
 
 #include <string.h>
 #include "string_funcs.h"
+#include "AST_io.h"
 
 const size_t TOKEN_LIST_MAX_SZ = 1028;
 
@@ -14,49 +15,49 @@ union token_value_t {
     long double fval;
 };
 
-enum token_t {
-    T_EOF = -1,
-    T_EMPTY = 0,
+// enum token_t {
+//     T_EOF = -1,
+//     T_EMPTY = 0,
 
-    T_NUM = 1,
+//     T_NUM = 1,
 
-    T_ADD = 2,
-    T_MUL = 3,
-    T_SUB = 4,
-    T_DIV = 5,
-    T_POW = 6,
+//     T_ADD = 2,
+//     T_MUL = 3,
+//     T_SUB = 4,
+//     T_DIV = 5,
+//     T_POW = 6,
 
-    T_O_BRACE = 7,
-    T_C_BRACE = 8,
-    T_O_FIG_BRACE = 9,
-    T_C_FIG_BRACE = 10,
-    T_EOL = 11, // '\n'
-    T_SPACE = 12,
-    T_ID = 13,
+//     T_O_BRACE = 7,
+//     T_C_BRACE = 8,
+//     T_O_FIG_BRACE = 9,
+//     T_C_FIG_BRACE = 10,
+//     T_EOL = 11, // '\n'
+//     T_SPACE = 12,
+//     T_ID = 13,
 
-    T_IF = 14, // key_words
-    T_WHILE = 15,
+//     T_IF = 14, // key_words
+//     T_WHILE = 15,
 
-    T_SEMICOLON = 16,
+//     T_SEMICOLON = 16,
 
-    T_MORE = 17,
-    T_LESS = 18,
-    T_MORE_EQ = 19,
-    T_LESS_EQ = 20,
-    T_EQ = 21,
+//     T_MORE = 17,
+//     T_LESS = 18,
+//     T_MORE_EQ = 19,
+//     T_LESS_EQ = 20,
+//     T_EQ = 21,
 
-    T_INT = 22,
-    T_FLOAT = 23,
+//     T_INT = 22,
+//     T_FLOAT = 23,
+//     T_VOID = 24,
 
-    T_ASSIGN = 24,
-    T_COMMA = 25,
-    T_RETURN = 26,
-    T_ELSE = 27,
+//     T_ASSIGN = 25,
+//     T_COMMA = 26,
+//     T_RETURN = 27,
+//     T_ELSE = 28,
 
-    T_BREAK = 28,
-    T_CONTINUE = 29,
-
-};
+//     T_BREAK = 29,
+//     T_CONTINUE = 30,
+// };
 
 struct text_pos_t {
     size_t lines;
@@ -64,7 +65,7 @@ struct text_pos_t {
 };
 
 struct lexem_t {
-    enum token_t token_type;
+    enum ast_token_t token_type;
     union token_value_t token_val;
 
     text_pos_t text_pos;
@@ -76,13 +77,13 @@ struct lexem_t {
 struct keyword_t {
     const char *name;
     size_t len;
-    token_t token_type;
+    ast_token_t token_type;
 };
 
 struct name_t {
     char *name;
     size_t len;
-    token_t token_type;
+    ast_token_t token_type;
 };
 
 enum grammar_rule_num {

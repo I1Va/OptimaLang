@@ -33,10 +33,10 @@ ast_tree_elem_t *get_grule_divided_list(parsing_block_t *data, int *empty, ast_t
 ast_tree_elem_t *get_function_initialization(parsing_block_t *data);
 ast_tree_elem_t *get_global_statement(parsing_block_t *data);
 ast_tree_elem_t *try_grule(parsing_block_t *data, ast_tree_elem_t *(*grule_func)(parsing_block_t *data));
-bool check_token_on_logical_class(const token_t token);
-bool check_token_on_additive_class(const token_t token);
-bool check_token_on_multiplicative_class(const token_t token);
-bool check_token_on_type_class(const token_t token);
+bool check_token_on_logical_class(const ast_token_t token);
+bool check_token_on_additive_class(const ast_token_t token);
+bool check_token_on_multiplicative_class(const ast_token_t token);
+bool check_token_on_type_class(const ast_token_t token);
 ast_tree_elem_t *get_type(parsing_block_t *data);
 ast_tree_elem_t* get_func_separated_init_args(parsing_block_t*);
 ast_tree_elem_t *get_scope(parsing_block_t *data, int *empty);

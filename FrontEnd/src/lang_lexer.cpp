@@ -35,7 +35,7 @@ int add_to_name_table(char *new_name, parsing_block_t *data) {
     assert(new_name);
     assert(data);
 
-    data->name_table[data->name_table_sz++] = {new_name, strlen(new_name), T_ID};
+    data->name_table[data->name_table_sz++] = {new_name, strlen(new_name), AST_ID};
     return (int) data->name_table_sz - 1;
 }
 
@@ -64,7 +64,7 @@ lexem_t next_lexem(parsing_block_t *data) {
     lexem_t lexem = {};
 
     if (isdigit(c)) {
-        lexem.token_type = T_NUM;
+        lexem.token_type = AST_NUM;
 
         long long l_part = 0;
         long long frac_part = 0;
@@ -124,49 +124,49 @@ lexem_t next_lexem(parsing_block_t *data) {
     }
 
     switch (c) {
-        case '+': return {T_ADD, {}, {}, 1}; case '-': return {T_SUB, {}, {}, 1};
-        case '*': return {T_MUL, {}, {}, 1};
-        case '(': return {T_O_BRACE, {}, {}, 1}; case ')': return {T_C_BRACE, {}, {}, 1};
-        case '{': return {T_O_FIG_BRACE, {}, {}, 1}; case '}': return {T_C_FIG_BRACE, {}, {}, 1};
-        case '\n': return {T_EOL, {}, {}, 1};
-        case ' ': return {T_SPACE, {}, {}, 1};
-        case '/': return {T_DIV, {}, {}, 1};
-        case '\t': return {T_SPACE, {}, {}, 4};
-        case '^': return {T_POW, {}, {}, 1};
-        case EOF: return {T_EOF, {}, {}, 1};
-        case '\0': return {T_EOF, {}, {}, 1};
-        case ';': return {T_SEMICOLON, {}, {}, 1};
-        case '=': return {T_ASSIGN, {}, {}, 1};
-        case ',': return {T_COMMA, {}, {}, 1};
+        case '+': return {AST_ADD, {}, {}, 1}; case '-': return {AST_SUB, {}, {}, 1};
+        case '*': return {AST_MUL, {}, {}, 1};
+        case '(': return {AST_O_BRACE, {}, {}, 1}; case ')': return {AST_C_BRACE, {}, {}, 1};
+        case '{': return {AST_O_FIG_BRACE, {}, {}, 1}; case '}': return {AST_C_FIG_BRACE, {}, {}, 1};
+        case '\n': return {AST_EOL, {}, {}, 1};
+        case ' ': return {AST_SPACE, {}, {}, 1};
+        case '/': return {AST_DIV, {}, {}, 1};
+        case '\t': return {AST_SPACE, {}, {}, 4};
+        case '^': return {AST_POW, {}, {}, 1};
+        case EOF: return {AST_EOF, {}, {}, 1};
+        case '\0': return {AST_EOF, {}, {}, 1};
+        case ';': return {AST_SEMICOLON, {}, {}, 1};
+        case '=': return {AST_ASSIGN, {}, {}, 1};
+        case ',': return {AST_COMMA, {}, {}, 1};
         default: break;
     }
 
     char c_next = s[(*p)];
     if (c == '>' && c_next == '=') {
         (*p)++;
-        return {T_MORE_EQ, {}, {}, 1};
+        return {AST_MORE_EQ, {}, {}, 1};
     }
     if (c == '<' && c_next == '=') {
         (*p)++;
-        return {T_LESS_EQ, {}, {}, 1};
+        return {AST_LESS_EQ, {}, {}, 1};
     }
     if (c == '=' && c_next == '=') {
         (*p)++;
-        return {T_EQ, {}, {}, 1};
+        return {AST_EQ, {}, {}, 1};
     }
     if (c == '>' && c_next != '=') {
-        return {T_MORE, {}, {}, 1};
+        return {AST_MORE, {}, {}, 1};
     }
     if (c == '<' && c_next != '=') {
-        return {T_LESS, {}, {}, 1};
+        return {AST_LESS, {}, {}, 1};
     }
 
     debug("UNKNOWN_SYMS: %c %c", c, c_next);
-    return {T_EOF};
+    return {AST_EOF};
 }
 
 void text_pos_update(text_pos_t *text_pos, const lexem_t lexem) {
-    if (lexem.token_type == T_EOL) {
+    if (lexem.token_type == AST_EOL) {
         text_pos->lines++;
         text_pos->syms = 0;
         return;
@@ -189,10 +189,10 @@ void lex_scanner(parsing_block_t *data) {
         lexem.text_pos = cur_text_pos;
         text_pos_update(&cur_text_pos, lexem);
 
-        if (lexem.token_type != T_SPACE && lexem.token_type != T_EOL) {
+        if (lexem.token_type != AST_SPACE && lexem.token_type != AST_EOL) {
             data->lexem_list[token_idx++] = lexem;
         }
-        if (lexem.token_type == T_EOF) {
+        if (lexem.token_type == AST_EOF) {
             break;
         }
     }

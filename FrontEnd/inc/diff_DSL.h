@@ -12,7 +12,6 @@
 #define _FUNC_INIT(type, var)          ast_tree_create_node(type, var,              {NODE_FUNC_INIT,   {0, 0ll, 0.0, NULL}})
 #define _TYPE(num)                     ast_tree_create_node(NULL, NULL,             {NODE_TYPE,        {num, 0ll, 0.0, NULL}})
 #define _FUNC_ID(name, name_id)        ast_tree_create_node(NULL, NULL,             {NODE_FUNC_ID,     {name_id, 0ll, 0.0, name}})
-#define _FUNC_BODY(return_val, body)   ast_tree_create_node(return_val, body,       {NODE_FUNC_BODY,   {0, 0ll, 0.0, NULL}})
 #define _GLOBAL(gl_states)             ast_tree_create_node(gl_states, NULL,        {NODE_GLOBAL,      {0, 0ll, 0.0, NULL}})
 #define _CALL(func_id, args)           ast_tree_create_node(func_id, args,          {NODE_CALL,        {0, 0ll, 0.0, NULL}})
 #define _ELSE(if_body, else_body)      ast_tree_create_node(if_body, else_body,     {NODE_ELSE,        {0, 0ll, 0.0, NULL}})
