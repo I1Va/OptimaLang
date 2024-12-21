@@ -280,6 +280,7 @@ void translate_func_args_init(size_t *argc, ast_tree_elem_t *node) {
                         "pop [rbp+%d]; // '%s' init\n"
                         "push rsp;\n"
                         "push 1;\n"
+                        "add;\n"
                         "pop rsp; stack_ptr++\n",
                         var_info.loc_addr, var_info.name);
 
@@ -313,9 +314,10 @@ void translate_function_init(ast_tree_elem_t *node) {
                          "jmp %s_end:;\n"
                          "%s:\n"
                          ";#=======Input=Action======#\n"
-                         "push rbp\n"
-                         "push rsp\n"
-                         "pop rbp\n"
+                         "push rbp;\n"
+                         "pop rbx;\n" // save of prev rpb into register
+                         "push rsp;\n"
+                         "pop rbp;\n"
                          ";#=======End=Action========#\n"
                          "\n;#=========Init=Args=======#\n",
                          func_info.name, func_info.name);
@@ -326,6 +328,7 @@ void translate_function_init(ast_tree_elem_t *node) {
     if (node->left) {
         translate_func_args_init(&argc, node->left); // write_args_initialization
     }
+    fprintf(asm_code_ptr, "push rbx;\n"); // save of prev rpb into stack
 
     func_info.argc = argc;
     add_function_to_name_table(func_info);
@@ -778,14 +781,12 @@ void translate_var(ast_tree_elem_t *node) {
 }
 
 void translate_return(ast_tree_elem_t *node) {
-
     assert(node);
     CHECK_NODE_TYPE(node, NODE_RETURN);
 
     fprintf(asm_code_ptr, ";#========Var=Return=======#\n");
 
     if (!node->left) {
-
         RAISE_TR_ERROR("<return> hasn't arg");
         return;
     }

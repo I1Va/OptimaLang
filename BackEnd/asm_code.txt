@@ -1,71 +1,67 @@
-push 0;
-; // 'n' init, loc_addr: 0
-push rsp;
-push 1;
-add;
-pop rsp; stack_ptr++
-;#====Init_Var=Assinment===#
-pop [0]; // 'n' assinment
-;#======End=Assinment======#
-push 1;
-; // 'ans' init, loc_addr: 1
-push rsp;
-push 1;
-add;
-pop rsp; stack_ptr++
-;#====Init_Var=Assinment===#
-pop [1]; // 'ans' assinment
-;#======End=Assinment======#
-push 1;
-; // 'cur' init, loc_addr: 2
-push rsp;
-push 1;
-add;
-pop rsp; stack_ptr++
-;#====Init_Var=Assinment===#
-pop [2]; // 'cur' assinment
-;#======End=Assinment======#
 
 ;#=========Function========#
-jmp factorial_end:;
-factorial:
+jmp rec_factorial_end:;
+rec_factorial:
 ;#=======Input=Action======#
-push rbp
-push rsp
-pop rbp
+push rbp;
+pop rbx;
+push rsp;
+pop rbp;
 ;#=======End=Action========#
 
 ;#=========Init=Args=======#
+pop [rbp+0]; // 'n' init
+push rsp;
+push 1;
+add;
+pop rsp; stack_ptr++
+push rbx;
 ;#========End=Init=========#
 
 ;#========Func=Body========#
-;#===========While=========#
-jmp while_check_0:
-while_start_0:
-
-push [2]; // access to 'cur'
-push [1]; // access to 'ans'
-mult;
-pop [1]; // 'ans' assinment
+push 0;
+; // 'return_val' init, loc_addr: 1
+push rsp;
 push 1;
-push [2]; // access to 'cur'
 add;
-pop [2]; // 'cur' assinment
+pop rsp; stack_ptr++
+;#====Init_Var=Assinment===#
+pop [rbp+1]; // 'return_val' assinment
+;#======End=Assinment======#
+;#=============If==========#
+jmp if_check_0:
+if_start_0:
+;#========#If_body#=========#
+push 1;
+pop [rbp+1]; // 'return_val' assinment
+;#========#End_body#========#
+jmp if_end_0:
+else_start_0:
+;#=======#Else_body#========#
+push 1;
+push [rbp+0]; // access to 'n'
+sub;
+call rec_factorial:
+push rax; push return value
+push [rbp+0]; // access to 'n'
+mult;
+pop [rbp+1]; // 'return_val' assinment
+;#========#End_body#========#
+jmp if_end_0:
+if_check_0:
 
-while_check_0:
-
-push [0]; // access to 'n'
-push [2]; // access to 'cur'
-less;
+push 1;
+push [rbp+0]; // access to 'n'
+lesseq;
 ;#========Condition========#
-
 push 0
-jne while_start_0:
-
-while_end_0:
-;#=======End=While========#
+je else_start_0:
+jmp if_start_0:
+;#======End=Condition=======#
+if_end_0:
+;#=========End=IF=========#
 ;#========Var=Return=======#
-push [1]; // access to 'ans'
+push [rbp+1]; // access to 'return_val'
 pop rax
 ;#========End=Return=======#
 ;#========End=Body=========#
@@ -75,25 +71,110 @@ push rbp;
 pop rsp; stack_pointer = frame_pointer
 pop  rbp;
 ret;
-factorial_end:;
+rec_factorial_end:;
+;#=======End=Function======#
+
+;#=========Function========#
+jmp iter_factorial_end:;
+iter_factorial:
+;#=======Input=Action======#
+push rbp;
+pop rbx;
+push rsp;
+pop rbp;
+;#=======End=Action========#
+
+;#=========Init=Args=======#
+pop [rbp+0]; // 'n' init
+push rsp;
+push 1;
+add;
+pop rsp; stack_ptr++
+push rbx;
+;#========End=Init=========#
+
+;#========Func=Body========#
+push 1;
+; // 'return_val' init, loc_addr: 1
+push rsp;
+push 1;
+add;
+pop rsp; stack_ptr++
+;#====Init_Var=Assinment===#
+pop [rbp+1]; // 'return_val' assinment
+;#======End=Assinment======#
+;#===========While=========#
+jmp while_check_0:
+while_start_0:
+
+push [rbp+0]; // access to 'n'
+push [rbp+1]; // access to 'return_val'
+mult;
+pop [rbp+1]; // 'return_val' assinment
+push 1;
+push [rbp+0]; // access to 'n'
+sub;
+pop [rbp+0]; // 'n' assinment
+
+while_check_0:
+
+push 1;
+push [rbp+0]; // access to 'n'
+moreeq;
+;#========Condition========#
+
+push 0
+jne while_start_0:
+
+while_end_0:
+;#=======End=While========#
+;#========Var=Return=======#
+push [rbp+1]; // access to 'return_val'
+pop rax
+;#========End=Return=======#
+;#========End=Body=========#
+
+;#=======Leave=Action======#
+push rbp;
+pop rsp; stack_pointer = frame_pointer
+pop  rbp;
+ret;
+iter_factorial_end:;
 ;#=======End=Function======#
 
 ;#=========Function========#
 jmp main_end:;
 main:
 ;#=======Input=Action======#
-push rbp
-push rsp
-pop rbp
+push rbp;
+pop rbx;
+push rsp;
+pop rbp;
 ;#=======End=Action========#
 
 ;#=========Init=Args=======#
+push rbx;
 ;#========End=Init=========#
 
 ;#========Func=Body========#
 in; call input
-pop [0]; // 'n' assinment
-call factorial:
+; // 'n' init, loc_addr: 0
+push rsp;
+push 1;
+add;
+pop rsp; stack_ptr++
+;#====Init_Var=Assinment===#
+pop [rbp+0]; // 'n' assinment
+;#======End=Assinment======#
+push [rbp+0]; // access to 'n'
+call rec_factorial:
+push rax; push return value
+;call print
+    out;
+    push 10;
+    outc;
+push [rbp+0]; // access to 'n'
+call iter_factorial:
 push rax; push return value
 ;call print
     out;

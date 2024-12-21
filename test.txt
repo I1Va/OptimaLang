@@ -1,0 +1,164 @@
+jump from {1} to {90} // fact
+label_com
+jump from {92} to {124} // main
+label_com
+
+
+
+
+
+
+call: push 127; jmp 93 // main
+label_com
+----------------------------
+push reg[0]: 0
+pop reg[3] = 0
+push reg[1]: 0
+pop reg[0] = 0
+push reg[3]: 0
+3
+in: 3
+
+
+call: push 107; jmp 2 // fact 1
+label_com
+----------------------------
+push reg[0]: 0
+pop reg[3] = 0
+push reg[1]: 0
+pop reg[0] = 0
+pop RAM[0] = 300
+push reg[1]: 0
+push val : 100
+pop reg[1] = 100
+push reg[3]: 0
+push val : 0
+
+
+push reg[1]: 100
+push val : 100
+push 100 + 100
+pop reg[1] = 200
+pop RAM[1] = 0
+
+->if
+jump from {35} to {64}
+label_com
+push val : 100
+push RAM[0] : 300
+push 0 = 300 <= 100
+push val : 0
+if (0 == 0) jump from {75} to {44}
+label_com
+->preparation for call 2
+push val : 100
+push RAM[0] : 300
+push 300 - 100
+
+call: push 53; jmp 2 // fact 2
+label_com
+----------------------------
+push reg[0]: 0
+pop reg[3] = 0
+push reg[1]: 200
+pop reg[0] = 200
+
+!
+pop RAM[2] = 200
+push reg[1]: 200
+push val : 100
+pop reg[1] = 100
+!
+push reg[3]: 0
+push val : 0
+push reg[1]: 100
+push val : 100
+push 100 + 100
+pop reg[1] = 200
+pop RAM[3] = 0
+jump from {35} to {64}
+label_com
+push val : 100
+push RAM[2] : 200
+push 0 = 200 <= 100
+push val : 0
+if (0 == 0) jump from {75} to {44}
+label_com
+push val : 100
+push RAM[2] : 200
+push 200 - 100
+
+
+call: push 53; jmp 2 // fact 3
+label_com
+----------------------------
+push reg[0]: 200
+pop reg[3] = 200
+push reg[1]: 200
+pop reg[0] = 200
+pop RAM[2] = 100
+push reg[1]: 200
+push val : 100
+pop reg[1] = 100
+push reg[3]: 200
+push val : 0
+push reg[1]: 100
+push val : 100
+push 100 + 100
+pop reg[1] = 200
+pop RAM[3] = 0
+jump from {35} to {64}
+label_com
+push val : 100
+push RAM[2] : 100
+push 100 = 100 <= 100
+push val : 0
+if (0 == 1) jump from {75} to {44}
+jump from {76} to {36}
+label_com
+push val : 100
+pop RAM[3] = 100
+jump from {43} to {77}
+label_com
+push RAM[3] : 100
+pop reg[2] = 100
+push reg[0]: 200
+pop reg[1] = 200
+pop reg[0] = 200
+ret 53
+push reg[2]: 100
+push RAM[2] : 100
+push 10000 = 100 * 100
+pop RAM[3] = 100
+jump from {63} to {77}
+label_com
+push RAM[3] : 100
+pop reg[2] = 100
+push reg[0]: 200
+pop reg[1] = 200
+pop reg[0] = 200
+ret 53
+push reg[2]: 100
+push RAM[2] : 100
+push 10000 = 100 * 100
+pop RAM[3] = 100
+jump from {63} to {77}
+label_com
+push RAM[3] : 100
+pop reg[2] = 100
+push reg[0]: 200
+pop reg[1] = 200
+pop reg[0] = 0
+ret 107
+push reg[2]: 100
+out: 1
+push val : 1000
+outc:
+
+push val : 0
+pop reg[2] = 0
+push reg[0]: 0
+pop reg[1] = 0
+pop reg[0] = 200
+ret 127
+hlt
