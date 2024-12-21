@@ -5,7 +5,7 @@
 #include <limits.h>
 
 
-const size_t MAX_BIN_CODE_SZ = 1024;
+const size_t max_bin_code_sz = 8192;
 
 const int MASK_MEM  = 1 << 8;
 const int MASK_REG  = 1 << 7;
@@ -39,7 +39,11 @@ enum asm_coms_nums
     DIV_COM  = 24,
     SQRT_COM = 25,
 
-
+    LESS_COM = 26,
+    LESSEQ_COM = 27,
+    MORE_COM = 28,
+    MOREEQ_COM = 29,
+    EQ_COM = 30,
     HLT_COM = INT_MAX & filter_mask,
     UNKNOWN_COM = 31,
 };

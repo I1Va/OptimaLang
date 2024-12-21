@@ -1,7 +1,34 @@
+push 0;
+; // 'n' init, loc_addr: 0
+push rsp;
+push 1;
+add;
+pop rsp; stack_ptr++
+;#====Init_Var=Assinment===#
+pop [0]; // 'n' assinment
+;#======End=Assinment======#
+push 1;
+; // 'ans' init, loc_addr: 1
+push rsp;
+push 1;
+add;
+pop rsp; stack_ptr++
+;#====Init_Var=Assinment===#
+pop [1]; // 'ans' assinment
+;#======End=Assinment======#
+push 1;
+; // 'cur' init, loc_addr: 2
+push rsp;
+push 1;
+add;
+pop rsp; stack_ptr++
+;#====Init_Var=Assinment===#
+pop [2]; // 'cur' assinment
+;#======End=Assinment======#
 
 ;#=========Function========#
-jmp rec_fact_end:;
-rec_fact:
+jmp factorial_end:;
+factorial:
 ;#=======Input=Action======#
 push rbp
 push rsp
@@ -9,47 +36,81 @@ pop rbp
 ;#=======End=Action========#
 
 ;#=========Init=Args=======#
-pop [rbp+0]; // 'n' init
-push rsp;
-push 1;
-pop rsp; stack_ptr++
 ;#========End=Init=========#
 
 ;#========Func=Body========#
-;#=============If==========#
-jmp if_check_0:
-if_start_0:
-;#========#If_body#=========#
-;#========Var=Return=======#
-push 1;
-pop rax
-;#========End=Return=======#
-;#========#End_body#========#
-jmp if_end_0:
-else_start_0:
-;#=======#Else_body#========#
-;#========#End_body#========#
-jmp if_end_0:
-if_check_0:
+;#===========While=========#
+jmp while_check_0:
+while_start_0:
 
-push 1;
-push [0]; // access to 'n'
-eq;
-;#========Condition========#
-push 0
-je else_start_0:
-jmp if_start_0:
-;#======End=Condition=======#
-if_end_0:
-;#=========End=IF=========#
-;#========Var=Return=======#
-push 1;
-push [0]; // access to 'n'
-sub;
-call rec_fact:
-push rax; push return value
-push [0]; // access to 'n'
+push [2]; // access to 'cur'
+push [1]; // access to 'ans'
 mult;
+pop [1]; // 'ans' assinment
+push 1;
+push [2]; // access to 'cur'
+add;
+pop [2]; // 'cur' assinment
+
+while_check_0:
+
+push [0]; // access to 'n'
+push [2]; // access to 'cur'
+less;
+;#========Condition========#
+
+push 0
+jne while_start_0:
+
+while_end_0:
+;#=======End=While========#
+;#========Var=Return=======#
+push [1]; // access to 'ans'
 pop rax
 ;#========End=Return=======#
 ;#========End=Body=========#
+
+;#=======Leave=Action======#
+push rbp;
+pop rsp; stack_pointer = frame_pointer
+pop  rbp;
+ret;
+factorial_end:;
+;#=======End=Function======#
+
+;#=========Function========#
+jmp main_end:;
+main:
+;#=======Input=Action======#
+push rbp
+push rsp
+pop rbp
+;#=======End=Action========#
+
+;#=========Init=Args=======#
+;#========End=Init=========#
+
+;#========Func=Body========#
+in; call input
+pop [0]; // 'n' assinment
+call factorial:
+push rax; push return value
+;call print
+    out;
+    push 10;
+    outc;
+;#========Var=Return=======#
+push 0;
+pop rax
+;#========End=Return=======#
+;#========End=Body=========#
+
+;#=======Leave=Action======#
+push rbp;
+pop rsp; stack_pointer = frame_pointer
+pop  rbp;
+ret;
+main_end:;
+;#=======End=Function======#
+call main:
+hlt;

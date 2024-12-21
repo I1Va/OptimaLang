@@ -2,6 +2,7 @@
 #include "error_processing.h"
 #include "assembler_funcs.h"
 #include "asm_args_proc.h"
+#include "inc/assembler_funcs.h"
 
 int main(const int argc, const char *argv[]) {
     main_config_t main_config = {};
@@ -20,15 +21,15 @@ int main(const int argc, const char *argv[]) {
 
     asm_err last_err = ASM_ERR_OK;
 
-    asm_data_t asm_data = {}; asm_data_t_ctor(&asm_data);
+    bin_code_t bin_code = bin_code_init();
 
-    asm_code_read(&asm_data.asm_code, main_config.input_file, &last_err);
+    asm_code_t asm_code =  asm_code_read(main_config.input_file, &last_err);
     if (last_err != ASM_ERR_OK) {
         DEBUG_ERROR(last_err);
         return EXIT_FAILURE;
     }
 
-    asm_commands_translate(&asm_data, &last_err);
+    asm_commands_translate(&bin_code, &asm_code, &last_err);
 
-    bin_code_write(main_config.output_file, asm_data.bin_code, &last_err);
+    bin_code_write(main_config.output_file, bin_code, &last_err);
 }

@@ -1,13 +1,18 @@
-int rec_fact(int n) {
-    if (n == 1) {
-        return 1;
+int n = 0;
+int ans = 1;
+int cur = 1;
+
+int factorial() {
+    while (cur < n) {
+        ans = ans * cur;
+        cur = cur + 1;
     };
-    return n * rec_fact(n - 1);
+    return ans;
 };
 
 int main() {
-    int n = input();
-    rec_fact(n);
+    n = input();
+    print(factorial());
     return 0;
 };
 

@@ -16,7 +16,6 @@
         RAISE_TR_ERROR("invalid_node: {%d}, expected: "#exp_type, node->data.type) \
     }
 
-
 #define RAISE_TR_ERROR(str_, ...) fprintf_red(stderr, "{%s} [%s: %d]: translator_error{" str_ "}\n", __FILE_NAME__, __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__); abort();
 
 const var_t POISON_VAR = {-1, -1, -1, NULL};
@@ -27,6 +26,7 @@ int cur_scope_deep = 0;
 int cur_frame_ptr = 0;
 int while_counter = 0;
 int if_counter = 0;
+bool func_init = false;
 
 reserved_func_info_t reserved_func_name_table[] =
 {
@@ -92,6 +92,13 @@ void translate_reserved_print_call(ast_tree_elem_t *node) {
                           "    push 10;\n"
                           "    outc;\n"
                         );
+}
+
+void assembler_make_bin_code(const char asm_code_path[], const char bin_code_path[]) {
+    char bufer[MEDIUM_BUFER_SZ] = {};
+
+    snprintf(bufer, MEDIUM_BUFER_SZ, "cd ./assembler && make launch -f Makefile LAUNCH_FLAGS=\"-i=./.%s -o=./.%s\"", asm_code_path, bin_code_path);
+    system(bufer);
 }
 
 void translate_reserved_print_string_call(ast_tree_elem_t *node) {
@@ -174,7 +181,7 @@ void var_stack_remove_local_variables() {
     stack_get_elem(&var_stack, &last_elem, var_stack.size - 1);
 
     while (last_elem.deep > cur_scope_deep && var_stack.size) {
-        if (last_elem.deep == 0) {
+        if (last_elem.global) {
             break; // don't remove global variables
         }
         stack_pop(&var_stack);
@@ -282,7 +289,7 @@ void var_stack_restore_old_frame() {
     var_t last_elem = {};
     stack_get_elem(&var_stack, &last_elem, var_stack.size - 1);
     for (int i = (int) var_stack.size; i >= cur_frame_ptr; i--) {
-        if (last_elem.deep == 0) {
+        if (last_elem.global) {
             break; // don't remove global variables
         }
         stack_pop(&var_stack);
@@ -464,7 +471,7 @@ void translate_node_to_asm_code(ast_tree_elem_t *node) {
             break;
         case NODE_WHILE: translate_while(node);
             break;
-        case NODE_FUNC_INIT: translate_function_init(node);
+        case NODE_FUNC_INIT: func_init = true; translate_function_init(node); func_init = false;
             break;
         case NODE_IF: translate_if(node);
             break;
@@ -694,7 +701,7 @@ void translate_assign(ast_tree_elem_t *node) {
     translate_node_to_asm_code(node->right); // push right part of assign
 
     var_t found_var = get_var_from_frame(var_name_id);
-    global_state = (found_var.deep == 0);
+    global_state = found_var.global;
     if (var_t_equal(found_var, POISON_VAR)) {
         RAISE_TR_ERROR("var '%s' not initialized", var_name);
         return;
@@ -721,9 +728,8 @@ void translate_var_init(ast_tree_elem_t *node) {
 
     var_info.name_id = name_node->left->data.value.ival;
     var_info.name    = name_node->left->data.value.sval;
+    var_info.global  = (var_info.deep == 0 && !func_init);
     var_info.loc_addr = add_var_into_frame(var_info);
-    bool global_state = (var_info.deep == 0);
-
     if (name_node->data.type == NODE_ASSIGN) {
         with_assignment = true;
         translate_node_to_asm_code(name_node->right); // push right part of assignment
@@ -737,7 +743,7 @@ void translate_var_init(ast_tree_elem_t *node) {
                         "pop rsp; stack_ptr++\n",
                         var_info.name, var_info.loc_addr);
 
-    if (global_state) {REG_PLUS = "";}
+    if (var_info.global) {REG_PLUS = "";}
 
     if (with_assignment) {
         fprintf(asm_code_ptr,
@@ -756,7 +762,7 @@ void translate_var(ast_tree_elem_t *node) {
     int var_name_id = node->data.value.ival;
 
     var_t found_var = get_var_from_frame(var_name_id);
-    bool global_state = (found_var.deep == 0);
+    bool global_state = found_var.global;
 
     if (var_t_equal(found_var, POISON_VAR)) {
         RAISE_TR_ERROR("var '%s' not initialized", var_name);

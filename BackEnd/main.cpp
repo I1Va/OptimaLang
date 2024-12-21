@@ -59,11 +59,7 @@ int main(const int argc, const char *argv[]) {
 
     translate_ast_to_asm_code(ASM_CODE_PATH, &tree);
 
-
-
-    // assembler_make_bin_code(ASM_CODE_PATH, BIN_CODE_PATH);
-
-    // processor_execute_bin_code(BIN_CODE_PATH);
+    assembler_make_bin_code(ASM_CODE_PATH, main_config.output_file);
 
     convert_subtree_to_dot(tree.root, &dot_code, &storage);
 
@@ -75,12 +71,4 @@ int main(const int argc, const char *argv[]) {
     str_storage_t_dtor(storage);
 
     return EXIT_SUCCESS;
-
-    exit_mark:
-    FREE(text.str_ptr);
-    stack_destroy(&call_stack);
-    sub_tree_dtor(tree.root);
-    str_storage_t_dtor(storage);
-
-    return EXIT_FAILURE;
 }

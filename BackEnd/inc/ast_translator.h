@@ -16,6 +16,7 @@ struct var_t {
     int name_id;
     char *name;
     int loc_addr;
+    bool global;
 };
 
 
@@ -75,6 +76,7 @@ struct func_info_t {
     int return_type_num;
     size_t argc;
 };
+void assembler_make_bin_code(const char asm_code_path[], const char bin_code_path[]);
 
 void translate_reserved_print_call(ast_tree_elem_t *node);
 void translate_reserved_input_call(ast_tree_elem_t *node);
