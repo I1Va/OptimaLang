@@ -1,7 +1,7 @@
 
 ;#=========Function========#
-jmp quadr_equ_solver_end:;
-quadr_equ_solver:
+jmp rec_factorial_end:;
+rec_factorial:
 ;#=======Input=Action======#
 push rbp;
 pop rbx;
@@ -10,330 +10,49 @@ pop rbp;
 ;#=======End=Action========#
 
 ;#=========Init=Args=======#
+pop [rbp+0]; // 'n' init
+push rsp;
+push 1;
+add;
+pop rsp; stack_ptr++
 push rbx;
 ;#========End=Init=========#
 
 ;#========Func=Body========#
-in; call input
-; // 'a' init, loc_addr: 0
+push 0;
+; // 'return_val' init, loc_addr: 1
 push rsp;
 push 1;
 add;
 pop rsp; stack_ptr++
 ;#====Init_Var=Assinment===#
-pop [rbp+0]; // 'a' assinment
-;#======End=Assinment======#
-in; call input
-; // 'b' init, loc_addr: 1
-push rsp;
-push 1;
-add;
-pop rsp; stack_ptr++
-;#====Init_Var=Assinment===#
-pop [rbp+1]; // 'b' assinment
-;#======End=Assinment======#
-in; call input
-; // 'c' init, loc_addr: 2
-push rsp;
-push 1;
-add;
-pop rsp; stack_ptr++
-;#====Init_Var=Assinment===#
-pop [rbp+2]; // 'c' assinment
+pop [rbp+1]; // 'return_val' assinment
 ;#======End=Assinment======#
 ;#=============If==========#
 jmp if_check_0:
 if_start_0:
 ;#========#If_body#=========#
-;#=============If==========#
-jmp if_check_1:
-if_start_1:
-;#========#If_body#=========#
-;#=============If==========#
-jmp if_check_2:
-if_start_2:
-;#========#If_body#=========#
-push 115;
-push 116;
-push 111;
-push 111;
-push 114;
-push 95;
-push 121;
-push 116;
-push 105;
-push 110;
-push 105;
-push 102;
-push 110;
-push 105;
-; print_string call
-    outc;
-    outc;
-    outc;
-    outc;
-    outc;
-    outc;
-    outc;
-    outc;
-    outc;
-    outc;
-    outc;
-    outc;
-    outc;
-    outc;
-    push 10;
-    outc;
-;#========#End_body#========#
-jmp if_end_2:
-else_start_2:
-;#=======#Else_body#========#
-push 115;
-push 116;
-push 111;
-push 111;
-push 114;
-push 95;
-push 111;
-push 114;
-push 101;
-push 122;
-; print_string call
-    outc;
-    outc;
-    outc;
-    outc;
-    outc;
-    outc;
-    outc;
-    outc;
-    outc;
-    outc;
-    push 10;
-    outc;
-;#========#End_body#========#
-jmp if_end_2:
-if_check_2:
-
-push 0;
-push [rbp+2]; // access to 'c'
-eq;
-;#========Condition========#
-push 0
-je else_start_2:
-jmp if_start_2:
-;#======End=Condition=======#
-if_end_2:
-;#=========End=IF=========#
-;#========#End_body#========#
-jmp if_end_1:
-else_start_1:
-;#=======#Else_body#========#
 push 1;
-;call print
-    out;
-    push 10;
-    outc;
-;#========#End_body#========#
-jmp if_end_1:
-if_check_1:
-
-push 0;
-push [rbp+1]; // access to 'b'
-eq;
-;#========Condition========#
-push 0
-je else_start_1:
-jmp if_start_1:
-;#======End=Condition=======#
-if_end_1:
-;#=========End=IF=========#
+pop [rbp+1]; // 'return_val' assinment
 ;#========#End_body#========#
 jmp if_end_0:
 else_start_0:
 ;#=======#Else_body#========#
-push [rbp+2]; // access to 'c'
-push [rbp+0]; // access to 'a'
-push 4;
-mult;
-mult;
-push [rbp+1]; // access to 'b'
-push [rbp+1]; // access to 'b'
-mult;
-sub;
-; // 'D' init, loc_addr: 3
-push rsp;
 push 1;
-add;
-pop rsp; stack_ptr++
-;#====Init_Var=Assinment===#
-pop [rbp+3]; // 'D' assinment
-;#======End=Assinment======#
-;#=============If==========#
-jmp if_check_3:
-if_start_3:
-;#========#If_body#=========#
-;#=============If==========#
-jmp if_check_4:
-if_start_4:
-;#========#If_body#=========#
-push 58;
-push 116;
-push 111;
-push 111;
-push 114;
-push 95;
-push 101;
-push 110;
-push 111;
-; print_string call
-    outc;
-    outc;
-    outc;
-    outc;
-    outc;
-    outc;
-    outc;
-    outc;
-    outc;
-    push 10;
-    outc;
-push [rbp+0]; // access to 'a'
-push 2;
-mult;
-push [rbp+1]; // access to 'b'
-push -1;
-mult;
-div;
-;call print
-    out;
-    push 10;
-    outc;
-;#========#End_body#========#
-jmp if_end_4:
-else_start_4:
-;#=======#Else_body#========#
-push [rbp+3]; // access to 'D'
-sqrt; call sqrt
-; // 'D_sqrt' init, loc_addr: 4
-push rsp;
-push 1;
-add;
-pop rsp; stack_ptr++
-;#====Init_Var=Assinment===#
-pop [rbp+4]; // 'D_sqrt' assinment
-;#======End=Assinment======#
-push 58;
-push 115;
-push 116;
-push 111;
-push 111;
-push 114;
-push 95;
-push 111;
-push 119;
-push 116;
-; print_string call
-    outc;
-    outc;
-    outc;
-    outc;
-    outc;
-    outc;
-    outc;
-    outc;
-    outc;
-    outc;
-    push 10;
-    outc;
-push [rbp+0]; // access to 'a'
-push 2;
-mult;
-push [rbp+4]; // access to 'D_sqrt'
-push [rbp+1]; // access to 'b'
-push -1;
-mult;
-add;
-div;
-;call print
-    out;
-    push 10;
-    outc;
-push [rbp+0]; // access to 'a'
-push 2;
-mult;
-push [rbp+4]; // access to 'D_sqrt'
-push [rbp+1]; // access to 'b'
-push -1;
-mult;
+push [rbp+0]; // access to 'n'
 sub;
-div;
-;call print
-    out;
-    push 10;
-    outc;
-;#========#End_body#========#
-jmp if_end_4:
-if_check_4:
-
-push 0;
-push [rbp+3]; // access to 'D'
-eq;
-;#========Condition========#
-push 0
-je else_start_4:
-jmp if_start_4:
-;#======End=Condition=======#
-if_end_4:
-;#=========End=IF=========#
-;#========#End_body#========#
-jmp if_end_3:
-else_start_3:
-;#=======#Else_body#========#
-push 115;
-push 116;
-push 111;
-push 111;
-push 114;
-push 95;
-push 111;
-push 114;
-push 101;
-push 122;
-; print_string call
-    outc;
-    outc;
-    outc;
-    outc;
-    outc;
-    outc;
-    outc;
-    outc;
-    outc;
-    outc;
-    push 10;
-    outc;
-;#========#End_body#========#
-jmp if_end_3:
-if_check_3:
-
-push 0;
-push [rbp+3]; // access to 'D'
-moreeq;
-;#========Condition========#
-push 0
-je else_start_3:
-jmp if_start_3:
-;#======End=Condition=======#
-if_end_3:
-;#=========End=IF=========#
+call rec_factorial:
+push rax; push return value
+push [rbp+0]; // access to 'n'
+mult;
+pop [rbp+1]; // 'return_val' assinment
 ;#========#End_body#========#
 jmp if_end_0:
 if_check_0:
 
-push 0;
-push [rbp+0]; // access to 'a'
-eq;
+push 1;
+push [rbp+0]; // access to 'n'
+lesseq;
 ;#========Condition========#
 push 0
 je else_start_0:
@@ -342,7 +61,7 @@ jmp if_start_0:
 if_end_0:
 ;#=========End=IF=========#
 ;#========Var=Return=======#
-push 0;
+push [rbp+1]; // access to 'return_val'
 pop rax
 push rbp;
 pop rsp; stack_pointer = frame_pointer
@@ -356,7 +75,79 @@ push rbp;
 pop rsp; stack_pointer = frame_pointer
 pop  rbp;
 ret;
-quadr_equ_solver_end:;
+rec_factorial_end:;
+;#=======End=Function======#
+
+;#=========Function========#
+jmp iter_factorial_end:;
+iter_factorial:
+;#=======Input=Action======#
+push rbp;
+pop rbx;
+push rsp;
+pop rbp;
+;#=======End=Action========#
+
+;#=========Init=Args=======#
+pop [rbp+0]; // 'n' init
+push rsp;
+push 1;
+add;
+pop rsp; stack_ptr++
+push rbx;
+;#========End=Init=========#
+
+;#========Func=Body========#
+push 1;
+; // 'return_val' init, loc_addr: 1
+push rsp;
+push 1;
+add;
+pop rsp; stack_ptr++
+;#====Init_Var=Assinment===#
+pop [rbp+1]; // 'return_val' assinment
+;#======End=Assinment======#
+;#===========While=========#
+jmp while_check_0:
+while_start_0:
+
+push [rbp+0]; // access to 'n'
+push [rbp+1]; // access to 'return_val'
+mult;
+pop [rbp+1]; // 'return_val' assinment
+push 1;
+push [rbp+0]; // access to 'n'
+sub;
+pop [rbp+0]; // 'n' assinment
+
+while_check_0:
+
+push 1;
+push [rbp+0]; // access to 'n'
+moreeq;
+;#========Condition========#
+
+push 0
+jne while_start_0:
+
+while_end_0:
+;#=======End=While========#
+;#========Var=Return=======#
+push [rbp+1]; // access to 'return_val'
+pop rax
+push rbp;
+pop rsp; stack_pointer = frame_pointer
+pop  rbp;
+ret;
+;#========End=Return=======#
+;#========End=Body=========#
+
+;#=======Leave=Action======#
+push rbp;
+pop rsp; stack_pointer = frame_pointer
+pop  rbp;
+ret;
+iter_factorial_end:;
 ;#=======End=Function======#
 
 ;#=========Function========#
@@ -374,8 +165,29 @@ push rbx;
 ;#========End=Init=========#
 
 ;#========Func=Body========#
-call quadr_equ_solver:
+in; call input
+; // 'n' init, loc_addr: 0
+push rsp;
+push 1;
+add;
+pop rsp; stack_ptr++
+;#====Init_Var=Assinment===#
+pop [rbp+0]; // 'n' assinment
+;#======End=Assinment======#
+push [rbp+0]; // access to 'n'
+call rec_factorial:
 push rax; push return value
+;call print
+    out;
+    push 10;
+    outc;
+push [rbp+0]; // access to 'n'
+call iter_factorial:
+push rax; push return value
+;call print
+    out;
+    push 10;
+    outc;
 ;#========Var=Return=======#
 push 0;
 pop rax

@@ -17,7 +17,7 @@ int main(const int argc, const char *argv[]) {
 
     get_options(argc, argv, options, n_options);
 
-    main_config_print(stdout, &main_config);
+    // main_config_print(stdout, &main_config);
 
     asm_err last_err = ASM_ERR_OK;
 

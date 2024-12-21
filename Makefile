@@ -143,8 +143,8 @@ all: $(OUT_O_DIR)/$(OUTFILE_NAME) # Target all depends on "$(OUTFILE_NAME)" file
 
 
 launch:
-	cd ./FrontEnd && make MODE=DEBUG && make launch -f Makefile LAUNCH_FLAGS="-i=./../code.txt -o=./../ast.txt"
-	cd ./BackEnd && make MODE=DEBUG && make launch -f Makefile LAUNCH_FLAGS="-i=./../ast.txt -o=./../bin_code.txt"
+	@cd ./FrontEnd && make MODE=DEBUG && make launch -f Makefile LAUNCH_FLAGS="-i=./../code.txt -o=./../ast.txt"
+	@cd ./BackEnd && make MODE=DEBUG && make launch -f Makefile LAUNCH_FLAGS="-i=./../ast.txt -o=./../bin_code.txt"
 
 #@$(LAUNCH_PREFLAGS) ./$(OUT_O_DIR)/$(OUTFILE_NAME)
 

@@ -646,7 +646,7 @@ void asm_commands_translate(bin_code_t *bin_code, asm_code_t *asm_code, asm_err 
 }
 
 void bin_code_write(const char path[], bin_code_t bin_code, asm_err *return_err) {
-    bin_code_dump(stdout, bin_code);
+    // bin_code_dump(stdout, bin_code);
     FILE *bin_code_file_ptr = fopen(path, "wb");
     if (bin_code_file_ptr == NULL) {
         asm_add_err(return_err, ASM_ERR_SYNTAX);
