@@ -12,6 +12,12 @@ const size_t NAME_TABLE_MAX_SIZE     = 1024;
 const size_t KEY_WORD_TABLE_MAX_SIZE = 64;
 
 bool char_in_str_lex(int c);
+bool try_parse_num(lexem_t *lexem, char *str);
+bool try_parse_string_literal(parsing_block_t *data, lexem_t *lexem, char *str);
+bool try_parse_identificator(parsing_block_t *data, lexem_t *lexem, char *str);
+bool try_parse_single_sim(lexem_t *lexem, char *str);
+bool try_parse_double_sim(lexem_t *lexem, char *str);
+bool check_lextype_for_skip(const enum ast_token_t token_type);
 
 int get_index_in_name_table(char *new_name, parsing_block_t *data);
 int get_index_in_keyword_table(char *new_name, parsing_block_t *data);

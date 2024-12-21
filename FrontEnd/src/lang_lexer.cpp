@@ -93,7 +93,7 @@ bool try_parse_string_literal(parsing_block_t *data, lexem_t *lexem, char *str) 
     return true;
 }
 
-bool try_parse_identificator(parsing_block_t *data, lexem_t *lexem, char *str, char *bufer) {
+bool try_parse_identificator(parsing_block_t *data, lexem_t *lexem, char *str) {
     assert(data);
     assert(lexem);
     assert(str);
@@ -183,8 +183,6 @@ bool try_parse_double_sim(lexem_t *lexem, char *str) {
 lexem_t next_lexem(parsing_block_t *data) {
     char   *s        = data->text;
     size_t *p        = &data->text_idx;
-
-    char    bufer[MEDIUM_BUFER_SZ] = {};
     lexem_t lexem                  = {};
 
     if (try_parse_num(&lexem, s + *p)) {
@@ -195,7 +193,7 @@ lexem_t next_lexem(parsing_block_t *data) {
         *p += (size_t) lexem.len + 2; // quotes: +2
         return lexem;
     }
-    if (try_parse_identificator(data, &lexem, s + *p, bufer)) {
+    if (try_parse_identificator(data, &lexem, s + *p)) {
         *p += (size_t) lexem.len;
         return lexem;
     }

@@ -44,6 +44,18 @@ void main_config_print(FILE *stream, main_config_t *conf) {
     fprintf(stream, "conf_name: %s\n", conf->output_file);
 }
 
+void main_config_get(main_config_t *main_config, const int argc, const char *argv[]) {
+    opt_data options[] =
+    {
+        {"-i", "--input", "%s",  &main_config->input_file},
+        {"-o", "--output", "%s", &main_config->output_file},
+    };
+
+    size_t n_options = sizeof(options) / sizeof(opt_data);
+
+    get_options(argc, argv, options, n_options);
+}
+
 #define DESCR_(code) case code : return #code;
 
 const char *get_descr(enum arg_err_code err) {
