@@ -93,7 +93,7 @@ SRC = ./src
 #/---------------------------PROJECT_SRC_CONFIG--------------------\#
 
 #/---------------------------SUBMODULES_CONFIG--------------------\#
-SUBMODULES = args_processing string_funcs ASTio_lib graphviz_funcs stack
+SUBMODULES = string_funcs ASTio_lib graphviz_funcs stack
 #/---------------------------SUBMODULES_CONFIG--------------------\#
 
 

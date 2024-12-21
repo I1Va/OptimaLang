@@ -81,7 +81,9 @@ void assembler_make_bin_code(const char asm_code_path[], const char bin_code_pat
 void translate_reserved_print_call(ast_tree_elem_t *node);
 void translate_reserved_input_call(ast_tree_elem_t *node);
 void translate_reserved_sqrt_call(ast_tree_elem_t *node);
-
+bool var_t_equal(const var_t v1, const var_t v2);
+void translate_num(ast_tree_elem_t *node);
+void translate_op(ast_tree_elem_t *node);
 void init_stacks(FILE *log_file_ptr);
 void translate_ast_to_asm_code(const char path[], ast_tree_t *tree);
 void var_stack_remove_local_variables();

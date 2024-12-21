@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <cstring>
 #include <stdio.h>
 #include <stdlib.h>
@@ -95,10 +96,17 @@ void translate_reserved_print_call(ast_tree_elem_t *node) {
 }
 
 void assembler_make_bin_code(const char asm_code_path[], const char bin_code_path[]) {
+    assert(asm_code_path);
+    assert(bin_code_path);
+
     char bufer[MEDIUM_BUFER_SZ] = {};
 
     snprintf(bufer, MEDIUM_BUFER_SZ, "cd ./assembler && make launch -f Makefile LAUNCH_FLAGS=\"-i=./.%s -o=./.%s\"", asm_code_path, bin_code_path);
-    system(bufer);
+    int sys_val = system(bufer);
+
+    if (sys_val) {
+        debug("system: '%s' exit(%d)", bufer, sys_val);
+    }
 }
 
 void translate_reserved_print_string_call(ast_tree_elem_t *node) {
@@ -434,6 +442,10 @@ void translate_op(ast_tree_elem_t *node) {
         case AST_MORE: fprintf(asm_code_ptr, "more;\n"); break;
         case AST_MORE_EQ: fprintf(asm_code_ptr, "moreeq;\n"); break;
         case AST_EQ: fprintf(asm_code_ptr, "eq;\n"); break;
+        default:
+            debug("translate_op UNKNOWN_OP(%d)", node->data.value.ival);
+            fprintf(asm_code_ptr, "UNKNOWN_OP(%d);\n", node->data.value.ival);
+        break;
     }
 }
 
