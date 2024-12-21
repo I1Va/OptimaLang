@@ -7,8 +7,9 @@
 
 #define ScannerError(p, c) {debug("ScannerError: text[%d] : '%c'", p, c); fprintf(stderr, WHT); abort();}
 
-const size_t LEXEM_LIST_MAX_SIZE = BUFSIZ;
-const size_t NAME_TABLE_MAX_SIZE = 1024;
+const size_t LEXEM_LIST_MAX_SIZE     = BUFSIZ;
+const size_t NAME_TABLE_MAX_SIZE     = 1024;
+const size_t KEY_WORD_TABLE_MAX_SIZE = 64;
 
 bool char_in_str_lex(int c);
 

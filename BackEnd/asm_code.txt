@@ -32,18 +32,20 @@ pop [rbp+1]; // 'return_val' assinment
 jmp if_check_0:
 if_start_0:
 ;#========#If_body#=========#
-;#========Var=Return=======#
 push 1;
-pop rax
-push rbp;
-pop rsp; stack_pointer = frame_pointer
-pop  rbp;
-ret;
-;#========End=Return=======#
+pop [rbp+1]; // 'return_val' assinment
 ;#========#End_body#========#
 jmp if_end_0:
 else_start_0:
 ;#=======#Else_body#========#
+push 1;
+push [rbp+0]; // access to 'n'
+sub;
+call rec_factorial:
+push rax; push return value
+push [rbp+0]; // access to 'n'
+mult;
+pop [rbp+1]; // 'return_val' assinment
 ;#========#End_body#========#
 jmp if_end_0:
 if_check_0:
@@ -59,13 +61,7 @@ jmp if_start_0:
 if_end_0:
 ;#=========End=IF=========#
 ;#========Var=Return=======#
-push 1;
-push [rbp+0]; // access to 'n'
-sub;
-call rec_factorial:
-push rax; push return value
-push [rbp+0]; // access to 'n'
-mult;
+push [rbp+1]; // access to 'return_val'
 pop rax
 push rbp;
 pop rsp; stack_pointer = frame_pointer

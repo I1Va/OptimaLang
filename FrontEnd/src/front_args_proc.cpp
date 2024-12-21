@@ -38,6 +38,18 @@ void get_options(const int argc, const char* argv[], opt_data opts[], const size
 
 // // MODES/CONFIG ZONE
 
+void main_config_get(main_config_t *main_config, const int argc, const char *argv[]) {
+    opt_data options[] =
+    {
+        {"-i", "--input", "%s",  &main_config->input_file},
+        {"-o", "--output", "%s", &main_config->output_file},
+    };
+
+    size_t n_options = sizeof(options) / sizeof(opt_data);
+
+    get_options(argc, argv, options, n_options);
+}
+
 void main_config_print(FILE *stream, main_config_t *conf) {
     fprintf_red(stream, RED "main_config_t: \n");
     fprintf(stream, "conf_name: %s\n", conf->input_file);

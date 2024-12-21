@@ -1,4 +1,5 @@
 
+#include <cstdio>
 #include <string.h>
 #include <ctype.h>
 #include <assert.h>
@@ -64,7 +65,9 @@ lexem_t next_lexem(parsing_block_t *data) {
     char *str = NULL;
 
     lexem_t lexem = {};
+
     if (isdigit(c) || (c == '-' && isdigit(s[*p]))) {
+
         lexem.token_type = AST_NUM;
 
         long long l_part = 0;
@@ -212,6 +215,7 @@ void lex_scanner(parsing_block_t *data) {
     // printf("text: '%s'\n", data->text);
 
     while (1) {
+        // FIXME: тут можно сделать функцию для пропуска ненужных символов
         lexem_t lexem = next_lexem(data);
 
         lexem.text_pos = cur_text_pos;

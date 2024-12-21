@@ -16,50 +16,6 @@ union token_value_t {
     char *sval;
 };
 
-// enum token_t {
-//     T_EOF = -1,
-//     T_EMPTY = 0,
-
-//     T_NUM = 1,
-
-//     T_ADD = 2,
-//     T_MUL = 3,
-//     T_SUB = 4,
-//     T_DIV = 5,
-//     T_POW = 6,
-
-//     T_O_BRACE = 7,
-//     T_C_BRACE = 8,
-//     T_O_FIG_BRACE = 9,
-//     T_C_FIG_BRACE = 10,
-//     T_EOL = 11, // '\n'
-//     T_SPACE = 12,
-//     T_ID = 13,
-
-//     T_IF = 14, // key_words
-//     T_WHILE = 15,
-
-//     T_SEMICOLON = 16,
-
-//     T_MORE = 17,
-//     T_LESS = 18,
-//     T_MORE_EQ = 19,
-//     T_LESS_EQ = 20,
-//     T_EQ = 21,
-
-//     T_INT = 22,
-//     T_FLOAT = 23,
-//     T_VOID = 24,
-
-//     T_ASSIGN = 25,
-//     T_COMMA = 26,
-//     T_RETURN = 27,
-//     T_ELSE = 28,
-
-//     T_BREAK = 29,
-//     T_CONTINUE = 30,
-// };
-
 struct text_pos_t {
     size_t lines;
     size_t syms;
@@ -89,7 +45,7 @@ struct name_t {
 
 enum grammar_rule_num {
     EMPTY_GRULE = 0,
-    GET_CODE_BLOCK = 1,
+    PARSE_LEXEMS = 1,
     GET_ADDITIVE_EXPRESSION = 2,
     GET_MULTIPLICATIVE_EXPRESSION = 3,
     GET_DIRECT_DECLARATOR = 4,
@@ -146,11 +102,11 @@ struct parsing_block_t {
     FILE *asm_code_file_ptr;
 };
 
-
 bool parsing_block_t_ctor(parsing_block_t *data, char *text,
-    keyword_t keywords_table[], const size_t keywords_table_sz, name_t *name_table,
+    keyword_t keywords_table[], name_t *name_table,
     lexem_t *lexem_list, str_storage_t **storage, const char asm_code_file_path[]);
 
 void parsing_block_t_dtor(parsing_block_t *data);
+bool keywords_table_fill(keyword_t keywords_table[], size_t *keywords_table_size);
 
 #endif // LANG_GLOBAL_SPACE_H

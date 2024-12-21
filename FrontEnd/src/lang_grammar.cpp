@@ -116,7 +116,7 @@ void dump_last_lex(parsing_block_t *data) {
     fprintf_border(stdout, '-', STR_F_BORDER_SZ, true);
 }
 
-ast_tree_elem_t *get_code_block(parsing_block_t *data) {
+ast_tree_elem_t *parse_lexems(parsing_block_t *data) {
     assert(data);
 
     ast_tree_elem_t *global_statement_list = NULL;
@@ -124,9 +124,9 @@ ast_tree_elem_t *get_code_block(parsing_block_t *data) {
 
     empty = 1;
     global_statement_list = get_statement_list_untill_eof(data, &empty);
-    CATCH_PARSE_ERROR(data, GET_CODE_BLOCK, CLEAR_MEMORY(exit_mark))
+    CATCH_PARSE_ERROR(data, PARSE_LEXEMS, CLEAR_MEMORY(exit_mark))
 
-    STEP_OVER_TOKEN_WITH_CHECK(data, GET_CODE_BLOCK, AST_EOF, CLEAR_MEMORY(exit_mark))
+    STEP_OVER_TOKEN_WITH_CHECK(data, PARSE_LEXEMS, AST_EOF, CLEAR_MEMORY(exit_mark))
 
     return global_statement_list;
 
@@ -426,7 +426,8 @@ bool check_token_on_type_class(const ast_token_t token) {
     (
     token == AST_INT     ||
     token == AST_FLOAT   ||
-    token == AST_STR_LIT
+    token == AST_STR_LIT ||
+    token == AST_VOID
     );
 }
 

@@ -52,7 +52,6 @@ int main(const int argc, const char *argv[]) {
     ast_tree_t tree = {}; ast_tree_ctor(&tree, LOG_FILE_PATH);
     dot_code_t dot_code = {}; dot_code_t_ctor(&dot_code, LIST_DOT_CODE_PARS);
     dot_dir_t dot_dir = {}; dot_dir_ctor(&dot_dir, DOT_DIR_PATH, DOT_FILE_NAME, DOT_IMG_NAME);
-    stack_t call_stack = {};;
 
 
     tree.root = load_ast_tree(text.str_ptr, &storage, bufer);
@@ -65,7 +64,7 @@ int main(const int argc, const char *argv[]) {
 
     dot_code_render(&dot_dir, &dot_code);
 
-    stack_destroy(&call_stack);
+    // stack_destroy(&call_stack);
     FREE(text.str_ptr);
     sub_tree_dtor(tree.root);
     str_storage_t_dtor(storage);
