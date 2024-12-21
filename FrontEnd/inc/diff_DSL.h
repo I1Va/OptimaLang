@@ -23,6 +23,7 @@
 #define _SEMICOLON(left, right)        ast_tree_create_node(left, right,            {NODE_SEMICOLON,   {0, 0ll, 0.0, NULL}})
 #define _IF(cond, else_node)           ast_tree_create_node(cond, else_node,        {NODE_IF,          {0, 0ll, 0.0, NULL}})
 #define _COMMA(copy_node, args_node)   ast_tree_create_node(copy_node, args_node,   {NODE_COMMA,       {0, 0ll, 0.0, NULL}})
+#define _STR_LIT(str, len)             ast_tree_create_node(NULL, NULL,             {NODE_STR_LIT,     {len, 0ll, 0.0, str}})
 // Можно сделать multiple type через divider: (например const long double)
 
 #endif // DIFF_DSL_H

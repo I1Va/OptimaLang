@@ -83,6 +83,8 @@ void translate_reserved_sqrt_call(ast_tree_elem_t *node);
 void init_stacks(FILE *log_file_ptr);
 void translate_ast_to_asm_code(const char path[], ast_tree_t *tree);
 void var_stack_remove_local_variables();
+void translate_reserved_print_string_call(ast_tree_elem_t *node);
+void translate_string_literal(ast_tree_elem_t *node);
 
 int get_func_idx_in_name_table(func_info_t func_info);
 int get_func_idx_in_reserved_name_table(func_info_t func_info);

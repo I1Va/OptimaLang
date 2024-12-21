@@ -30,10 +30,12 @@ int if_counter = 0;
 
 reserved_func_info_t reserved_func_name_table[] =
 {
-    {"print", AST_VOID, 1, translate_reserved_print_call},
-    {"input", AST_INT, 0, translate_reserved_input_call},
-    {"sqrt", AST_FLOAT, 1, translate_reserved_sqrt_call},
+    {"print",          AST_VOID, 1, translate_reserved_print_call},
+    {"input",          AST_INT, 0, translate_reserved_input_call},
+    {"sqrt",           AST_FLOAT, 1, translate_reserved_sqrt_call},
+    {"print_string",   AST_VOID, 1, translate_reserved_print_string_call}
 };
+
 size_t reserved_func_name_table_sz = sizeof(reserved_func_name_table) / sizeof(reserved_func_info_t);
 
 
@@ -43,6 +45,7 @@ size_t func_table_sz = 0;
 stack_t cond_stack = {};
 stack_t var_stack = {};
 stack_t global_var_stack = {};
+stack_t str_lit_lens_stack = {};
 
 void translate_reserved_input_call(ast_tree_elem_t *node) {
     assert(node);
@@ -91,7 +94,29 @@ void translate_reserved_print_call(ast_tree_elem_t *node) {
                         );
 }
 
+void translate_reserved_print_string_call(ast_tree_elem_t *node) {
+    assert(node);
+    CHECK_NODE_TYPE(node, NODE_CALL);
+
+    int lit_len = 0;
+    char *func_name = node->left->data.value.sval;
+    if (strcmp(func_name, "print_string") != 0) {
+        RAISE_TR_ERROR("reserve call error: expected 'print', got '%s'", func_name);
+        return;
+    }
+    stack_pop(&str_lit_lens_stack, &lit_len);
+    fprintf(asm_code_ptr, "; print_string call\n");
+    for (size_t i = 0; i < (size_t) lit_len; i++) {
+        fprintf(asm_code_ptr, "    outc;\n");
+    }
+    fprintf(asm_code_ptr,
+                          "    push 10;\n"
+                          "    outc;\n"
+                        );
+}
+
 void init_stacks(FILE *log_file_ptr) {
+    STACK_INIT(&str_lit_lens_stack, 0, sizeof(int), log_file_ptr, NULL);
     STACK_INIT(&cond_stack, 0, sizeof(int), log_file_ptr, NULL);
     STACK_INIT(&var_stack, 0, sizeof(var_t), log_file_ptr, NULL);
     STACK_INIT(&global_var_stack, 0, sizeof(ast_tree_elem_t *), log_file_ptr, NULL);
@@ -304,9 +329,9 @@ void translate_function_init(ast_tree_elem_t *node) {
     translate_node_to_asm_code(node->right); //func_body;
     fprintf(asm_code_ptr, ";#========End=Body=========#\n");
 
-    if (count_node_type_in_subtreeas(node->right, NODE_RETURN) != 1) {
-
-        RAISE_TR_ERROR("function '%s' hasn't <return>", func_info.name);
+    size_t return_num = count_node_type_in_subtreeas(node->right, NODE_RETURN);
+    if (return_num != 1) {
+        RAISE_TR_ERROR("function '%s' has {%lu} <return>'s", func_info.name, return_num);
         return;
     }
 
@@ -348,26 +373,36 @@ void translate_semicolon(ast_tree_elem_t *node) {
 }
 
 void translate_num(ast_tree_elem_t *node) {
-
     assert(node);
     CHECK_NODE_TYPE(node, NODE_NUM);
 
     fprintf(asm_code_ptr, "push %Lg;\n", node->data.value.fval);
 }
 
+void translate_string_literal(ast_tree_elem_t *node) {
+    assert(node);
+    CHECK_NODE_TYPE(node, NODE_STR_LIT);
+
+    stack_push(&str_lit_lens_stack, &node->data.value.ival);
+    for (int i = node->data.value.ival - 1; i >= 0; i--) {
+        fprintf(asm_code_ptr, "push %d;\n", node->data.value.sval[i]);
+    }
+}
+
 void translate_op(ast_tree_elem_t *node) {
     assert(node);
 
-    if (!node->left && !node->right) {
-
-        if (node->data.type == NODE_NUM) {
-            translate_num(node);
-        } else if (node->data.type == NODE_VAR) {
-            translate_var(node);
-        } else {
-            RAISE_TR_ERROR("translate_op doesn't support node_type: {%d}", node->data.type);
-            return;
-        }
+    if (node->data.type == NODE_NUM) {
+        translate_num(node);
+        return;
+    } else if (node->data.type == NODE_VAR) {
+        translate_var(node);
+        return;
+    } else if (node->data.type == NODE_STR_LIT) {
+        RAISE_TR_ERROR("translate_op doesn't support node_type: {%d}", node->data.type);
+        return;
+    } else if (node->data.type == NODE_CALL) {
+        translate_func_call(node);
         return;
     }
 
@@ -438,6 +473,8 @@ void translate_node_to_asm_code(ast_tree_elem_t *node) {
         case NODE_COMMA: RAISE_TR_ERROR(
             "<NODE_COMMA> should be processed in"
             "<translate_func_call>/<translate_func_args_init>")
+            break;
+        case NODE_STR_LIT: translate_string_literal(node);
             break;
         default: RAISE_TR_ERROR("incorrect AST: <UNKNOWN_NODE(%d)>", node->data.type)
             break;

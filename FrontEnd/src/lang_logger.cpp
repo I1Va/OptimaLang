@@ -1,3 +1,4 @@
+#include "AST_io.h"
 #include "lang_global_space.h"
 #include "lang_grammar.h"
 #include "lang_logger.h"
@@ -40,6 +41,7 @@ void lexem_dump(FILE *stream, parsing_block_t *data, lexem_t lexem) {
         T_DESCR_(stream, AST_RETURN, "%s", "return")
         T_DESCR_(stream, AST_ELSE, "%s", "else")
         T_DESCR_(stream, AST_VOID, "%s", "void")
+        T_DESCR_(stream, AST_STR_LIT, "\"%s\"", lexem.token_val.sval)
 
 
         default: fprintf(stream, "UNKNOWN_LEX(%d) ", lexem.token_type); break;

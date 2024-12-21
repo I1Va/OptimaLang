@@ -8,6 +8,7 @@
 #include "general.h"
 #include "lang_logger.h"
 #include "lang_global_space.h"
+#include "string_funcs.h"
 #include "lang_lexer.h"
 
 bool char_in_str_lex(int c) {
@@ -94,6 +95,25 @@ lexem_t next_lexem(parsing_block_t *data) {
         lexem.token_val.fval = fval;
 
         lexem.len = len_l_part + (len_frac_part > 0) + len_frac_part;
+
+        return lexem;
+    }
+
+    if (c == '"') {
+        char *open_quote = s + (*p) - 1;
+        char *close_quote = strchr(s + *p, '"');
+        if (!close_quote) {
+            debug("CLOSE_QUOTE ABSENT: '%c%c'", c, s[*p]);
+            return {AST_EOF};
+        }
+        size_t len = (size_t) (close_quote - open_quote) - 1;
+
+        lexem.token_type = AST_STR_LIT;
+        lexem.token_val.sval = get_new_str_ptr(data->storage, len);
+        lexem.len = len;
+        lexem.key_word_state = false;
+        strncpy(lexem.token_val.sval, s + *p, len);
+        (*p) = (*p) + (size_t) (close_quote - open_quote); // next sym after close_quote
 
         return lexem;
     }

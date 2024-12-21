@@ -1,0 +1,40 @@
+int quadr_equ_solver() {
+    int a = input();
+    int b = input();
+    int c = input();
+    if (a == 0) {
+        if (b == 0) {
+            if (c == 0) {
+                print(99999);
+            } else {
+                print(0);
+            };
+        } else {
+            print(1);
+        };
+    } else {
+        int D = b * b - 4 * a * c;
+        print(D);
+        if (D >= 0) {
+            if (D == 0) {
+                print(1);
+                print(-1 * b / (2 * a));
+            } else {
+                float D_sqrt = sqrt(D);
+                print(2);
+                print((-1 * b + D_sqrt) / (2 * a));
+                print((-1 * b - D_sqrt) / (2 * a));
+            };
+        } else {
+            print(0);
+        };
+    };
+
+    return 0;
+};
+
+int main() {
+    quadr_equ_solver();
+    return 0;
+};
+

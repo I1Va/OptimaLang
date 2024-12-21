@@ -166,7 +166,6 @@ ast_tree_elem_t *get_statement(parsing_block_t *data) {
     if (val) { return val; }
 
     val = try_grule(data, get_variable_initialization_with_assignment);
-
     if (val) { return val; }
 
     val = try_grule(data, get_variable_initialization);
@@ -377,6 +376,15 @@ ast_tree_elem_t *get_multiplicative_expression(parsing_block_t *data) {
     return NULL;
 }
 
+bool check_token_on_primary_expr_class(const ast_token_t token) {
+    return
+    (
+    token == AST_ID      ||
+    token == AST_NUM     ||
+    token == AST_STR_LIT
+    );
+}
+
 ast_tree_elem_t *get_direct_declarator(parsing_block_t *data) {
     assert(data);
 
@@ -394,14 +402,14 @@ ast_tree_elem_t *get_direct_declarator(parsing_block_t *data) {
         return val;
     }
 
-    if (tl[*tp].token_type ==AST_ID && tl[(*tp) + 1].token_type ==AST_O_BRACE) {
+    if (tl[*tp].token_type ==AST_ID && tl[(*tp) + 1].token_type == AST_O_BRACE) {
         ast_tree_elem_t *func_node = get_function_call(data);
         CATCH_PARSE_ERROR(data, GET_DIRECT_DECLARATOR, return NULL)
 
         return func_node;
     }
 
-    if (tl[*tp].token_type ==AST_ID || tl[*tp].token_type ==AST_NUM) {
+    if (check_token_on_primary_expr_class(tl[*tp].token_type)) {
         ast_tree_elem_t *prim_node = get_primary_expression(data);
         CATCH_PARSE_ERROR(data, GET_DIRECT_DECLARATOR, return NULL)
 
@@ -416,14 +424,14 @@ ast_tree_elem_t *get_direct_declarator(parsing_block_t *data) {
 bool check_token_on_type_class(const ast_token_t token) {
     return
     (
-    token ==AST_INT     ||
-    token ==AST_FLOAT
+    token == AST_INT     ||
+    token == AST_FLOAT   ||
+    token == AST_STR_LIT
     );
 }
 
 ast_tree_elem_t *get_type(parsing_block_t *data) {
     assert(data);
-
     lexem_t *tl = data->lexem_list;
     size_t *tp = &(data->lexem_list_idx);
     ast_tree_elem_t *type_node = NULL;
@@ -582,7 +590,6 @@ ast_tree_elem_t *get_statement_list_untill_eof(parsing_block_t *data, int *empty
 
 ast_tree_elem_t *get_scope(parsing_block_t *data, int *empty) {
     assert(data);
-
     ast_tree_elem_t *copy_node = NULL;
     ast_tree_elem_t *right_node = NULL;
 
@@ -590,7 +597,7 @@ ast_tree_elem_t *get_scope(parsing_block_t *data, int *empty) {
 
     STEP_OVER_TOKEN_WITH_CHECK(data, GET_SCOPE,AST_O_FIG_BRACE, CLEAR_MEMORY(exit_mark));
 
-    while (data->lexem_list[data->lexem_list_idx].token_type !=AST_C_FIG_BRACE) {
+    while (data->lexem_list[data->lexem_list_idx].token_type != AST_C_FIG_BRACE) {
         *empty = 0;
         copy_node = right_node;
         right_node = get_statement(data);
@@ -727,7 +734,7 @@ ast_tree_elem_t *get_primary_expression(parsing_block_t *data) {
     lexem_t *tl = data->lexem_list;
     size_t *tp = &(data->lexem_list_idx);
 
-    if (tl[*tp].token_type ==AST_ID) {
+    if (tl[*tp].token_type == AST_ID) {
         ast_tree_elem_t *id_node = get_variable(data);
         if (data->parser_err.err_state) {
             add_grule_to_parser_err(&data->parser_err, GET_PRIMARY_EXPRESSION);
@@ -735,13 +742,20 @@ ast_tree_elem_t *get_primary_expression(parsing_block_t *data) {
         }
 
         return id_node;
-    } else if (tl[*tp].token_type ==AST_NUM) {
+    } else if (tl[*tp].token_type == AST_NUM) {
         ast_tree_elem_t *const_node = get_constant(data);
         if (data->parser_err.err_state) {
             add_grule_to_parser_err(&data->parser_err, GET_PRIMARY_EXPRESSION);
             return const_node;
         }
         return const_node;
+    } else if (tl[*tp].token_type == AST_STR_LIT) {
+        ast_tree_elem_t *str_lit_node = get_string_literal(data);
+        if (data->parser_err.err_state) {
+            add_grule_to_parser_err(&data->parser_err, GET_PRIMARY_EXPRESSION);
+            return str_lit_node;
+        }
+        return str_lit_node;
     } else {
         start_parser_err(data, tl[*tp], GET_PRIMARY_EXPRESSION);
         return NULL;
@@ -799,6 +813,26 @@ ast_tree_elem_t *get_constant(parsing_block_t *data) {
     (*tp)++;
 
     return _NUM(val);
+}
+
+ast_tree_elem_t *get_string_literal(parsing_block_t *data) {
+    assert(data);
+
+    lexem_t *tl = data->lexem_list;
+    size_t *tp = &(data->lexem_list_idx);
+    char * val = 0;
+    size_t len = 0;
+
+    if (tl[*tp].token_type != AST_STR_LIT) {
+        start_parser_err(data, tl[*tp], GET_CONSTANT);
+        return NULL;
+    }
+
+    val = tl[*tp].token_val.sval;
+    len = tl[*tp].len;
+    (*tp)++;
+
+    return _STR_LIT(val, (int) len);
 }
 
 ast_tree_elem_t *get_variable(parsing_block_t *data) {

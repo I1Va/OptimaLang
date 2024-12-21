@@ -13,6 +13,7 @@ union token_value_t {
     int ival;
     long long lval;
     long double fval;
+    char *sval;
 };
 
 // enum token_t {

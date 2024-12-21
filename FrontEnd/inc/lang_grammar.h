@@ -42,6 +42,7 @@ ast_tree_elem_t* get_func_separated_init_args(parsing_block_t*);
 ast_tree_elem_t *get_scope(parsing_block_t *data, int *empty);
 ast_tree_elem_t *get_cont_ret_break(parsing_block_t *data);
 ast_tree_elem_t *get_statement_list_untill_eof(parsing_block_t *data, int *empty);
+ast_tree_elem_t *get_string_literal(parsing_block_t *data);
 
 void dump_last_lex(parsing_block_t *data);
 
