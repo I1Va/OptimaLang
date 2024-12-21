@@ -78,7 +78,7 @@ void grule_dump(FILE *stream, enum grammar_rule_num grule) {
 
     switch (grule) {
         GR_DESCR_(stream, EMPTY_GRULE)
-        GR_DESCR_(stream, PARSE_LEXEMS)
+        GR_DESCR_(stream, GET_SYNTAX_ANALYSIS)
         GR_DESCR_(stream, GET_ADDITIVE_EXPRESSION)
         GR_DESCR_(stream, GET_MULTIPLICATIVE_EXPRESSION)
         GR_DESCR_(stream, GET_DIRECT_DECLARATOR)

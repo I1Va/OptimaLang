@@ -20,7 +20,7 @@
 
 // GRAMMAR:
 // #=================================================================================================================#
-// parse_lexems: get_statement_list_untill_eof <EOF>
+// get_syntax_analysis: get_statement_list_untill_eof <EOF>
 
 // get_expression: get_logical_expression
 
@@ -187,7 +187,7 @@ void dump_last_lex(parsing_block_t *data) {
     fprintf_border(stdout, '-', STR_F_BORDER_SZ, true);
 }
 
-ast_tree_elem_t *parse_lexems(parsing_block_t *data) {
+ast_tree_elem_t *get_syntax_analysis(parsing_block_t *data) {
     assert(data);
 
     ast_tree_elem_t *global_statement_list = NULL;
@@ -195,9 +195,9 @@ ast_tree_elem_t *parse_lexems(parsing_block_t *data) {
 
     empty = 1;
     global_statement_list = get_statement_list_untill_eof(data, &empty);
-    CATCH_PARSE_ERROR(data, PARSE_LEXEMS, CLEAR_MEMORY(exit_mark))
+    CATCH_PARSE_ERROR(data, GET_SYNTAX_ANALYSIS, CLEAR_MEMORY(exit_mark))
 
-    STEP_OVER_TOKEN_WITH_CHECK(data, PARSE_LEXEMS, AST_EOF, CLEAR_MEMORY(exit_mark))
+    STEP_OVER_TOKEN_WITH_CHECK(data, GET_SYNTAX_ANALYSIS, AST_EOF, CLEAR_MEMORY(exit_mark))
 
     return global_statement_list;
 

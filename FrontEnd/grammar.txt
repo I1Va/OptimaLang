@@ -1,4 +1,4 @@
-parse_lexems: get_statement_list_untill_eof <EOF>
+get_syntax_analysis: get_statement_list_untill_eof <EOF>
 
 get_expression: get_logical_expression
 

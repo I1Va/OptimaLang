@@ -40,7 +40,7 @@ int main(const int argc, const char *argv[]) {
 
     lex_scanner(&data);
 
-    tree.root = parse_lexems(&data);
+    tree.root = get_syntax_analysis(&data);
     if (check_parser_err(stdout, &data)) {
         CLEAR_MEMORY(exit_mark);
     }

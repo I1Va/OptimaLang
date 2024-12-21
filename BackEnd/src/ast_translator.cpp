@@ -18,34 +18,33 @@
 
 #define RAISE_TR_ERROR(str_, ...) fprintf_red(stderr, "{%s} [%s: %d]: translator_error{" str_ "}\n", __FILE_NAME__, __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__); abort();
 
+// CONSTANTS
 const var_t POISON_VAR = {-1, -1, -1, NULL};
 const char FRAME_PTR_REG_PLUS[] = "rbp+";
-
-FILE *asm_code_ptr = NULL;
-int cur_scope_deep = 0;
-int cur_frame_ptr = 0;
-int while_counter = 0;
-int if_counter = 0;
-bool func_init = false;
-bool void_func = false;
-
-reserved_func_info_t reserved_func_name_table[] =
+const reserved_func_info_t reserved_func_name_table[] =
 {
     {"print",          AST_VOID, 1, translate_reserved_print_call},
     {"input",          AST_INT, 0, translate_reserved_input_call},
     {"sqrt",           AST_FLOAT, 1, translate_reserved_sqrt_call},
     {"print_string",   AST_VOID, 1, translate_reserved_print_string_call}
 };
+const size_t reserved_func_name_table_sz = sizeof(reserved_func_name_table) / sizeof(reserved_func_info_t);
 
-size_t reserved_func_name_table_sz = sizeof(reserved_func_name_table) / sizeof(reserved_func_info_t);
-
+// GLOBAL VARIABLES
+FILE *asm_code_ptr = NULL;
+int cur_scope_deep = 0;
+int cur_frame_ptr  = 0;
+int while_counter  = 0;
+int if_counter     = 0;
+bool func_init     = false;
+bool void_func     = false;
 
 func_info_t func_name_table[MAX_FUNC_TABLE_SZ] = {};
 size_t func_table_sz = 0;
 
-stack_t cond_stack = {};
-stack_t var_stack = {};
-stack_t global_var_stack = {};
+stack_t cond_stack         = {};
+stack_t var_stack          = {};
+stack_t global_var_stack   = {};
 stack_t str_lit_lens_stack = {};
 
 void translate_reserved_input_call(ast_tree_elem_t *node) {

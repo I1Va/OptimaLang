@@ -45,7 +45,7 @@ struct name_t {
 
 enum grammar_rule_num {
     EMPTY_GRULE = 0,
-    PARSE_LEXEMS = 1,
+    GET_SYNTAX_ANALYSIS = 1,
     GET_ADDITIVE_EXPRESSION = 2,
     GET_MULTIPLICATIVE_EXPRESSION = 3,
     GET_DIRECT_DECLARATOR = 4,

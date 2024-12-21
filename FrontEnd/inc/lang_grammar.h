@@ -14,7 +14,7 @@ bool check_parser_err(FILE *stream, parsing_block_t *data);
 void dump_last_lex(parsing_block_t *data);
 
 ast_tree_elem_t *get_return(parsing_block_t *data);
-ast_tree_elem_t *parse_lexems(parsing_block_t *data);
+ast_tree_elem_t *get_syntax_analysis(parsing_block_t *data);
 ast_tree_elem_t *get_additive_expression(parsing_block_t *data);
 ast_tree_elem_t *get_multiplicative_expression(parsing_block_t *data);
 ast_tree_elem_t *get_direct_declarator(parsing_block_t *data);
