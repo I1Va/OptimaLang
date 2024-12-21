@@ -1,0 +1,15 @@
+int function(int var) {
+    if (var > var + var) {
+        print_string("negative");
+    } else {
+        print_string("positive");
+    };
+    return 0;
+};
+
+int main() {
+    int n = input();
+    int ret = function(n);
+    return 0;
+};
+

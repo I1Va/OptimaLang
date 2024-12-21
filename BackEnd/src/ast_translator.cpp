@@ -27,6 +27,7 @@ int cur_frame_ptr = 0;
 int while_counter = 0;
 int if_counter = 0;
 bool func_init = false;
+bool void_func = false;
 
 reserved_func_info_t reserved_func_name_table[] =
 {
@@ -340,8 +341,10 @@ void translate_function_init(ast_tree_elem_t *node) {
     fprintf(asm_code_ptr, ";#========End=Body=========#\n");
 
     size_t return_num = count_node_type_in_subtreeas(node->right, NODE_RETURN);
-    if (return_num != 1) {
-        RAISE_TR_ERROR("function '%s' has {%lu} <return>'s", func_info.name, return_num);
+    void_func = func_info.return_type_num == AST_VOID;
+
+    if (return_num == 0 && !void_func) {
+        RAISE_TR_ERROR("non void function '%s' hasn't <return>", func_info.name);
         return;
     }
 
@@ -786,16 +789,26 @@ void translate_return(ast_tree_elem_t *node) {
 
     fprintf(asm_code_ptr, ";#========Var=Return=======#\n");
 
-    if (!node->left) {
-        RAISE_TR_ERROR("<return> hasn't arg");
-        return;
+    if (!void_func) {
+        if (!node->left) {
+            RAISE_TR_ERROR("non void function hasn't return value");
+            return;
+        }
+        translate_node_to_asm_code(node->left);
+        fprintf(asm_code_ptr, "pop rax\n"); // writes return value into rax register
+    } else {
+        if (node->left) {
+            RAISE_TR_ERROR("void function has return value");
+            return;
+        }
     }
-
-    translate_node_to_asm_code(node->left);
-
-    fprintf(asm_code_ptr, "pop rax\n"); // writes return arg into rax register
-
-    fprintf(asm_code_ptr, ";#========End=Return=======#\n");
+    fprintf(asm_code_ptr,
+                        "push rbp;\n"
+                        "pop rsp; stack_pointer = frame_pointer\n"
+                        "pop  rbp;\n"
+                        "ret;\n"
+                        ";#========End=Return=======#\n"
+                        );
 }
 
 void fprintf_asm_border(FILE* stream, const char bord_char, const size_t bord_sz, bool new_line) {
