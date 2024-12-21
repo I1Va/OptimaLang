@@ -102,6 +102,8 @@ struct parsing_block_t {
     FILE *asm_code_file_ptr;
 };
 
+const lexem_t EMPTY_LEXEM = {AST_EMPTY, };
+
 bool parsing_block_t_ctor(parsing_block_t *data, char *text,
     keyword_t keywords_table[], name_t *name_table,
     lexem_t *lexem_list, str_storage_t **storage, const char asm_code_file_path[]);
