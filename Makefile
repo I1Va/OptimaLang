@@ -146,10 +146,13 @@ clean:
 build:
 	@cd ./FrontEnd && make MODE=RELEAZE
 	@cd ./BackEnd && make MODE=RELEAZE
+	@cd ./Processor && make MODE=RELEAZE
 
-launch:
-	@cd ./FrontEnd && make MODE=DEBUG && make launch -f Makefile LAUNCH_FLAGS="-i=./../code.txt -o=./../ast.txt"
-	@cd ./BackEnd && make MODE=DEBUG && make launch -f Makefile LAUNCH_FLAGS="-i=./../ast.txt -o=./../bin_code.txt"
+compile_code:
+	@cd ./FrontEnd && make launch -f Makefile LAUNCH_FLAGS="-i=./../code.txt -o=./../ast.txt"
+	@cd ./BackEnd && make launch -f Makefile LAUNCH_FLAGS="-i=./../ast.txt -o=./../bin_code.txt"
+execute_code:
+	@cd ./Processor && make launch -f Makefile LAUNCH_FLAGS="-i=./../bin_code.txt"
 
 #@$(LAUNCH_PREFLAGS) ./$(OUT_O_DIR)/$(OUTFILE_NAME)
 

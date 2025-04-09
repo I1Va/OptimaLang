@@ -46,3 +46,6 @@
 [submodule "BackEnd/stack"]
 	path = BackEnd/stack
 	url = https://github.com/I1Va/stack.git
+[submodule "Processor"]
+	path = Processor
+	url = https://github.com/I1Va/Processor.git
