@@ -139,16 +139,19 @@ LAUNCH_PREFLAGS = LD_LIBRARY_PATH=$(subst $(space),:,$(SO_LIBS_PATHES))
 
 all: $(OUT_O_DIR)/$(OUTFILE_NAME) # Target all depends on "$(OUTFILE_NAME)" file creation. That is when we use "all" target, "$(OUTFILE_NAME)" file will be created
 
+clean:
+	@cd ./FrontEnd && make clean
+	@cd ./BackEnd && make clean
 
-
+build:
+	@cd ./FrontEnd && make MODE=RELEAZE
+	@cd ./BackEnd && make MODE=RELEAZE
 
 launch:
 	@cd ./FrontEnd && make MODE=DEBUG && make launch -f Makefile LAUNCH_FLAGS="-i=./../code.txt -o=./../ast.txt"
 	@cd ./BackEnd && make MODE=DEBUG && make launch -f Makefile LAUNCH_FLAGS="-i=./../ast.txt -o=./../bin_code.txt"
 
 #@$(LAUNCH_PREFLAGS) ./$(OUT_O_DIR)/$(OUTFILE_NAME)
-
-#FIXME: научится автоматически создавать динамические библиотеки сабмодулей. cd submodule_path && make DynLibGen
 
 DynLibGen: $(COBJ)
 	@mkdir -p libs
@@ -182,8 +185,6 @@ $(DEPS) : $(OUT_O_DIR)/%.d : %.cpp # Object files creation
 
 .PHONY: clean
 
-clean:
-	@rm -rf $(COBJ) $(DEPS) $(OUT_O_DIR)/*.out $(OUT_O_DIR)/*.log
 
 clean_logs:
 	@rm -rf $(LOGS_DIR)

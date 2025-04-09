@@ -11,7 +11,7 @@ noop=
 space = $(noop) $(noop)
 
 MODE ?= RELEAZE #exist 3 modes: DEBUG/REALIZE/SECURITY
-# in DEBUG:
+# if DEBUG:
 # 	CFLAGS = $(CDEBFLAGS)
 # 	OUT_O_DIR = debug
 # 	EXTRA_FLAGS = $(SANITIZER_FLAGS)
@@ -28,13 +28,7 @@ ifeq ($(origin CC),default) # "CC" Variable has makefile default value. If Makef
 endif
 
 
-CFLAGS ?= -O2 -Wshadow -Winit-self -Wredundant-decls -Wcast-align -Wundef -Wfloat-equal       \
-	-Winline -Wunreachable-code -Wmissing-declarations -Wmissing-include-dirs -Wswitch     \
-	-Wswitch-default -Weffc++ -Wmain -Wextra -Wall -g -pipe -fexceptions                   \
-	-Wcast-qual -Wconversion -Wctor-dtor-privacy -Wempty-body -Wformat-security -Wformat=2 \
-	-Wignored-qualifiers -Wlogical-op -Wno-missing-field-initializers -Wnon-virtual-dtor   \
-	-Woverloaded-virtual -Wpointer-arith -Wsign-promo -Wstack-usage=8192 -Wstrict-aliasing \
-	-Wstrict-null-sentinel -Wtype-limits -Wwrite-strings #-Werror
+CFLAGS ?= -O2 -D NDEBUG -fcompare-debug-second
 
 CDEBFLAGS = -D _DEBUG -ggdb3 -std=c++17 -O0 -Wall -Wextra -Weffc++ -Waggressive-loop-optimizations \
 -Wc++14-compat -Wmissing-declarations -Wcast-align -Wcast-qual -Wchar-subscripts -Wconditionally-supported \
