@@ -23,4 +23,3 @@ int main() {
     print(iter_factorial(n));
     return 0;
 };
-

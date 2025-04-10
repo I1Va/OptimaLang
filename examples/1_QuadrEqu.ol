@@ -5,28 +5,27 @@ int quadr_equ_solver() {
     if (a == 0) {
         if (b == 0) {
             if (c == 0) {
-                print(99999);
+                print_string("infinity_roots");
             } else {
-                print(0);
+                print_string("zero_roots");
             };
         } else {
             print(1);
         };
     } else {
         int D = b * b - 4 * a * c;
-        print(D);
         if (D >= 0) {
             if (D == 0) {
-                print(1);
+                print_string("one_root:");
                 print(-1 * b / (2 * a));
             } else {
                 float D_sqrt = sqrt(D);
-                print(2);
+                print_string("two_roots:");
                 print((-1 * b + D_sqrt) / (2 * a));
                 print((-1 * b - D_sqrt) / (2 * a));
             };
         } else {
-            print(0);
+            print_string("zero_roots");
         };
     };
 
@@ -37,4 +36,3 @@ int main() {
     quadr_equ_solver();
     return 0;
 };
-

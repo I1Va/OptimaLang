@@ -150,16 +150,8 @@ void translate_ast_to_asm_code(const char path[], ast_tree_t *tree) {
         return;
     }
 
-    setbuf(asm_code_ptr, 0); // FIXME: remove after debugging
-    // fprintf(asm_code_ptr, "jmp __MAIN_LAUNCH:\n\n");
+    setbuf(asm_code_ptr, 0);
     translate_node_to_asm_code(tree->root);
-
-    // __MAIN_LAUNCH:
-    // fprintf(asm_code_ptr,
-    //                  "\n\n__MAIN_LAUNCH:\n"
-    //                  ";#=====Global=Vars=Init====#\n");
-
-    // translate_global_vars_init();
 
     fprintf(asm_code_ptr,
                         "call main:\n"
